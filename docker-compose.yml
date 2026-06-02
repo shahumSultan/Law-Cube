@@ -57,7 +57,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    env_file: .env
+    env_file: ./backend/.env
     environment:
       DATABASE_URL: postgresql+asyncpg://lawcube:lawcube@postgres:5432/lawcube
     command: alembic upgrade head
@@ -72,7 +72,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     restart: unless-stopped
-    env_file: .env
+    env_file: ./backend/.env
     environment:
       DATABASE_URL: postgresql+asyncpg://lawcube:lawcube@postgres:5432/lawcube
       REDIS_URL: redis://redis:6379/0
@@ -103,7 +103,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     restart: unless-stopped
-    env_file: .env
+    env_file: ./backend/.env
     environment:
       DATABASE_URL: postgresql+asyncpg://lawcube:lawcube@postgres:5432/lawcube
       REDIS_URL: redis://redis:6379/0
@@ -128,7 +128,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     restart: unless-stopped
-    env_file: .env
+    env_file: ./frontend/.env.local
     environment:
       NEXT_PUBLIC_API_URL: http://backend:8000
     ports:

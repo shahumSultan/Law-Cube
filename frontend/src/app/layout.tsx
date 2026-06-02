@@ -8,10 +8,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Law Cube — AI-Powered Legal Intake & Marketing Intelligence",
+  title: "Law Cube — AI Intake & Marketing Intelligence for Law Firms",
   description:
-    "Turn calls into retained clients. Law Cube connects your marketing spend to actual retained clients — so you always know which channels grow your firm.",
-  keywords: "law firm software, legal intake, call intelligence, marketing attribution, Clio integration",
+    "Know exactly which campaigns retain clients. Law Cube connects every marketing dollar to retained clients with AI-powered call intelligence, lead scoring, and attribution.",
+  keywords: "law firm software, legal intake, call intelligence, marketing attribution, AI lead scoring, Clio integration",
 };
 
 export default function RootLayout({
@@ -21,7 +21,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geistMono.variable} h-full`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <head>
+        {/* Prevent flash of wrong theme on load */}
+        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('lc-theme'),d=window.matchMedia('(prefers-color-scheme:dark)').matches;if(t==='dark'||(t===null&&d)){document.documentElement.classList.add('dark')}}catch(e){}})()` }} />
+      </head>
+      <body className="min-h-full flex flex-col antialiased">{children}</body>
     </html>
   );
 }

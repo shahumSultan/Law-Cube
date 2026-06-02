@@ -13,6 +13,8 @@ WORKDIR /app
 RUN pip install --no-cache-dir uv
 
 COPY pyproject.toml .
+# Stub the package so hatchling can resolve deps before source is copied
+RUN mkdir -p app && touch app/__init__.py
 RUN uv pip install --system --no-cache -e .
 
 COPY . .

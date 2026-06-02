@@ -17,6 +17,6 @@ class AuditLog(Base):
     action: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
     resource_type: Mapped[str | None] = mapped_column(String(50))
     resource_id: Mapped[str | None] = mapped_column(String(100))
-    metadata: Mapped[str | None] = mapped_column(Text)                    # JSON with before/after or extra context
+    event_metadata: Mapped[str | None] = mapped_column("metadata", Text)  # JSON with before/after or extra context
     ip_address: Mapped[str | None] = mapped_column(String(45))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(UTC), index=True)

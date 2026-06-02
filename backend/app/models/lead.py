@@ -78,7 +78,7 @@ class LeadTimeline(Base):
     user_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"))
     event_type: Mapped[str] = mapped_column(String(50), nullable=False)   # call | email | sms | note | status_change
     description: Mapped[str] = mapped_column(Text, nullable=False)
-    metadata: Mapped[str | None] = mapped_column(Text)                    # JSON
+    event_metadata: Mapped[str | None] = mapped_column("metadata", Text)  # JSON
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
 
     lead: Mapped["Lead"] = relationship("Lead", back_populates="timeline", lazy="noload")

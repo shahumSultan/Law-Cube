@@ -1,7 +1,8 @@
-# Environment
-.env
-.env.local
-.env.*.local
+# Environment — ignore secrets, keep examples
+backend/.env
+backend/.env.local
+frontend/.env.local
+frontend/.env.*.local
 .claude
 
 # Dependencies
