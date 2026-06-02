@@ -1,0 +1,143 @@
+services:
+
+  # ── PostgreSQL ──────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: lawcube
+      POSTGRES_PASSWORD: lawcube
+      POSTGRES_DB: lawcube
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lawcube"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ── Redis ───────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ── MinIO ───────────────────────────────────────────────────────────────────
+  minio:
+    image: minio/minio:latest
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - minio_data:/data
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # Web console
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ── Backend migrations (run-once) ───────────────────────────────────────────
+  migrate:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://lawcube:lawcube@postgres:5432/lawcube
+    command: alembic upgrade head
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  # ── FastAPI backend ─────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://lawcube:lawcube@postgres:5432/lawcube
+      REDIS_URL: redis://redis:6379/0
+      MINIO_ENDPOINT: minio:9000
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    develop:
+      watch:
+        - path: ./backend/app
+          action: sync+restart
+          target: /app/app
+
+  # ── arq worker ──────────────────────────────────────────────────────────────
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://lawcube:lawcube@postgres:5432/lawcube
+      REDIS_URL: redis://redis:6379/0
+      MINIO_ENDPOINT: minio:9000
+    command: arq app.workers.main.WorkerSettings
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    develop:
+      watch:
+        - path: ./backend/app
+          action: sync+restart
+          target: /app/app
+
+  # ── Next.js frontend ────────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:

@@ -15,6 +15,18 @@ venv/
 dist/
 build/
 *.egg-info/
+.next/
+frontend/.next/
+
+# Python
+*.pyc
+__pycache__/
+.venv/
+venv/
+.ruff_cache/
+
+# Docker
+docker-compose.override.yml
 
 # IDE
 .vscode/
