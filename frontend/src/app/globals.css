@@ -1,0 +1,260 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300;1,9..40,400&family=Instrument+Serif:ital@0;1&display=swap');
+
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: 'DM Sans', sans-serif;
+  --font-display: 'Sora', sans-serif;
+  --font-serif: 'Instrument Serif', serif;
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Law Cube custom colors */
+  --color-lc-base:     #090d18;
+  --color-lc-surface:  #0f1624;
+  --color-lc-elevated: #141d2e;
+  --color-lc-subtle:   #1a2540;
+  --color-lc-border:   #1e2d45;
+  --color-lc-bright:   #2a3f5f;
+  --color-lc-blue:     #3b82f6;
+  --color-lc-blue-bright: #60a5fa;
+  --color-lc-gold:     #f59e0b;
+  --color-lc-green:    #10b981;
+  --color-lc-red:      #ef4444;
+  --color-lc-text:     #eef2ff;
+  --color-lc-muted:    #8899b4;
+  --color-lc-faint:    #4a5c78;
+}
+
+:root {
+  --background: #090d18;
+  --foreground: #eef2ff;
+  --card: #0f1624;
+  --card-foreground: #eef2ff;
+  --popover: #141d2e;
+  --popover-foreground: #eef2ff;
+  --primary: #3b82f6;
+  --primary-foreground: #ffffff;
+  --secondary: #1a2540;
+  --secondary-foreground: #eef2ff;
+  --muted: #1a2540;
+  --muted-foreground: #8899b4;
+  --accent: #141d2e;
+  --accent-foreground: #eef2ff;
+  --destructive: #ef4444;
+  --border: #1e2d45;
+  --input: #141d2e;
+  --ring: #3b82f6;
+  --chart-1: #3b82f6;
+  --chart-2: #10b981;
+  --chart-3: #f59e0b;
+  --chart-4: #8b5cf6;
+  --chart-5: #ef4444;
+  --radius: 0.625rem;
+  --sidebar: #0f1624;
+  --sidebar-foreground: #eef2ff;
+  --sidebar-primary: #3b82f6;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #141d2e;
+  --sidebar-accent-foreground: #eef2ff;
+  --sidebar-border: #1e2d45;
+  --sidebar-ring: #3b82f6;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'DM Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* === Scrollbar === */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: #090d18; }
+::-webkit-scrollbar-thumb { background: #1e2d45; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #2a3f5f; }
+
+/* === Typography helpers === */
+.font-display { font-family: 'Sora', sans-serif; }
+.font-serif   { font-family: 'Instrument Serif', serif; }
+
+/* === Glass === */
+.glass {
+  background: rgba(15, 22, 36, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid #1e2d45;
+}
+
+/* === Gradient text === */
+.text-gradient-blue {
+  background: linear-gradient(135deg, #60a5fa, #3b82f6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.text-gradient-gold {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.text-gradient-hero {
+  background: linear-gradient(135deg, #eef2ff 0%, #93c5fd 50%, #60a5fa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* === Dot grid background === */
+.dot-grid {
+  background-image: radial-gradient(circle, #1e2d45 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* === Animated gradient border === */
+@keyframes border-spin {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* === Keyframes === */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes ping-slow {
+  0%   { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+
+.animate-fade-up  { animation: fadeUp 0.6s ease forwards; }
+.animate-fade-in  { animation: fadeIn 0.4s ease forwards; }
+.animate-scale-in { animation: scaleIn 0.3s ease forwards; }
+.animate-float    { animation: float 4s ease-in-out infinite; }
+.ping-slow        { animation: ping-slow 2.5s ease-out infinite; }
+
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
+.delay-600 { animation-delay: 0.6s; }
+
+/* === Status pills === */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+.pill-new           { background: rgba(59,130,246,0.15);  color: #60a5fa; }
+.pill-contacted     { background: rgba(99,102,241,0.15);  color: #a5b4fc; }
+.pill-scheduled     { background: rgba(245,158,11,0.15);  color: #fcd34d; }
+.pill-completed     { background: rgba(16,185,129,0.15);  color: #6ee7b7; }
+.pill-retained      { background: rgba(16,185,129,0.2);   color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+.pill-lost          { background: rgba(239,68,68,0.12);   color: #fca5a5; }
+.pill-spam          { background: rgba(107,114,128,0.15); color: #9ca3af; }
+.pill-qualified     { background: rgba(16,185,129,0.15);  color: #6ee7b7; }
+.pill-unqualified   { background: rgba(239,68,68,0.12);   color: #fca5a5; }
+.pill-vendor        { background: rgba(139,92,246,0.15);  color: #c4b5fd; }
+.pill-wrong-number  { background: rgba(107,114,128,0.15); color: #9ca3af; }
+.pill-existing      { background: rgba(245,158,11,0.15);  color: #fcd34d; }
+.pill-positive      { background: rgba(16,185,129,0.15);  color: #6ee7b7; }
+.pill-negative      { background: rgba(239,68,68,0.12);   color: #fca5a5; }
+.pill-neutral       { background: rgba(107,114,128,0.15); color: #9ca3af; }
+
+/* === Table hover === */
+.table-row-hover { transition: background 0.12s ease; }
+.table-row-hover:hover { background: #141d2e; }
+
+/* === Recharts custom === */
+.recharts-default-tooltip {
+  background: #141d2e !important;
+  border: 1px solid #2a3f5f !important;
+  border-radius: 8px !important;
+  color: #eef2ff !important;
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 13px !important;
+}
+.recharts-tooltip-label { color: #8899b4 !important; margin-bottom: 4px !important; }
+
+/* === Shimmer skeleton === */
+.shimmer {
+  background: linear-gradient(90deg, #0f1624 25%, #141d2e 50%, #0f1624 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* === Focus ring === */
+*:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
