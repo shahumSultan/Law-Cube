@@ -152,7 +152,7 @@ function Navbar() {
 /* ─── Hero ─── */
 function Hero() {
   return (
-    <section className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-white dark:bg-slate-950 pt-16">
+    <section className="relative min-h-[100dvh] w-full flex items-center justify-center overflow-hidden bg-white dark:bg-slate-950 pt-20 pb-10">
       <div className="absolute inset-0">
         <FloatingPaths position={1} />
         <FloatingPaths position={-1} />
@@ -221,7 +221,7 @@ function Hero() {
         {/* Dashboard preview */}
         <motion.div initial={{ opacity: 0, y: 48 }} animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.5, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-20 w-full max-w-6xl mx-auto">
+          className="mt-16 sm:mt-20 w-full max-w-6xl mx-auto hidden sm:block">
           <div className="relative rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-2xl shadow-slate-900/10 dark:shadow-black/40">
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/60 dark:to-slate-950/60 pointer-events-none z-10" />
             <div className="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
@@ -306,7 +306,7 @@ function StatsStrip() {
             Trusted by 200+ law firms · Based on aggregated customer data after 90 days
           </p>
         </Reveal>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-0 lg:divide-x divide-slate-200 dark:divide-slate-700">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-0 lg:divide-x divide-slate-200 dark:divide-slate-700">
           {[
             { value: 68, suffix: "%", label: "Average lift in lead-to-consultation conversion", color: "#059669" },
             { value: 2847, suffix: "+", label: "Calls analyzed and scored this month", color: "#1E3A8A" },

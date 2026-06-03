@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Users, PhoneCall, Zap, Calendar,
   TrendingUp, BarChart3, Settings, ChevronLeft,
-  Bell, Search, ChevronDown, ChevronRight
+  Bell, Search, ChevronDown, ChevronRight, Menu, X
 } from "lucide-react";
 import { FloatingPaths } from "@/components/ui/background-paths";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
@@ -22,186 +22,272 @@ const NAV_ITEMS = [
   { icon: BarChart3,       label: "Reports",      href: "/dashboard/reports" },
 ];
 
-function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) {
+function NavLink({
+  item,
+  collapsed,
+  mobile = false,
+  onClick,
+}: {
+  item: typeof NAV_ITEMS[0];
+  collapsed: boolean;
+  mobile?: boolean;
+  onClick?: () => void;
+}) {
   const pathname = usePathname();
+  const active = pathname === item.href;
+  const showLabel = mobile || !collapsed;
 
   return (
-    <aside
-      className={`fixed top-0 left-0 h-full flex flex-col bg-[#0A1628] z-40 transition-all duration-300 sidebar-scroll overflow-hidden ${collapsed ? "w-[64px]" : "w-[224px]"}`}
-      style={{ borderRight: "1px solid #162640" }}
+    <Link
+      href={item.href}
+      onClick={onClick}
+      className={[
+        "flex items-center gap-3 rounded-lg transition-all duration-150 group relative font-sans-body",
+        mobile ? "px-3 py-3" : collapsed ? "px-0 py-2.5 justify-center" : "px-3 py-2.5",
+        active
+          ? "bg-[#D97706]/15 text-[#D97706]"
+          : "text-slate-400 hover:bg-[#162640] hover:text-slate-200",
+      ].join(" ")}
     >
-      {/* Subtle floating paths watermark */}
-      <div className="absolute inset-0 opacity-[0.07] pointer-events-none dark">
-        <FloatingPaths position={1} />
-      </div>
+      <item.icon className="w-[18px] h-[18px] shrink-0" />
+      {showLabel && <span className="text-sm font-medium">{item.label}</span>}
+      {active && showLabel && <div className="ml-auto w-1 h-4 rounded-full bg-[#D97706]" />}
+      {/* Collapsed tooltip */}
+      {!mobile && collapsed && (
+        <div className="absolute left-full ml-3 px-3 py-1.5 bg-[#0F1E35] border border-[#243D62] rounded-lg text-slate-300 text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 font-sans-body shadow-lg">
+          {item.label}
+        </div>
+      )}
+    </Link>
+  );
+}
 
-      {/* Logo */}
-      <div className={`relative flex items-center h-[60px] shrink-0 px-4 ${collapsed ? "justify-center" : "justify-between"}`}
-        style={{ borderBottom: "1px solid #162640" }}>
-        {!collapsed && (
+function Sidebar({
+  collapsed,
+  onToggle,
+  mobileOpen,
+  onMobileClose,
+}: {
+  collapsed: boolean;
+  onToggle: () => void;
+  mobileOpen: boolean;
+  onMobileClose: () => void;
+}) {
+  return (
+    <>
+      {/* ── Mobile backdrop ── */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm lg:hidden"
+            onClick={onMobileClose}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* ── Sidebar panel ── */}
+      <aside
+        className={[
+          "fixed top-0 left-0 h-full flex flex-col bg-[#0A1628] z-40 transition-all duration-300 sidebar-scroll overflow-hidden",
+          // Mobile: full-width drawer, hidden/shown via translate
+          "w-[280px]",
+          mobileOpen ? "translate-x-0" : "-translate-x-full",
+          // Desktop: always visible, width depends on collapsed state
+          collapsed ? "lg:w-[64px] lg:translate-x-0" : "lg:w-[224px] lg:translate-x-0",
+        ].join(" ")}
+        style={{ borderRight: "1px solid #162640" }}
+      >
+        {/* Watermark paths */}
+        <div className="absolute inset-0 opacity-[0.07] pointer-events-none dark">
+          <FloatingPaths position={1} />
+        </div>
+
+        {/* Logo row */}
+        <div
+          className={[
+            "relative flex items-center h-[60px] shrink-0 px-4",
+            collapsed ? "lg:justify-center" : "justify-between",
+          ].join(" ")}
+          style={{ borderBottom: "1px solid #162640" }}
+        >
           <Link href="/" className="flex items-center gap-2.5 min-w-0">
             <div className="w-7 h-7 rounded-lg bg-[#1E3A8A] flex items-center justify-center shrink-0 shadow-md">
               <span className="font-display font-bold text-white text-xs">LC</span>
             </div>
-            <span className="font-display font-semibold text-white text-lg tracking-tight truncate">Law Cube</span>
+            <span className={`font-display font-semibold text-white text-lg tracking-tight truncate ${collapsed ? "lg:hidden" : ""}`}>
+              Law Cube
+            </span>
           </Link>
-        )}
-        {collapsed && (
-          <Link href="/">
-            <div className="w-7 h-7 rounded-lg bg-[#1E3A8A] flex items-center justify-center shadow-md">
-              <span className="font-display font-bold text-white text-xs">LC</span>
-            </div>
-          </Link>
-        )}
-        {!collapsed && (
-          <button onClick={onToggle}
-            className="w-6 h-6 rounded-md flex items-center justify-center text-slate-500 hover:text-slate-300 hover:bg-[#162640] transition-all shrink-0">
-            <ChevronLeft className="w-3.5 h-3.5" />
+
+          {/* Desktop collapse toggle */}
+          {!collapsed && (
+            <button
+              onClick={onToggle}
+              className="hidden lg:flex w-6 h-6 rounded-md items-center justify-center text-slate-500 hover:text-slate-300 hover:bg-[#162640] transition-all shrink-0"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" />
+            </button>
+          )}
+
+          {/* Mobile close button */}
+          <button
+            onClick={onMobileClose}
+            className="lg:hidden w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-200 hover:bg-[#162640] transition-all shrink-0"
+          >
+            <X className="w-4 h-4" />
           </button>
-        )}
-      </div>
-
-      {/* Nav section label */}
-      {!collapsed && (
-        <div className="relative px-4 pt-5 pb-2">
-          {/* FIX: was #334155 on #0A1628 → slate-500 (passes at large size) */}
-          <span className="text-slate-500 text-[10px] font-semibold uppercase tracking-widest font-sans-body">Main Menu</span>
         </div>
-      )}
 
-      {/* Nav items */}
-      <nav className="relative flex-1 py-2 px-2 flex flex-col gap-0.5 overflow-y-auto sidebar-scroll">
-        {NAV_ITEMS.map(item => {
-          const active = pathname === item.href;
-          return (
-            <Link key={item.href} href={item.href}
-              className={`flex items-center gap-3 rounded-lg transition-all duration-150 group relative font-sans-body ${
-                collapsed ? "px-0 py-2.5 justify-center" : "px-3 py-2.5"
-              } ${active
-                /* FIX: active state text #D97706 on its own bg — fine */
-                ? "bg-[#D97706]/15 text-[#D97706]"
-                /* FIX: was #475569 on #0A1628 (3.2:1 fails small text) → slate-400 */
-                : "text-slate-400 hover:bg-[#162640] hover:text-slate-200"
-              }`}>
-              <item.icon className="w-[18px] h-[18px] shrink-0" />
-              {!collapsed && <span className="text-sm font-medium">{item.label}</span>}
-              {active && !collapsed && <div className="ml-auto w-1 h-4 rounded-full bg-[#D97706]" />}
-              {collapsed && (
-                <div className="absolute left-full ml-3 px-3 py-1.5 bg-[#0F1E35] border border-[#243D62] rounded-lg text-slate-300 text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 font-sans-body shadow-lg">
-                  {item.label}
-                </div>
-              )}
-            </Link>
-          );
-        })}
-      </nav>
-
-      {/* Settings */}
-      <div className="relative px-2 pb-2" style={{ borderTop: "1px solid #162640" }}>
-        <div className="pt-2">
-          <Link href="/dashboard/settings"
-            className={`flex items-center gap-3 rounded-lg transition-all duration-150 group relative font-sans-body ${
-              collapsed ? "px-0 py-2.5 justify-center" : "px-3 py-2.5"
-            } ${pathname === "/dashboard/settings"
-              ? "bg-[#D97706]/15 text-[#D97706]"
-              : "text-slate-400 hover:bg-[#162640] hover:text-slate-200"
-            }`}>
-            <Settings className="w-[18px] h-[18px] shrink-0" />
-            {!collapsed && <span className="text-sm font-medium">Settings</span>}
-            {collapsed && (
-              <div className="absolute left-full ml-3 px-3 py-1.5 bg-[#0F1E35] border border-[#243D62] rounded-lg text-slate-300 text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 font-sans-body shadow-lg">
-                Settings
-              </div>
-            )}
-          </Link>
+        {/* Section label */}
+        <div className={`relative px-4 pt-5 pb-2 ${collapsed ? "lg:hidden" : ""}`}>
+          <span className="text-slate-500 text-[10px] font-semibold uppercase tracking-widest font-sans-body">
+            Main Menu
+          </span>
         </div>
-      </div>
 
-      {/* User */}
-      <div className={`relative p-3 shrink-0 ${collapsed ? "flex justify-center" : ""}`}
-        style={{ borderTop: "1px solid #162640" }}>
-        {collapsed ? (
-          <div className="w-8 h-8 rounded-full bg-[#1E3A8A] flex items-center justify-center border border-[#243D62]">
-            <span className="text-white text-xs font-bold font-sans-body">JM</span>
+        {/* Nav */}
+        <nav className="relative flex-1 py-2 px-2 flex flex-col gap-0.5 overflow-y-auto sidebar-scroll">
+          {NAV_ITEMS.map(item => (
+            <NavLink
+              key={item.href}
+              item={item}
+              collapsed={collapsed}
+              mobile={mobileOpen}
+              onClick={onMobileClose}
+            />
+          ))}
+        </nav>
+
+        {/* Settings */}
+        <div className="relative px-2 pb-2" style={{ borderTop: "1px solid #162640" }}>
+          <div className="pt-2">
+            <NavLink
+              item={{ icon: Settings, label: "Settings", href: "/dashboard/settings" }}
+              collapsed={collapsed}
+              mobile={mobileOpen}
+              onClick={onMobileClose}
+            />
           </div>
-        ) : (
-          <div className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-[#162640] cursor-pointer transition-colors">
+        </div>
+
+        {/* User */}
+        <div
+          className={`relative p-3 shrink-0 ${collapsed ? "lg:flex lg:justify-center" : ""}`}
+          style={{ borderTop: "1px solid #162640" }}
+        >
+          <div className={`flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-[#162640] cursor-pointer transition-colors ${collapsed ? "lg:px-0 lg:justify-center" : ""}`}>
             <div className="w-8 h-8 rounded-full bg-[#1E3A8A] flex items-center justify-center border border-[#243D62] shrink-0">
               <span className="text-white text-xs font-bold font-sans-body">JM</span>
             </div>
-            <div className="flex-1 min-w-0">
+            <div className={`flex-1 min-w-0 ${collapsed ? "lg:hidden" : ""}`}>
               <div className="text-slate-200 text-xs font-semibold truncate font-sans-body">James Mitchell</div>
-              {/* FIX: was #334155 on #0A1628 (2.3:1 fails) → slate-500 */}
               <div className="text-slate-500 text-[10px] truncate font-sans-body">Mitchell &amp; Associates</div>
             </div>
-            <ChevronDown className="w-3 h-3 text-slate-500 shrink-0" />
+            <ChevronDown className={`w-3 h-3 text-slate-500 shrink-0 ${collapsed ? "lg:hidden" : ""}`} />
           </div>
-        )}
-      </div>
+        </div>
 
-      {/* Expand button when collapsed */}
-      {collapsed && (
-        <button onClick={onToggle}
-          className="absolute -right-3 top-[72px] w-6 h-6 rounded-full bg-[#162640] border border-[#243D62] flex items-center justify-center text-slate-400 hover:text-slate-200 transition-all shadow-md">
-          <ChevronRight className="w-3 h-3" />
-        </button>
-      )}
-    </aside>
+        {/* Desktop expand toggle (when collapsed) */}
+        {collapsed && (
+          <button
+            onClick={onToggle}
+            className="hidden lg:flex absolute -right-3 top-[72px] w-6 h-6 rounded-full bg-[#162640] border border-[#243D62] items-center justify-center text-slate-400 hover:text-slate-200 transition-all shadow-md"
+          >
+            <ChevronRight className="w-3 h-3" />
+          </button>
+        )}
+      </aside>
+    </>
   );
 }
 
-function Topbar() {
+function Topbar({ onMobileMenuOpen }: { onMobileMenuOpen: () => void }) {
   const pathname = usePathname();
   const current = NAV_ITEMS.find(n => n.href === pathname);
   const label = current?.label ?? (pathname.includes("settings") ? "Settings" : "Dashboard");
 
   return (
-    <header className="h-[60px] bg-white dark:bg-slate-900 flex items-center px-6 gap-4"
-      style={{ borderBottom: "1px solid var(--border)" }}>
+    <header
+      className="h-[60px] bg-white dark:bg-slate-900 flex items-center px-4 gap-3"
+      style={{ borderBottom: "1px solid var(--border)" }}
+    >
+      {/* Mobile hamburger */}
+      <button
+        onClick={onMobileMenuOpen}
+        className="lg:hidden w-9 h-9 rounded-lg flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0"
+      >
+        <Menu className="w-5 h-5" />
+      </button>
+
       <div className="flex-1 min-w-0">
-        <h1 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-lg leading-tight">{label}</h1>
-        {/* FIX: was #94A3B8 on white (2.82:1 fails) → slate-500 */}
-        <p className="text-slate-500 dark:text-slate-400 text-xs font-sans-body">Mitchell &amp; Associates</p>
+        <h1 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-base sm:text-lg leading-tight">{label}</h1>
+        <p className="text-slate-500 dark:text-slate-400 text-xs font-sans-body hidden sm:block">Mitchell &amp; Associates</p>
       </div>
 
-      {/* Search */}
-      <div className="hidden md:flex items-center gap-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3.5 py-2 w-60 focus-within:border-[#1E3A8A] transition-colors">
-        {/* FIX: was #94A3B8 (fails on white) → slate-400 which renders at 3.75:1 on slate-50 — acceptable for icons */}
+      {/* Search — hidden on mobile */}
+      <div className="hidden md:flex items-center gap-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3.5 py-2 w-56 focus-within:border-[#1E3A8A] transition-colors">
         <Search className="w-3.5 h-3.5 text-slate-400 shrink-0" />
         <input
           placeholder="Search leads, calls…"
-          className="bg-transparent text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none flex-1 w-full font-sans-body" />
+          className="bg-transparent text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none flex-1 w-full font-sans-body"
+        />
       </div>
 
-      {/* Theme toggle */}
       <ThemeToggle />
 
-      {/* Notifications */}
-      <button className="relative w-9 h-9 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-all">
+      <button className="relative w-9 h-9 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-all shrink-0">
         <Bell className="w-4 h-4" />
         <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-[#D97706] rounded-full" />
       </button>
 
-      {/* Avatar */}
-      <motion.div
-        whileHover={{ scale: 1.05 }}
-        className="w-9 h-9 rounded-lg bg-[#1E3A8A] flex items-center justify-center cursor-pointer border border-[#1D4ED8]/30 hover:bg-[#1D4ED8] transition-colors"
-      >
+      <div className="w-9 h-9 rounded-lg bg-[#1E3A8A] flex items-center justify-center cursor-pointer border border-[#1D4ED8]/30 hover:bg-[#1D4ED8] transition-colors shrink-0">
         <span className="text-white text-xs font-bold font-sans-body">JM</span>
-      </motion.div>
+      </div>
     </header>
   );
 }
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
+
+  // Close mobile sidebar on route change
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
+  // Close mobile sidebar on resize to desktop
+  useEffect(() => {
+    const handler = () => {
+      if (window.innerWidth >= 1024) setMobileOpen(false);
+    };
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 flex">
-      <Sidebar collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
-      <div className={`flex-1 flex flex-col min-h-screen transition-all duration-300 ${collapsed ? "ml-[64px]" : "ml-[224px]"}`}>
-        <Topbar />
-        <main className="flex-1 p-6 overflow-auto">{children}</main>
+      <Sidebar
+        collapsed={collapsed}
+        onToggle={() => setCollapsed(c => !c)}
+        mobileOpen={mobileOpen}
+        onMobileClose={() => setMobileOpen(false)}
+      />
+
+      {/* Main content — no left margin on mobile, desktop margin based on sidebar width */}
+      <div
+        className={[
+          "flex-1 flex flex-col min-h-screen transition-all duration-300",
+          collapsed ? "lg:ml-[64px]" : "lg:ml-[224px]",
+        ].join(" ")}
+      >
+        <Topbar onMobileMenuOpen={() => setMobileOpen(true)} />
+        <main className="flex-1 p-4 sm:p-6 overflow-auto">{children}</main>
       </div>
     </div>
   );

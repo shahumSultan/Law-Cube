@@ -169,7 +169,7 @@ export default function DashboardPage() {
       </motion.div>
 
       {/* KPIs — staggered entrance */}
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {Object.entries(kpiData).map(([, v], i) => (
           <motion.div
             key={v.label}
@@ -260,10 +260,13 @@ export default function DashboardPage() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-slate-100 dark:border-slate-700/50 dark:border-slate-700/50">
-                    {["Name", "Source", "Score", "Status", "Assigned", "Date"].map(h => (
-                      <th key={h} className="text-left text-slate-500 dark:text-slate-400 text-xs font-semibold px-5 py-3 font-sans-body uppercase tracking-wider">{h}</th>
-                    ))}
+                  <tr className="border-b border-slate-100 dark:border-slate-700/50">
+                    <th className="text-left text-slate-500 dark:text-slate-400 text-xs font-semibold px-5 py-3 font-sans-body uppercase tracking-wider">Name</th>
+                    <th className="hidden sm:table-cell text-left text-slate-500 dark:text-slate-400 text-xs font-semibold px-5 py-3 font-sans-body uppercase tracking-wider">Source</th>
+                    <th className="text-left text-slate-500 dark:text-slate-400 text-xs font-semibold px-5 py-3 font-sans-body uppercase tracking-wider">Score</th>
+                    <th className="text-left text-slate-500 dark:text-slate-400 text-xs font-semibold px-5 py-3 font-sans-body uppercase tracking-wider">Status</th>
+                    <th className="hidden lg:table-cell text-left text-slate-500 dark:text-slate-400 text-xs font-semibold px-5 py-3 font-sans-body uppercase tracking-wider">Assigned</th>
+                    <th className="hidden md:table-cell text-left text-slate-500 dark:text-slate-400 text-xs font-semibold px-5 py-3 font-sans-body uppercase tracking-wider">Date</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -273,11 +276,11 @@ export default function DashboardPage() {
                         <div className="font-medium text-slate-900 dark:text-slate-100 text-sm font-sans-body">{lead.firstName} {lead.lastName}</div>
                         <div className="text-slate-500 dark:text-slate-400 text-xs font-sans-body">{lead.email}</div>
                       </td>
-                      <td className="px-5 py-3.5 text-slate-600 dark:text-slate-400 text-sm font-sans-body">{lead.source}</td>
+                      <td className="hidden sm:table-cell px-5 py-3.5 text-slate-600 dark:text-slate-400 text-sm font-sans-body">{lead.source}</td>
                       <td className="px-5 py-3.5"><ScoreBadge score={lead.score} /></td>
                       <td className="px-5 py-3.5"><StatusPill status={lead.status} /></td>
-                      <td className="px-5 py-3.5 text-slate-600 dark:text-slate-400 text-sm font-sans-body">{lead.assigned}</td>
-                      <td className="px-5 py-3.5 text-slate-500 dark:text-slate-400 text-xs font-sans-body">{lead.created}</td>
+                      <td className="hidden lg:table-cell px-5 py-3.5 text-slate-600 dark:text-slate-400 text-sm font-sans-body">{lead.assigned}</td>
+                      <td className="hidden md:table-cell px-5 py-3.5 text-slate-500 dark:text-slate-400 text-xs font-sans-body">{lead.created}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -288,8 +291,8 @@ export default function DashboardPage() {
 
         {/* Right: AI insights + today's activity */}
         <motion.div
-          initial={{ opacity: 0, x: 24 }}
-          animate={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           className="flex flex-col gap-4"
         >
