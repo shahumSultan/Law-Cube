@@ -152,12 +152,7 @@ function Navbar() {
 /* ─── Hero ─── */
 function Hero() {
   return (
-    <section className="relative min-h-[100dvh] w-full flex items-center justify-center overflow-hidden bg-white dark:bg-slate-950 pt-20 pb-10">
-      <div className="absolute inset-0">
-        <FloatingPaths position={1} />
-        <FloatingPaths position={-1} />
-      </div>
-
+    <section className="relative min-h-[100dvh] w-full flex items-center justify-center overflow-hidden pt-20 pb-10">
       <div className="relative z-10 container mx-auto px-6 text-center">
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.5 }} className="max-w-5xl mx-auto">
 
@@ -298,7 +293,7 @@ function Hero() {
 /* ─── Stats strip ─── */
 function StatsStrip() {
   return (
-    <section className="bg-white dark:bg-slate-900 border-y border-slate-200 dark:border-slate-700 py-14 px-6">
+    <section className="bg-white/85 dark:bg-slate-900/85 backdrop-blur-sm border-y border-slate-200 dark:border-slate-700 py-14 px-6">
       <div className="max-w-7xl mx-auto">
         <Reveal className="text-center mb-12">
           {/* FIX: was #94A3B8 on white → slate-500 */}
@@ -329,7 +324,7 @@ function StatsStrip() {
 /* ─── Integrations bar ─── */
 function IntegrationsBar() {
   return (
-    <section id="integrations" className="py-10 bg-slate-50 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-700">
+    <section id="integrations" className="py-10 bg-slate-50/80 dark:bg-slate-900/50 backdrop-blur-sm border-b border-slate-200 dark:border-slate-700">
       <div className="max-w-7xl mx-auto px-6">
         <Reveal>
           {/* FIX: was #94A3B8 on slate-50 → slate-500 */}
@@ -362,7 +357,7 @@ const FEATURES = [
 
 function Features() {
   return (
-    <section id="features" className="py-28 px-6 bg-white dark:bg-slate-950">
+    <section id="features" className="py-28 px-6 bg-white/85 dark:bg-slate-950/85 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto">
         <Reveal className="max-w-2xl mb-16">
           <div className="inline-flex items-center gap-2 bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 rounded-full px-4 py-1.5 mb-6 font-sans-body">
@@ -404,7 +399,7 @@ function HowItWorks() {
   ];
 
   return (
-    <section className="py-28 px-6 bg-slate-50 dark:bg-slate-900">
+    <section className="py-28 px-6 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto">
         <Reveal className="text-center mb-16">
           <h2 className="font-display font-bold text-5xl md:text-6xl text-slate-900 dark:text-slate-100 mb-5 leading-tight">
@@ -446,7 +441,7 @@ const TESTIMONIALS = [
 
 function Testimonials() {
   return (
-    <section className="py-28 px-6 bg-white dark:bg-slate-950">
+    <section className="py-28 px-6 bg-white/85 dark:bg-slate-950/85 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto">
         <Reveal className="text-center mb-16">
           <div className="flex justify-center gap-1 mb-5">
@@ -497,7 +492,7 @@ const PLANS = [
 
 function Pricing() {
   return (
-    <section id="pricing" className="py-28 px-6 bg-slate-50 dark:bg-slate-900">
+    <section id="pricing" className="py-28 px-6 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto">
         <Reveal className="text-center mb-16">
           <h2 className="font-display font-bold text-5xl md:text-6xl text-slate-900 dark:text-slate-100 mb-5 leading-tight">Simple, transparent pricing</h2>
@@ -560,7 +555,7 @@ function Pricing() {
 /* ─── CTA ─── */
 function CTA() {
   return (
-    <section className="py-28 px-6 bg-white dark:bg-slate-950">
+    <section className="py-28 px-6 bg-white/85 dark:bg-slate-950/85 backdrop-blur-sm">
       <div className="max-w-5xl mx-auto">
         <Reveal>
           <div className="relative rounded-3xl overflow-hidden bg-[#0A1628] p-16 text-center">
@@ -641,7 +636,14 @@ function Footer() {
 
 export default function LandingPage() {
   return (
-    <main className="min-h-screen bg-white dark:bg-slate-950">
+    <main className="min-h-screen bg-white dark:bg-slate-950 relative">
+      {/* Fixed full-page background — stays in place as user scrolls */}
+      <div className="fixed inset-0 pointer-events-none z-0" aria-hidden>
+        <FloatingPaths position={1} />
+        <FloatingPaths position={-1} />
+      </div>
+
+      <div className="relative z-10">
       <Navbar />
       <Hero />
       <StatsStrip />
@@ -652,6 +654,7 @@ export default function LandingPage() {
       <Pricing />
       <CTA />
       <Footer />
+      </div>
     </main>
   );
 }
