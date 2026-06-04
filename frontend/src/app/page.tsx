@@ -564,9 +564,6 @@ function CTA() {
       <div className="max-w-5xl mx-auto">
         <Reveal>
           <div className="relative rounded-3xl overflow-hidden bg-[#0A1628] p-16 text-center">
-            <div className="absolute inset-0 opacity-30">
-              <FloatingPaths position={1} />
-            </div>
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-48 bg-[#D97706]/10 blur-[80px] rounded-full pointer-events-none" />
             <div className="relative z-10">
               <div className="inline-flex items-center gap-2 border border-[#D97706]/30 bg-[#D97706]/10 rounded-full px-4 py-1.5 mb-8 font-sans-body">

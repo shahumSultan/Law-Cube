@@ -111,10 +111,6 @@ export default function LoginPage() {
 
       {/* ── Right form panel ── */}
       <div className="flex-1 flex items-center justify-center px-6 py-12 bg-white dark:bg-slate-950 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
-          <FloatingPaths position={0.3} />
-        </div>
-
         <motion.div initial={{ opacity: 0, y: 32 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
           className="relative z-10 w-full max-w-[400px]">

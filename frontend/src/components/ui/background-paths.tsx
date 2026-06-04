@@ -4,13 +4,13 @@ import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
-// Stable durations — no Math.random() on render
-const DURATIONS = [22, 25, 28, 24, 27, 23, 26, 29, 21, 30, 24, 26, 28, 22, 25, 27, 23, 29];
+// Pre-computed durations so nothing changes on re-render
+const DURATIONS = [22, 28, 24, 30, 26, 21, 27, 23, 29, 25];
 
 export function FloatingPaths({ position }: { position: number }) {
     const paths = useMemo(
         () =>
-            Array.from({ length: 18 }, (_, i) => ({
+            Array.from({ length: 10 }, (_, i) => ({
                 id: i,
                 d: `M-${380 - i * 5 * position} -${189 + i * 6}C-${
                     380 - i * 5 * position
@@ -19,7 +19,8 @@ export function FloatingPaths({ position }: { position: number }) {
                 } ${343 - i * 6}C${616 - i * 5 * position} ${470 - i * 6} ${
                     684 - i * 5 * position
                 } ${875 - i * 6} ${684 - i * 5 * position} ${875 - i * 6}`,
-                width: 0.5 + i * 0.03,
+                width: 0.5 + i * 0.05,
+                delay: i * 1.8,
             })),
         [position],
     );
@@ -30,22 +31,17 @@ export function FloatingPaths({ position }: { position: number }) {
                 className="w-full h-full text-slate-950 dark:text-white"
                 viewBox="0 0 696 316"
                 fill="none"
-                style={{ willChange: "transform" }}
             >
                 <title>Background Paths</title>
                 {paths.map((path) => (
-                    <motion.path
+                    <path
                         key={path.id}
                         d={path.d}
                         stroke="currentColor"
                         strokeWidth={path.width}
-                        strokeOpacity={0.1 + path.id * 0.03}
-                        initial={{ opacity: 0.3 }}
-                        animate={{ opacity: [0.3, 0.6, 0.3] }}
-                        transition={{
-                            duration: DURATIONS[path.id % DURATIONS.length],
-                            repeat: Number.POSITIVE_INFINITY,
-                            ease: "linear",
+                        style={{
+                            opacity: 0.25,
+                            animation: `path-pulse ${DURATIONS[path.id]}s ease-in-out ${path.delay}s infinite`,
                         }}
                     />
                 ))}
