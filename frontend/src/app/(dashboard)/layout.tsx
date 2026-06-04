@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -159,9 +160,7 @@ function Sidebar({
           style={{ borderBottom: "1px solid #162640" }}
         >
           <Link href="/" className="flex items-center gap-2.5 min-w-0">
-            <div className="w-7 h-7 rounded-lg bg-[#1E3A8A] flex items-center justify-center shrink-0 shadow-md">
-              <span className="font-display font-bold text-white text-xs">LC</span>
-            </div>
+            <Image src="/logo.png" alt="Law Cube" width={28} height={28} className="rounded-lg shrink-0 shadow-md" />
             <span className={`font-display font-semibold text-white text-lg tracking-tight truncate ${collapsed ? "lg:hidden" : ""}`}>
               Law Cube
             </span>

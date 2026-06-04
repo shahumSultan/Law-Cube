@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -77,9 +78,7 @@ export default function SignupPage() {
           className="relative z-10 flex flex-col h-full p-12">
 
           <Link href="/" className="flex items-center gap-3 mb-14">
-            <div className="w-9 h-9 rounded-xl bg-[#1E3A8A] flex items-center justify-center shadow-lg">
-              <span className="font-display font-bold text-white">LC</span>
-            </div>
+            <Image src="/logo.png" alt="Law Cube" width={36} height={36} className="rounded-xl shadow-lg" />
             <span className="font-display font-semibold text-white text-xl tracking-tight">Law Cube</span>
           </Link>
 
@@ -149,9 +148,7 @@ export default function SignupPage() {
           className="relative z-10 w-full max-w-[400px]">
 
           <Link href="/" className="flex lg:hidden items-center gap-2.5 mb-10">
-            <div className="w-8 h-8 rounded-lg bg-[#1E3A8A] flex items-center justify-center shadow">
-              <span className="font-display font-bold text-white text-sm">LC</span>
-            </div>
+            <Image src="/logo.png" alt="Law Cube" width={32} height={32} className="rounded-lg shadow" />
             <span className="font-display font-semibold text-slate-900 dark:text-slate-100 text-lg tracking-tight">Law Cube</span>
           </Link>
 

@@ -2,6 +2,7 @@
 
 import { Suspense, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, ArrowRight, AlertCircle, Check } from "lucide-react";
@@ -52,9 +53,7 @@ function AcceptInviteForm() {
         className="relative z-10 w-full max-w-[400px]">
 
         <Link href="/" className="flex items-center gap-2.5 mb-10 justify-center">
-          <div className="w-9 h-9 rounded-xl bg-[#1E3A8A] flex items-center justify-center shadow">
-            <span className="font-display font-bold text-white">LC</span>
-          </div>
+          <Image src="/logo.png" alt="Law Cube" width={36} height={36} className="rounded-xl shadow" />
           <span className="font-display font-semibold text-slate-900 dark:text-slate-100 text-xl tracking-tight">Law Cube</span>
         </Link>
 

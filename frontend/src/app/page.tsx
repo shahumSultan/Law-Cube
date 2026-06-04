@@ -4,6 +4,7 @@ import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, useInView } from "framer-motion";
 import { FloatingPaths } from "@/components/ui/background-paths";
+import Image from "next/image";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Button } from "@/components/ui/button";
 import {
@@ -101,9 +102,7 @@ function Navbar() {
     }`}>
       <div className="max-w-7xl mx-auto px-6 h-[68px] flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-[#1E3A8A] flex items-center justify-center shadow-md">
-            <span className="font-display font-bold text-white text-sm">LC</span>
-          </div>
+          <Image src="/logo.png" alt="Law Cube" width={32} height={32} className="rounded-lg shadow-md" />
           <span className="font-display font-semibold text-slate-900 dark:text-slate-100 text-xl tracking-tight">Law Cube</span>
         </Link>
 
@@ -595,9 +594,7 @@ function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-10 mb-14">
           <div className="col-span-2">
             <div className="flex items-center gap-2.5 mb-5">
-              <div className="w-7 h-7 rounded-lg bg-[#1E3A8A] flex items-center justify-center">
-                <span className="font-display font-bold text-white text-xs">LC</span>
-              </div>
+              <Image src="/logo.png" alt="Law Cube" width={28} height={28} className="rounded-lg" />
               <span className="font-display font-semibold text-white tracking-tight text-lg">Law Cube</span>
             </div>
             <p className="text-slate-500 text-sm leading-relaxed max-w-xs font-sans-body">
