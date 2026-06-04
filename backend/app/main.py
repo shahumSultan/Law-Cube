@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import get_settings
 from app.core.storage import ensure_buckets
-from app.routers import auth, calls, dashboard, leads, webhooks
+from app.routers import auth, calls, dashboard, leads, users, webhooks
 
 settings = get_settings()
 logger = structlog.get_logger()
@@ -47,6 +47,7 @@ app.include_router(auth.router,      prefix="/api")
 app.include_router(leads.router,     prefix="/api")
 app.include_router(calls.router,     prefix="/api")
 app.include_router(dashboard.router, prefix="/api")
+app.include_router(users.router,     prefix="/api")
 app.include_router(webhooks.router,  prefix="/api")
 
 

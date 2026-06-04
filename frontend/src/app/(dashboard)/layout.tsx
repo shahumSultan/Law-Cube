@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 import { FloatingPaths } from "@/components/ui/background-paths";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { AuthGuard } from "@/components/auth-guard";
+import { useAuthStore } from "@/lib/auth-store";
 
 const NAV_ITEMS = [
   { icon: LayoutDashboard, label: "Dashboard",  href: "/dashboard" },
@@ -59,6 +61,48 @@ function NavLink({
         </div>
       )}
     </Link>
+  );
+}
+
+function SidebarUser({ collapsed }: { collapsed: boolean }) {
+  const user = useAuthStore(s => s.user);
+  const logout = useAuthStore(s => s.logout);
+  const initials = user
+    ? `${user.first_name[0] ?? ""}${user.last_name[0] ?? ""}`.toUpperCase()
+    : "?";
+
+  return (
+    <div
+      className={`relative p-3 shrink-0 ${collapsed ? "lg:flex lg:justify-center" : ""}`}
+      style={{ borderTop: "1px solid #162640" }}
+    >
+      {collapsed ? (
+        <div className="w-8 h-8 rounded-full bg-[#1E3A8A] flex items-center justify-center border border-[#243D62]">
+          <span className="text-white text-xs font-bold font-sans-body">{initials}</span>
+        </div>
+      ) : (
+        <div className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-[#162640] cursor-pointer transition-colors group">
+          <div className="w-8 h-8 rounded-full bg-[#1E3A8A] flex items-center justify-center border border-[#243D62] shrink-0">
+            <span className="text-white text-xs font-bold font-sans-body">{initials}</span>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-slate-200 text-xs font-semibold truncate font-sans-body">
+              {user ? `${user.first_name} ${user.last_name}` : "Loading…"}
+            </div>
+            <div className="text-slate-500 text-[10px] truncate font-sans-body capitalize">
+              {user?.role?.replace(/_/g, " ") ?? ""}
+            </div>
+          </div>
+          <button
+            onClick={logout}
+            title="Sign out"
+            className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-500 hover:text-slate-300"
+          >
+            <ChevronDown className="w-3 h-3" />
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -175,21 +219,7 @@ function Sidebar({
         </div>
 
         {/* User */}
-        <div
-          className={`relative p-3 shrink-0 ${collapsed ? "lg:flex lg:justify-center" : ""}`}
-          style={{ borderTop: "1px solid #162640" }}
-        >
-          <div className={`flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-[#162640] cursor-pointer transition-colors ${collapsed ? "lg:px-0 lg:justify-center" : ""}`}>
-            <div className="w-8 h-8 rounded-full bg-[#1E3A8A] flex items-center justify-center border border-[#243D62] shrink-0">
-              <span className="text-white text-xs font-bold font-sans-body">JM</span>
-            </div>
-            <div className={`flex-1 min-w-0 ${collapsed ? "lg:hidden" : ""}`}>
-              <div className="text-slate-200 text-xs font-semibold truncate font-sans-body">James Mitchell</div>
-              <div className="text-slate-500 text-[10px] truncate font-sans-body">Mitchell &amp; Associates</div>
-            </div>
-            <ChevronDown className={`w-3 h-3 text-slate-500 shrink-0 ${collapsed ? "lg:hidden" : ""}`} />
-          </div>
-        </div>
+        <SidebarUser collapsed={collapsed} />
 
         {/* Desktop expand toggle (when collapsed) */}
         {collapsed && (
@@ -202,6 +232,16 @@ function Sidebar({
         )}
       </aside>
     </>
+  );
+}
+
+function OrgName() {
+  const user = useAuthStore(s => s.user);
+  if (!user) return null;
+  return (
+    <p className="text-slate-500 dark:text-slate-400 text-xs font-sans-body hidden sm:block capitalize">
+      {user.role.replace(/_/g, " ")}
+    </p>
   );
 }
 
@@ -225,7 +265,7 @@ function Topbar({ onMobileMenuOpen }: { onMobileMenuOpen: () => void }) {
 
       <div className="flex-1 min-w-0">
         <h1 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-base sm:text-lg leading-tight">{label}</h1>
-        <p className="text-slate-500 dark:text-slate-400 text-xs font-sans-body hidden sm:block">Mitchell &amp; Associates</p>
+        <OrgName />
       </div>
 
       {/* Search — hidden on mobile */}
@@ -271,6 +311,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }, []);
 
   return (
+    <AuthGuard>
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 flex">
       <Sidebar
         collapsed={collapsed}
@@ -290,5 +331,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <main className="flex-1 p-4 sm:p-6 overflow-auto">{children}</main>
       </div>
     </div>
+    </AuthGuard>
   );
 }

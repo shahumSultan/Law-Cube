@@ -37,8 +37,8 @@ async def get_current_user(
     return user
 
 
-async def require_roles(*roles: str):
-    """Dependency factory — require one of the given roles."""
+def require_roles(*roles: str):
+    """Dependency factory — returns a FastAPI dependency that enforces role membership."""
     async def _check(current_user: Annotated[User, Depends(get_current_user)]) -> User:
         if current_user.role not in roles:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Insufficient permissions")
@@ -46,5 +46,10 @@ async def require_roles(*roles: str):
     return _check
 
 
+# Convenience typed aliases
 CurrentUser = Annotated[User, Depends(get_current_user)]
-DB = Annotated[AsyncSession, Depends(get_db)]
+DB          = Annotated[AsyncSession, Depends(get_db)]
+
+# Role-scoped dependencies
+FirmOwner = Annotated[User, Depends(require_roles("firm_owner", "super_admin"))]
+Manager   = Annotated[User, Depends(require_roles("firm_owner", "intake_manager", "super_admin"))]

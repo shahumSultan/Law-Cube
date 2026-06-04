@@ -37,6 +37,9 @@ class Settings(BaseSettings):
     CALLRAIL_API_KEY: str = ""
     CALLRAIL_WEBHOOK_SECRET: str = ""
 
+    # Google OAuth
+    GOOGLE_CLIENT_ID: str = ""
+
     # Clio
     CLIO_CLIENT_ID: str = ""
     CLIO_CLIENT_SECRET: str = ""

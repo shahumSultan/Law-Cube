@@ -20,9 +20,15 @@ class User(Base):
     role: Mapped[str] = mapped_column(String(50), nullable=False, default="intake_specialist")
     # roles: super_admin | firm_owner | intake_manager | intake_specialist | attorney
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    email_verified: Mapped[bool] = mapped_column(Boolean, default=False)
     avatar_url: Mapped[str | None] = mapped_column(String(500))
     google_id: Mapped[str | None] = mapped_column(String(255), unique=True)
     microsoft_id: Mapped[str | None] = mapped_column(String(255), unique=True)
+
+    # Invite flow
+    invite_token: Mapped[str | None] = mapped_column(String(255), unique=True)
+    invited_by_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"))
+
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC))
 
