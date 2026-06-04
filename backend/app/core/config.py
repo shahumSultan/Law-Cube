@@ -1,4 +1,5 @@
 from functools import lru_cache
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -13,13 +14,22 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24       # 24h
     REFRESH_TOKEN_EXPIRE_DAYS: int = 30
 
-    # Database
+    # Database — Railway sets DATABASE_URL as postgres://, asyncpg needs postgresql+asyncpg://
     DATABASE_URL: str = "postgresql+asyncpg://lawcube:lawcube@postgres:5432/lawcube"
+
+    @field_validator("DATABASE_URL", mode="before")
+    @classmethod
+    def fix_postgres_scheme(cls, v: str) -> str:
+        if v.startswith("postgres://"):
+            return v.replace("postgres://", "postgresql+asyncpg://", 1)
+        if v.startswith("postgresql://"):
+            return v.replace("postgresql://", "postgresql+asyncpg://", 1)
+        return v
 
     # Redis
     REDIS_URL: str = "redis://redis:6379/0"
 
-    # MinIO
+    # MinIO / S3-compatible storage (use Cloudflare R2 on Railway)
     MINIO_ENDPOINT: str = "minio:9000"
     MINIO_ACCESS_KEY: str = "minioadmin"
     MINIO_SECRET_KEY: str = "minioadmin"
@@ -44,13 +54,17 @@ class Settings(BaseSettings):
     CLIO_CLIENT_ID: str = ""
     CLIO_CLIENT_SECRET: str = ""
 
-    # Frontend URL (for CORS)
-    FRONTEND_URL: str = "http://localhost:3000"
+    # CORS — comma-separated list of allowed origins, e.g. https://app.vercel.app,http://localhost:3000
+    CORS_ORIGINS: str = "http://localhost:3000"
 
     # SMS (Twilio)
     TWILIO_ACCOUNT_SID: str = ""
     TWILIO_AUTH_TOKEN: str = ""
     TWILIO_FROM_NUMBER: str = ""
+
+    @property
+    def cors_origins_list(self) -> list[str]:
+        return [o.strip() for o in self.CORS_ORIGINS.split(",") if o.strip()]
 
 
 @lru_cache

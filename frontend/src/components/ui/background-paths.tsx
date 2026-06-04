@@ -34,7 +34,7 @@ export function FloatingPaths({ position }: { position: number }) {
                         strokeOpacity={0.1 + path.id * 0.03}
                         initial={{ pathLength: 0.3, opacity: 0.6 }}
                         animate={{
-                            pathLength: 1,
+                            pathLength: 0.5,
                             opacity: [0.3, 0.6, 0.3],
                             pathOffset: [0, 1, 0],
                         }}
@@ -68,7 +68,7 @@ export function BackgroundPaths({
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ duration: 2 }}
+                    transition={{ duration: 0.5 }}
                     className="max-w-4xl mx-auto"
                 >
                     <h1 className="text-5xl sm:text-7xl md:text-8xl font-bold mb-8 tracking-tighter">

@@ -5,7 +5,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import get_settings
-from app.core.storage import ensure_buckets
 from app.routers import auth, calls, dashboard, leads, users, webhooks
 
 settings = get_settings()
@@ -15,11 +14,6 @@ logger = structlog.get_logger()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Starting Law Cube API", env=settings.APP_ENV)
-    try:
-        ensure_buckets()
-        logger.info("MinIO buckets ready")
-    except Exception as e:
-        logger.warning("MinIO not ready yet", error=str(e))
     yield
     logger.info("Shutting down Law Cube API")
 
@@ -36,7 +30,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.FRONTEND_URL, "http://localhost:3000"],
+    allow_origins=settings.cors_origins_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
