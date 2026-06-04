@@ -1,3 +1,4 @@
+from uuid import UUID
 from pydantic import BaseModel, EmailStr
 
 
@@ -14,6 +15,11 @@ class LoginRequest(BaseModel):
     password: str
 
 
+class GoogleAuthRequest(BaseModel):
+    token: str          # Google ID token from the client
+    firm_name: str = "" # only required for new accounts; ignored if user already exists
+
+
 class TokenResponse(BaseModel):
     access_token: str
     refresh_token: str
@@ -25,11 +31,13 @@ class RefreshRequest(BaseModel):
 
 
 class UserOut(BaseModel):
-    id: str
+    id: UUID
     email: str
     first_name: str
     last_name: str
     role: str
-    organization_id: str
+    organization_id: UUID
+    avatar_url: str | None = None
+    email_verified: bool = False
 
     model_config = {"from_attributes": True}
