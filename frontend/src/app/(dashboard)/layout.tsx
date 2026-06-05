@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Users, PhoneCall, Zap, Calendar,
   TrendingUp, BarChart3, Settings, ChevronLeft,
-  Bell, Search, ChevronDown, ChevronRight, Menu, X
+  Bell, Search, ChevronRight, Menu, X, LogOut,
 } from "lucide-react";
 import { FloatingPaths } from "@/components/ui/background-paths";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
@@ -55,7 +55,6 @@ function NavLink({
       <item.icon className="w-[18px] h-[18px] shrink-0" />
       {showLabel && <span className="text-sm font-medium">{item.label}</span>}
       {active && showLabel && <div className="ml-auto w-1 h-4 rounded-full bg-[#D97706]" />}
-      {/* Collapsed tooltip */}
       {!mobile && collapsed && (
         <div className="absolute left-full ml-3 px-3 py-1.5 bg-[#0F1E35] border border-[#243D62] rounded-lg text-slate-300 text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 font-sans-body shadow-lg">
           {item.label}
@@ -68,9 +67,16 @@ function NavLink({
 function SidebarUser({ collapsed }: { collapsed: boolean }) {
   const user = useAuthStore(s => s.user);
   const logout = useAuthStore(s => s.logout);
+  const router = useRouter();
+
   const initials = user
-    ? `${user.first_name[0] ?? ""}${user.last_name[0] ?? ""}`.toUpperCase()
+    ? `${user.first_name?.[0] ?? ""}${user.last_name?.[0] ?? ""}`.toUpperCase()
     : "?";
+
+  const handleLogout = () => {
+    logout();
+    router.replace("/");
+  };
 
   return (
     <div
@@ -78,11 +84,16 @@ function SidebarUser({ collapsed }: { collapsed: boolean }) {
       style={{ borderTop: "1px solid #162640" }}
     >
       {collapsed ? (
-        <div className="w-8 h-8 rounded-full bg-[#1E3A8A] flex items-center justify-center border border-[#243D62]">
-          <span className="text-white text-xs font-bold font-sans-body">{initials}</span>
-        </div>
+        <button
+          onClick={handleLogout}
+          title="Sign out"
+          className="w-8 h-8 rounded-full bg-[#1E3A8A] flex items-center justify-center border border-[#243D62] hover:bg-red-800 hover:border-red-700 transition-colors group"
+        >
+          <span className="text-white text-xs font-bold font-sans-body group-hover:hidden">{initials}</span>
+          <LogOut className="w-3.5 h-3.5 text-white hidden group-hover:block" />
+        </button>
       ) : (
-        <div className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-[#162640] cursor-pointer transition-colors group">
+        <div className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-[#162640] transition-colors">
           <div className="w-8 h-8 rounded-full bg-[#1E3A8A] flex items-center justify-center border border-[#243D62] shrink-0">
             <span className="text-white text-xs font-bold font-sans-body">{initials}</span>
           </div>
@@ -95,11 +106,11 @@ function SidebarUser({ collapsed }: { collapsed: boolean }) {
             </div>
           </div>
           <button
-            onClick={logout}
+            onClick={handleLogout}
             title="Sign out"
-            className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-500 hover:text-slate-300"
+            className="w-7 h-7 rounded-md flex items-center justify-center text-slate-500 hover:text-red-400 hover:bg-red-950/20 transition-all shrink-0"
           >
-            <ChevronDown className="w-3 h-3" />
+            <LogOut className="w-3.5 h-3.5" />
           </button>
         </div>
       )}
@@ -120,7 +131,7 @@ function Sidebar({
 }) {
   return (
     <>
-      {/* ── Mobile backdrop ── */}
+      {/* Mobile backdrop */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
@@ -134,20 +145,18 @@ function Sidebar({
         )}
       </AnimatePresence>
 
-      {/* ── Sidebar panel ── */}
+      {/* Sidebar panel — overflow-hidden removed so toggle button isn't clipped */}
       <aside
         className={[
-          "fixed top-0 left-0 h-full flex flex-col bg-[#0A1628] z-40 transition-all duration-300 sidebar-scroll overflow-hidden",
-          // Mobile: full-width drawer, hidden/shown via translate
+          "fixed top-0 left-0 h-full flex flex-col bg-[#0A1628] z-40 transition-all duration-300 sidebar-scroll",
           "w-[280px]",
           mobileOpen ? "translate-x-0" : "-translate-x-full",
-          // Desktop: always visible, width depends on collapsed state
           collapsed ? "lg:w-[64px] lg:translate-x-0" : "lg:w-[224px] lg:translate-x-0",
         ].join(" ")}
         style={{ borderRight: "1px solid #162640" }}
       >
-        {/* Watermark paths */}
-        <div className="absolute inset-0 opacity-[0.07] pointer-events-none dark">
+        {/* Watermark — overflow-hidden lives here instead of on aside */}
+        <div className="absolute inset-0 overflow-hidden opacity-[0.07] pointer-events-none dark">
           <FloatingPaths position={1} />
         </div>
 
@@ -165,18 +174,7 @@ function Sidebar({
               Law Cube
             </span>
           </Link>
-
-          {/* Desktop collapse toggle */}
-          {!collapsed && (
-            <button
-              onClick={onToggle}
-              className="hidden lg:flex w-6 h-6 rounded-md items-center justify-center text-slate-500 hover:text-slate-300 hover:bg-[#162640] transition-all shrink-0"
-            >
-              <ChevronLeft className="w-3.5 h-3.5" />
-            </button>
-          )}
-
-          {/* Mobile close button */}
+          {/* Mobile close only — desktop toggle is rendered outside aside */}
           <button
             onClick={onMobileClose}
             className="lg:hidden w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-200 hover:bg-[#162640] transition-all shrink-0"
@@ -219,17 +217,20 @@ function Sidebar({
 
         {/* User */}
         <SidebarUser collapsed={collapsed} />
-
-        {/* Desktop expand toggle (when collapsed) */}
-        {collapsed && (
-          <button
-            onClick={onToggle}
-            className="hidden lg:flex absolute -right-3 top-[72px] w-6 h-6 rounded-full bg-[#162640] border border-[#243D62] items-center justify-center text-slate-400 hover:text-slate-200 transition-all shadow-md"
-          >
-            <ChevronRight className="w-3 h-3" />
-          </button>
-        )}
       </aside>
+
+      {/* Desktop collapse/expand toggle — sibling of aside, never clipped */}
+      <button
+        onClick={onToggle}
+        aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        className="hidden lg:flex fixed z-50 top-[72px] -translate-x-1/2 w-6 h-6 rounded-full bg-[#162640] border border-[#243D62] items-center justify-center text-slate-400 hover:text-slate-200 hover:bg-[#243D62] shadow-md"
+        style={{
+          left: collapsed ? "64px" : "224px",
+          transition: "left 300ms cubic-bezier(0.4,0,0.2,1), background-color 150ms, color 150ms",
+        }}
+      >
+        {collapsed ? <ChevronRight className="w-3 h-3" /> : <ChevronLeft className="w-3 h-3" />}
+      </button>
     </>
   );
 }
@@ -244,6 +245,83 @@ function OrgName() {
   );
 }
 
+function TopbarUserMenu() {
+  const user = useAuthStore(s => s.user);
+  const logout = useAuthStore(s => s.logout);
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  const initials = user
+    ? `${user.first_name?.[0] ?? ""}${user.last_name?.[0] ?? ""}`.toUpperCase()
+    : "?";
+
+  useEffect(() => {
+    if (!open) return;
+    const close = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, [open]);
+
+  const handleLogout = () => {
+    logout();
+    setOpen(false);
+    router.replace("/login");
+  };
+
+  return (
+    <div ref={ref} className="relative shrink-0">
+      <button
+        onClick={() => setOpen(o => !o)}
+        aria-label="User menu"
+        aria-expanded={open}
+        className="w-9 h-9 rounded-lg bg-[#1E3A8A] flex items-center justify-center border border-[#1D4ED8]/30 hover:bg-[#1D4ED8] transition-colors"
+      >
+        <span className="text-white text-xs font-bold font-sans-body">{initials}</span>
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96, y: -4 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.96, y: -4 }}
+            transition={{ duration: 0.12 }}
+            className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl overflow-hidden z-50"
+          >
+            <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-700/60">
+              <div className="text-slate-900 dark:text-slate-100 text-sm font-semibold font-sans-body truncate">
+                {user ? `${user.first_name} ${user.last_name}` : ""}
+              </div>
+              <div className="text-slate-500 dark:text-slate-400 text-xs mt-0.5 font-sans-body capitalize truncate">
+                {user?.role?.replace(/_/g, " ") ?? ""}
+              </div>
+            </div>
+            <div className="py-1">
+              <button
+                onClick={() => { router.push("/dashboard/settings"); setOpen(false); }}
+                className="w-full text-left px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center gap-3 font-sans-body"
+              >
+                <Settings className="w-4 h-4 text-slate-400" />
+                Settings
+              </button>
+              <button
+                onClick={handleLogout}
+                className="w-full text-left px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors flex items-center gap-3 font-sans-body"
+              >
+                <LogOut className="w-4 h-4" />
+                Sign out
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 function Topbar({ onMobileMenuOpen }: { onMobileMenuOpen: () => void }) {
   const pathname = usePathname();
   const current = NAV_ITEMS.find(n => n.href === pathname);
@@ -254,7 +332,6 @@ function Topbar({ onMobileMenuOpen }: { onMobileMenuOpen: () => void }) {
       className="h-[60px] bg-white dark:bg-slate-900 flex items-center px-4 gap-3"
       style={{ borderBottom: "1px solid var(--border)" }}
     >
-      {/* Mobile hamburger */}
       <button
         onClick={onMobileMenuOpen}
         className="lg:hidden w-9 h-9 rounded-lg flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0"
@@ -263,11 +340,10 @@ function Topbar({ onMobileMenuOpen }: { onMobileMenuOpen: () => void }) {
       </button>
 
       <div className="flex-1 min-w-0">
-        <h1 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-base sm:text-lg leading-tight">{label}</h1>
+        <h1 className="font-display font-bold text-slate-900 dark:text-slate-100 text-xl sm:text-2xl leading-tight tracking-tight">{label}</h1>
         <OrgName />
       </div>
 
-      {/* Search — hidden on mobile */}
       <div className="hidden md:flex items-center gap-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3.5 py-2 w-56 focus-within:border-[#1E3A8A] transition-colors">
         <Search className="w-3.5 h-3.5 text-slate-400 shrink-0" />
         <input
@@ -283,9 +359,7 @@ function Topbar({ onMobileMenuOpen }: { onMobileMenuOpen: () => void }) {
         <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-[#D97706] rounded-full" />
       </button>
 
-      <div className="w-9 h-9 rounded-lg bg-[#1E3A8A] flex items-center justify-center cursor-pointer border border-[#1D4ED8]/30 hover:bg-[#1D4ED8] transition-colors shrink-0">
-        <span className="text-white text-xs font-bold font-sans-body">JM</span>
-      </div>
+      <TopbarUserMenu />
     </header>
   );
 }
@@ -295,12 +369,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
 
-  // Close mobile sidebar on route change
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
 
-  // Close mobile sidebar on resize to desktop
   useEffect(() => {
     const handler = () => {
       if (window.innerWidth >= 1024) setMobileOpen(false);
@@ -311,25 +383,24 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <AuthGuard>
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 flex">
-      <Sidebar
-        collapsed={collapsed}
-        onToggle={() => setCollapsed(c => !c)}
-        mobileOpen={mobileOpen}
-        onMobileClose={() => setMobileOpen(false)}
-      />
+      <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 flex">
+        <Sidebar
+          collapsed={collapsed}
+          onToggle={() => setCollapsed(c => !c)}
+          mobileOpen={mobileOpen}
+          onMobileClose={() => setMobileOpen(false)}
+        />
 
-      {/* Main content — no left margin on mobile, desktop margin based on sidebar width */}
-      <div
-        className={[
-          "flex-1 flex flex-col min-h-screen transition-all duration-300",
-          collapsed ? "lg:ml-[64px]" : "lg:ml-[224px]",
-        ].join(" ")}
-      >
-        <Topbar onMobileMenuOpen={() => setMobileOpen(true)} />
-        <main className="flex-1 p-4 sm:p-6 overflow-auto">{children}</main>
+        <div
+          className={[
+            "flex-1 flex flex-col min-h-screen transition-all duration-300",
+            collapsed ? "lg:ml-[64px]" : "lg:ml-[224px]",
+          ].join(" ")}
+        >
+          <Topbar onMobileMenuOpen={() => setMobileOpen(true)} />
+          <main className="flex-1 p-4 sm:p-6 overflow-auto">{children}</main>
+        </div>
       </div>
-    </div>
     </AuthGuard>
   );
 }

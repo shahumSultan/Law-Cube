@@ -52,7 +52,7 @@ async function request<T>(path: string, opts: RequestOptions = {}): Promise<T> {
       return retryRes.json() as Promise<T>;
     } catch {
       store.logout();
-      if (typeof window !== "undefined") window.location.href = "/login";
+      if (typeof window !== "undefined") window.location.href = "/";
       throw new Error("Session expired");
     }
   }
