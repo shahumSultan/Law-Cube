@@ -38,9 +38,6 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true, error: null });
         try {
           const tokens = await authApi.login(email, password);
-          const user = await authApi.me();
-          // authApi.me() uses the store token, but we need to set it first
-          // So we temporarily set the access token, then fetch me
           set({
             accessToken: tokens.access_token,
             refreshToken: tokens.refresh_token,
