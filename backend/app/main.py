@@ -1,13 +1,16 @@
 from contextlib import asynccontextmanager
+import time
 
 import structlog
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import get_settings
+from app.core.logging import setup_logging
 from app.routers import auth, calls, dashboard, leads, users, webhooks
 
 settings = get_settings()
+setup_logging(debug=settings.DEBUG, env=settings.APP_ENV)
 logger = structlog.get_logger()
 
 
@@ -35,6 +38,21 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    start = time.perf_counter()
+    response = await call_next(request)
+    duration_ms = round((time.perf_counter() - start) * 1000, 1)
+    logger.info(
+        "request",
+        method=request.method,
+        path=request.url.path,
+        status=response.status_code,
+        duration_ms=duration_ms,
+    )
+    return response
 
 # Register routers
 app.include_router(auth.router,      prefix="/api")
