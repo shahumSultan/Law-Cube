@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Search, Plus, Filter, ChevronLeft, ChevronRight, MoreHorizontal, ArrowUpDown, X, Loader2 } from "lucide-react";
+import { Search, Plus, Filter, ChevronLeft, ChevronRight, MoreHorizontal, ArrowUpDown, X, Loader2, ChevronDown, Check } from "lucide-react";
 import { leadsApi } from "@/lib/api";
 import { useAuthStore } from "@/lib/auth-store";
 import { canDeleteLead, canSetFinalStatus } from "@/lib/types";
@@ -19,9 +20,114 @@ const STATUS_API_MAP: Record<string, string> = {
   "Retained": "retained", "Lost": "lost", "Spam": "spam",
 };
 
+const STATUS_SLUG: Record<string, string> = {
+  new: "new", contacted: "contacted",
+  consultation_scheduled: "scheduled",
+  consultation_completed: "completed",
+  retained: "retained", lost: "lost", spam: "spam",
+};
+const STATUS_LABEL: Record<string, string> = {
+  new: "New", contacted: "Contacted",
+  consultation_scheduled: "Consultation Scheduled",
+  consultation_completed: "Consultation Completed",
+  retained: "Retained", lost: "Lost", spam: "Spam",
+};
+
 function StatusPill({ status }: { status: string }) {
-  const slug = status.toLowerCase().replace(/\s+/g, "-");
-  return <span className={`pill pill-${slug}`}>{status}</span>;
+  const slug = STATUS_SLUG[status] ?? status.split("_").pop() ?? "new";
+  const label = STATUS_LABEL[status] ?? status.replace(/_/g, " ");
+  return <span className={`pill pill-${slug}`}>{label}</span>;
+}
+
+const LEAD_STATUSES: LeadStatus[] = [
+  "new", "contacted", "consultation_scheduled", "consultation_completed",
+  "retained", "lost", "spam",
+];
+
+function StatusSelect({
+  value,
+  onChange,
+  loading,
+}: {
+  value: LeadStatus;
+  onChange: (s: LeadStatus) => void;
+  loading?: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const [coords, setCoords] = useState({ top: 0, left: 0 });
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  const openMenu = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const rect = triggerRef.current?.getBoundingClientRect();
+    if (rect) {
+      setCoords({ top: rect.bottom + 6, left: rect.left });
+    }
+    setOpen(o => !o);
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    const close = (e: MouseEvent) => {
+      if (
+        menuRef.current && !menuRef.current.contains(e.target as Node) &&
+        triggerRef.current && !triggerRef.current.contains(e.target as Node)
+      ) {
+        setOpen(false);
+      }
+    };
+    const onScroll = () => setOpen(false);
+    document.addEventListener("mousedown", close);
+    document.addEventListener("scroll", onScroll, true);
+    return () => {
+      document.removeEventListener("mousedown", close);
+      document.removeEventListener("scroll", onScroll, true);
+    };
+  }, [open]);
+
+  const menu = open && createPortal(
+    <div
+      ref={menuRef}
+      style={{ position: "fixed", top: coords.top, left: coords.left, zIndex: 9999 }}
+      className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl py-1.5 min-w-[220px]"
+    >
+      {LEAD_STATUSES.map(s => (
+        <button
+          key={s}
+          onClick={(e) => { e.stopPropagation(); onChange(s); setOpen(false); }}
+          className={`w-full text-left px-3 py-2 flex items-center justify-between transition-colors hover:bg-slate-50 dark:hover:bg-slate-800 ${
+            s === value ? "bg-slate-50 dark:bg-slate-800/60" : ""
+          }`}
+        >
+          <StatusPill status={s} />
+          {s === value && <Check className="w-3.5 h-3.5 text-[#1E3A8A] dark:text-blue-400 shrink-0" />}
+        </button>
+      ))}
+    </div>,
+    document.body
+  );
+
+  return (
+    <div onClick={e => e.stopPropagation()}>
+      <button
+        ref={triggerRef}
+        onClick={openMenu}
+        disabled={loading}
+        className="flex items-center gap-1.5 group hover:opacity-80 transition-opacity disabled:opacity-50"
+      >
+        {loading ? (
+          <Loader2 className="w-3.5 h-3.5 animate-spin text-slate-400" />
+        ) : (
+          <>
+            <StatusPill status={value} />
+            <ChevronDown className="w-3 h-3 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors" />
+          </>
+        )}
+      </button>
+      {menu}
+    </div>
+  );
 }
 
 function ScoreBadge({ score }: { score: number | null }) {
@@ -62,6 +168,7 @@ export default function LeadsPage() {
   const [page, setPage] = useState(1);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
+  const [pendingLeadId, setPendingLeadId] = useState<string | null>(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ["leads", { status: statusFilter, source: sourceFilter, search, page }],
@@ -81,8 +188,11 @@ export default function LeadsPage() {
   });
 
   const updateStatusMutation = useMutation({
-    mutationFn: ({ id, status }: { id: string; status: LeadStatus }) =>
-      leadsApi.update(id, { status }),
+    mutationFn: ({ id, status }: { id: string; status: LeadStatus }) => {
+      setPendingLeadId(id);
+      return leadsApi.update(id, { status });
+    },
+    onSettled: () => setPendingLeadId(null),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["leads"] }),
   });
 
@@ -204,18 +314,13 @@ export default function LeadsPage() {
                     <td className="px-4 py-4"><ScoreBadge score={lead.score} /></td>
                     <td className="px-4 py-4">
                       {canSetFinalStatus(role) ? (
-                        <select
-                          value={lead.status}
-                          onChange={e => updateStatusMutation.mutate({ id: lead.id, status: e.target.value as LeadStatus })}
-                          className="bg-transparent border-0 outline-none cursor-pointer text-xs font-sans-body"
-                          onClick={e => e.stopPropagation()}
-                        >
-                          {["new","contacted","consultation_scheduled","consultation_completed","retained","lost","spam"].map(s => (
-                            <option key={s} value={s}>{s.replace(/_/g, " ")}</option>
-                          ))}
-                        </select>
+                        <StatusSelect
+                          value={lead.status as LeadStatus}
+                          onChange={status => updateStatusMutation.mutate({ id: lead.id, status })}
+                          loading={pendingLeadId === lead.id && updateStatusMutation.isPending}
+                        />
                       ) : (
-                        <StatusPill status={lead.status.replace(/_/g, " ")} />
+                        <StatusPill status={lead.status} />
                       )}
                     </td>
                     <td className="hidden lg:table-cell px-4 py-4 text-slate-600 dark:text-slate-400 text-sm font-sans-body">

@@ -24,7 +24,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
       })
       .catch(() => {
         logout();
-        router.replace("/login");
+        router.replace("/");
       });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
