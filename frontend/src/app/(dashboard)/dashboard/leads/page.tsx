@@ -101,7 +101,7 @@ function StatusSelect({
           }`}
         >
           <StatusPill status={s} />
-          {s === value && <Check className="w-3.5 h-3.5 text-[#1E3A8A] dark:text-blue-400 shrink-0" />}
+          {s === value && <Check className="w-3.5 h-3.5 text-[#15803d] dark:text-green-400 shrink-0" />}
         </button>
       ))}
     </div>,
@@ -214,7 +214,7 @@ export default function LeadsPage() {
         </div>
         <button
           onClick={() => setCreateOpen(true)}
-          className="flex items-center gap-2 bg-[#1E3A8A] hover:bg-[#1D4ED8] text-white text-sm font-semibold px-3 sm:px-4 py-2.5 rounded-xl transition-colors shadow-md shadow-blue-900/20 shrink-0 font-sans-body"
+          className="flex items-center gap-2 bg-[#15803d] hover:bg-[#166534] text-white text-sm font-semibold px-3 sm:px-4 py-2.5 rounded-xl transition-colors shadow-md shadow-green-900/20 shrink-0 font-sans-body"
         >
           <Plus className="w-4 h-4" />
           <span className="hidden sm:inline">Add Lead</span>
@@ -224,7 +224,7 @@ export default function LeadsPage() {
       {/* Filters */}
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-3 sm:p-4">
         <div className="flex gap-2 sm:gap-3">
-          <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 flex-1 focus-within:border-[#1E3A8A] transition-colors">
+          <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 flex-1 focus-within:border-[#15803d] transition-colors">
             <Search className="w-3.5 h-3.5 text-slate-400 shrink-0" />
             <input value={search} onChange={e => { setSearch(e.target.value); setPage(1); }}
               placeholder="Search by name, email, phone…"
@@ -238,7 +238,7 @@ export default function LeadsPage() {
           <button
             onClick={() => setFiltersOpen(f => !f)}
             className={`sm:hidden flex items-center gap-2 border rounded-xl px-3 py-2.5 text-sm font-medium transition-all font-sans-body ${
-              hasActiveFilters ? "bg-[#1E3A8A] border-[#1E3A8A] text-white" : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400"
+              hasActiveFilters ? "bg-[#15803d] border-[#15803d] text-white" : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400"
             }`}>
             <Filter className="w-3.5 h-3.5" />
           </button>
@@ -369,7 +369,7 @@ export default function LeadsPage() {
               <button key={n} onClick={() => setPage(n)}
                 className={`w-8 h-8 rounded-lg text-sm font-semibold font-sans-body transition-all ${
                   n === page
-                    ? "bg-[#1E3A8A] text-white shadow-sm"
+                    ? "bg-[#15803d] text-white shadow-sm"
                     : "bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
                 }`}>
                 {n}

@@ -65,8 +65,8 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen flex">
       {/* ── Left panel ── */}
-      <div className="hidden lg:flex flex-col w-[480px] shrink-0 bg-[#0A1628] relative overflow-hidden"
-        style={{ borderRight: "1px solid #162640" }}>
+      <div className="hidden lg:flex flex-col w-[480px] shrink-0 bg-[#14532d] relative overflow-hidden"
+        style={{ borderRight: "1px solid #166534" }}>
         <div className="absolute inset-0 opacity-20 dark">
           <FloatingPaths position={1} />
           <FloatingPaths position={-1} />
@@ -119,11 +119,11 @@ export default function SignupPage() {
 
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.9, duration: 0.5 }}
-            className="bg-[#0F1E35] rounded-2xl p-5" style={{ border: "1px solid #162640" }}>
+            className="bg-[#0d2a18] rounded-2xl p-5" style={{ border: "1px solid #166534" }}>
             <div className="flex items-center gap-3 mb-3">
               <div className="flex -space-x-2">
                 {["JM", "ST", "CD", "AR"].map((initials, i) => (
-                  <div key={i} className="w-7 h-7 rounded-full bg-[#1E3A8A] border-2 border-[#0F1E35] flex items-center justify-center">
+                  <div key={i} className="w-7 h-7 rounded-full bg-[#15803d] border-2 border-[#091a0f] flex items-center justify-center">
                     <span className="text-white text-[9px] font-bold font-sans-body">{initials}</span>
                   </div>
                 ))}
@@ -184,25 +184,25 @@ export default function SignupPage() {
                 <div key={f.key}>
                   <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">{f.label}</label>
                   <input type="text" required value={form[f.key]} onChange={set(f.key)} placeholder={f.placeholder}
-                    className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#1E3A8A] rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors shadow-sm font-sans-body" />
+                    className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#15803d] rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors shadow-sm font-sans-body" />
                 </div>
               ))}
             </div>
             <div>
               <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">Firm name</label>
               <input type="text" required value={form.firm_name} onChange={set("firm_name")} placeholder="Mitchell & Associates"
-                className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#1E3A8A] rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors shadow-sm font-sans-body" />
+                className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#15803d] rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors shadow-sm font-sans-body" />
             </div>
             <div>
               <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">Work email</label>
               <input type="email" required value={form.email} onChange={set("email")} placeholder="james@mitchelllaw.com"
-                className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#1E3A8A] rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors shadow-sm font-sans-body" />
+                className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#15803d] rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors shadow-sm font-sans-body" />
             </div>
             <div>
               <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">Password</label>
               <div className="relative">
                 <input type={showPw ? "text" : "password"} required value={form.password} onChange={set("password")} placeholder="Min. 8 characters"
-                  className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#1E3A8A] rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors pr-11 shadow-sm font-sans-body" />
+                  className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#15803d] rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors pr-11 shadow-sm font-sans-body" />
                 <button type="button" onClick={() => setShowPw(!showPw)}
                   className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
                   {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -213,7 +213,7 @@ export default function SignupPage() {
             <div className="inline-block w-full group relative bg-gradient-to-b from-black/10 to-white/10 dark:from-white/10 dark:to-black/10 p-px rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 mt-1">
               <Button type="submit" disabled={loading} variant="ghost"
                 className="w-full rounded-[1.15rem] py-6 text-base font-semibold backdrop-blur-md
-                  bg-[#1E3A8A]/95 hover:bg-[#1D4ED8] text-white transition-all duration-300
+                  bg-[#15803d]/95 hover:bg-[#166534] text-white transition-all duration-300
                   group-hover:-translate-y-0.5 border border-white/10 hover:shadow-md font-sans-body disabled:opacity-60">
                 {loading
                   ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -224,14 +224,14 @@ export default function SignupPage() {
 
             <p className="text-slate-400 dark:text-slate-500 text-xs text-center font-sans-body">
               By creating an account, you agree to our{" "}
-              <a href="#" className="text-[#1E3A8A] dark:text-blue-400 hover:underline">Terms of Service</a> and{" "}
-              <a href="#" className="text-[#1E3A8A] dark:text-blue-400 hover:underline">Privacy Policy</a>.
+              <a href="#" className="text-[#15803d] dark:text-green-400 hover:underline">Terms of Service</a> and{" "}
+              <a href="#" className="text-[#15803d] dark:text-green-400 hover:underline">Privacy Policy</a>.
             </p>
           </form>
 
           <p className="text-center text-slate-500 dark:text-slate-400 text-sm mt-6 font-sans-body">
             Already have an account?{" "}
-            <Link href="/login" className="text-[#1E3A8A] dark:text-blue-400 hover:underline font-semibold transition-colors">Sign in</Link>
+            <Link href="/login" className="text-[#15803d] dark:text-green-400 hover:underline font-semibold transition-colors">Sign in</Link>
           </p>
           <div className="flex items-center justify-center gap-1.5 mt-8 text-slate-400 dark:text-slate-500 text-xs font-sans-body">
             <Shield className="w-3.5 h-3.5 text-emerald-600" />

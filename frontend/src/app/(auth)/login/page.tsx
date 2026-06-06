@@ -43,14 +43,14 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex">
       {/* ── Left brand panel ── */}
-      <div className="hidden lg:flex flex-col w-[520px] shrink-0 bg-[#0A1628] relative overflow-hidden"
-        style={{ borderRight: "1px solid #162640" }}>
+      <div className="hidden lg:flex flex-col w-[520px] shrink-0 bg-[#14532d] relative overflow-hidden"
+        style={{ borderRight: "1px solid #166534" }}>
         <div className="absolute inset-0 opacity-20 dark">
           <FloatingPaths position={1} />
           <FloatingPaths position={-1} />
         </div>
         <div className="absolute bottom-1/3 left-0 w-80 h-80 bg-[#D97706]/5 rounded-full blur-[100px] pointer-events-none" />
-        <div className="absolute top-1/4 right-0 w-64 h-64 bg-[#1E3A8A]/12 rounded-full blur-[80px] pointer-events-none" />
+        <div className="absolute top-1/4 right-0 w-64 h-64 bg-[#15803d]/12 rounded-full blur-[80px] pointer-events-none" />
 
         <motion.div
           initial={{ opacity: 0, x: -30 }}
@@ -74,7 +74,7 @@ export default function LoginPage() {
 
             <ul className="flex flex-col gap-4 mb-12">
               {[
-                { icon: PhoneCall, color: "#1E3A8A", bg: "#162640", text: "AI call transcription and lead scoring in under 4 minutes" },
+                { icon: PhoneCall, color: "#22c55e", bg: "#166534", text: "AI call transcription and lead scoring in under 4 minutes" },
                 { icon: TrendingUp, color: "#D97706", bg: "#1A1500", text: "True cost-per-client attribution by campaign and keyword" },
                 { icon: Shield, color: "#059669", bg: "#0A1E18", text: "SOC2 Type II compliant · HIPAA ready for legal data" },
               ].map((item, i) => (
@@ -93,7 +93,7 @@ export default function LoginPage() {
 
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, duration: 0.6 }}
-            className="bg-[#0F1E35] rounded-2xl p-6" style={{ border: "1px solid #162640" }}>
+            className="bg-[#0d2a18] rounded-2xl p-6" style={{ border: "1px solid #166534" }}>
             <div className="flex gap-1 mb-3">
               {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="w-3.5 h-3.5 fill-[#D97706] text-[#D97706]" />)}
             </div>
@@ -153,13 +153,13 @@ export default function LoginPage() {
               <input
                 type="email" required value={email} onChange={e => setEmail(e.target.value)}
                 placeholder="you@lawfirm.com"
-                className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#1E3A8A] rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors shadow-sm font-sans-body"
+                className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#15803d] rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors shadow-sm font-sans-body"
               />
             </div>
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold font-sans-body uppercase tracking-wider">Password</label>
-                <a href="#" className="text-[#1E3A8A] dark:text-blue-400 text-xs hover:underline font-semibold font-sans-body transition-colors">
+                <a href="#" className="text-[#15803d] dark:text-green-400 text-xs hover:underline font-semibold font-sans-body transition-colors">
                   Forgot password?
                 </a>
               </div>
@@ -167,7 +167,7 @@ export default function LoginPage() {
                 <input
                   type={showPw ? "text" : "password"} required value={password} onChange={e => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#1E3A8A] rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors pr-11 shadow-sm font-sans-body"
+                  className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#15803d] rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors pr-11 shadow-sm font-sans-body"
                 />
                 <button type="button" onClick={() => setShowPw(!showPw)}
                   className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
@@ -179,7 +179,7 @@ export default function LoginPage() {
             <div className="inline-block w-full group relative bg-gradient-to-b from-black/10 to-white/10 dark:from-white/10 dark:to-black/10 p-px rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 mt-1">
               <Button type="submit" disabled={isLoading} variant="ghost"
                 className="w-full rounded-[1.15rem] py-6 text-base font-semibold backdrop-blur-md
-                  bg-[#1E3A8A]/95 hover:bg-[#1D4ED8] text-white transition-all duration-300
+                  bg-[#15803d]/95 hover:bg-[#166534] text-white transition-all duration-300
                   group-hover:-translate-y-0.5 border border-white/10 hover:shadow-md font-sans-body disabled:opacity-60">
                 {isLoading
                   ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -191,7 +191,7 @@ export default function LoginPage() {
 
           <p className="text-center text-slate-500 dark:text-slate-400 text-sm mt-6 font-sans-body">
             Don&apos;t have an account?{" "}
-            <Link href="/signup" className="text-[#1E3A8A] dark:text-blue-400 hover:underline font-semibold transition-colors">Start free trial</Link>
+            <Link href="/signup" className="text-[#15803d] dark:text-green-400 hover:underline font-semibold transition-colors">Start free trial</Link>
           </p>
           <p className="text-center text-slate-400 dark:text-slate-500 text-xs mt-8 font-sans-body">Protected by SOC2 Type II · 256-bit encryption</p>
         </motion.div>

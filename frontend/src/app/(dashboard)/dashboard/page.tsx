@@ -42,17 +42,42 @@ function KpiSkeleton() {
 
 /* ─── KPI Card ─── */
 function KpiCard({ label, value, trend }: { label: string; value: number; trend: number }) {
-  const configs: Record<string, { icon: React.ReactNode; accentColor: string; borderTop: string; iconBg: string }> = {
-    "Total Leads":       { icon: <Users className="w-4 h-4" />,     accentColor: "#1E3A8A", borderTop: "#1E3A8A", iconBg: "#EFF6FF" },
-    "Qualified Leads":   { icon: <PhoneCall className="w-4 h-4" />, accentColor: "#1D4ED8", borderTop: "#1D4ED8", iconBg: "#EFF6FF" },
+  const configs: Record<string, { icon: React.ReactNode; accentColor: string; borderTop: string; iconBg: string; hero?: boolean }> = {
+    "Total Leads":       { icon: <Users className="w-4 h-4" />,     accentColor: "#22c55e", borderTop: "#22c55e", iconBg: "#dcfce7", hero: true },
+    "Qualified Leads":   { icon: <PhoneCall className="w-4 h-4" />, accentColor: "#15803d", borderTop: "#15803d", iconBg: "#f0fdf4" },
     "Consultations":     { icon: <Calendar className="w-4 h-4" />,  accentColor: "#D97706", borderTop: "#D97706", iconBg: "#FFFBEB" },
     "Retained Clients":  { icon: <UserCheck className="w-4 h-4" />, accentColor: "#059669", borderTop: "#059669", iconBg: "#ECFDF5" },
   };
   const cfg = configs[label] ?? configs["Total Leads"];
   const positive = trend >= 0;
 
+  if (cfg.hero) {
+    return (
+      <div className="bg-[#14532d] rounded-2xl p-5 hover:shadow-lg transition-all duration-200 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10 pointer-events-none dark">
+          <FloatingPaths position={0.3} />
+        </div>
+        <div className="relative flex items-start justify-between mb-4">
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-[#22c55e]/20">
+            <Users className="w-4 h-4 text-[#22c55e]" />
+          </div>
+          <span className={`flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full font-sans-body ${
+            positive ? "bg-[#22c55e]/20 text-[#22c55e] border border-[#22c55e]/30"
+                     : "bg-red-500/20 text-red-300 border border-red-500/30"
+          }`}>
+            {positive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+            {Math.abs(trend)}%
+          </span>
+        </div>
+        <div className="relative font-display font-bold text-3xl text-white mb-1">{value.toLocaleString()}</div>
+        <div className="relative text-green-200/70 text-sm font-sans-body">{label}</div>
+        <div className="relative text-green-200/40 text-xs mt-0.5 font-sans-body">vs. last 30 days</div>
+      </div>
+    );
+  }
+
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 hover:shadow-md transition-all duration-200 relative overflow-hidden">
+    <div className="bg-white dark:bg-[#0d2a18] border border-slate-200 dark:border-[#166534] rounded-2xl p-5 hover:shadow-md transition-all duration-200 relative overflow-hidden">
       <div className="absolute top-0 left-0 right-0 h-0.5 rounded-t-2xl" style={{ background: cfg.borderTop }} />
       <div className="flex items-start justify-between mb-4">
         <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
@@ -76,12 +101,12 @@ function KpiCard({ label, value, trend }: { label: string; value: number; trend:
 
 /* ─── Source colors ─── */
 const SOURCE_COLORS: Record<string, string> = {
-  callrail: "#1E3A8A",
-  web_form: "#059669",
+  callrail: "#15803d",
+  web_form: "#22c55e",
   manual:   "#D97706",
   calendly: "#6D28D9",
   facebook: "#DC2626",
-  google:   "#0284C7",
+  google:   "#059669",
 };
 
 /* ─── Static AI insights (real engine in M10) ─── */
@@ -107,7 +132,7 @@ function InsightCard({ insight }: { insight: typeof STATIC_INSIGHTS[0] }) {
         <div className="flex-1 min-w-0">
           <h4 className="font-display font-semibold text-slate-900 text-sm mb-1">{insight.title}</h4>
           <p className="text-slate-600 text-xs leading-relaxed font-sans-body">{insight.body}</p>
-          <button className="flex items-center gap-1 text-[#1E3A8A] text-xs font-semibold mt-2 hover:text-[#1D4ED8] transition-colors font-sans-body">
+          <button className="flex items-center gap-1 text-[#15803d] text-xs font-semibold mt-2 hover:text-[#166534] transition-colors font-sans-body">
             {insight.action} <ArrowRight className="w-3 h-3" />
           </button>
         </div>
@@ -231,17 +256,17 @@ export default function DashboardPage() {
               <ResponsiveContainer width="100%" height={180}>
                 <AreaChart data={leadsOverTime} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
                   <defs>
-                    <linearGradient id="navyGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#1E3A8A" stopOpacity={0.15} />
-                      <stop offset="95%" stopColor="#1E3A8A" stopOpacity={0} />
+                    <linearGradient id="forestGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#15803d" stopOpacity={0.2} />
+                      <stop offset="95%" stopColor="#15803d" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid stroke="#F1F5F9" strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="date" tick={{ fill: "#94A3B8", fontSize: 11, fontFamily: "Inter" }} tickLine={false} axisLine={false} interval={2} />
                   <YAxis tick={{ fill: "#94A3B8", fontSize: 11, fontFamily: "Inter" }} tickLine={false} axisLine={false} />
                   <Tooltip content={<ChartTooltip />} />
-                  <Area type="monotone" dataKey="leads" stroke="#1E3A8A" strokeWidth={2} fill="url(#navyGrad)" dot={false}
-                    activeDot={{ r: 4, fill: "#1E3A8A", stroke: "#FFFFFF", strokeWidth: 2 }} />
+                  <Area type="monotone" dataKey="leads" stroke="#15803d" strokeWidth={2} fill="url(#forestGrad)" dot={false}
+                    activeDot={{ r: 4, fill: "#22c55e", stroke: "#FFFFFF", strokeWidth: 2 }} />
                 </AreaChart>
               </ResponsiveContainer>
             )}
@@ -287,7 +312,7 @@ export default function DashboardPage() {
               ) : (
                 <div className="flex flex-col gap-3.5">
                   {funnel.map((item, i) => {
-                    const colors = ["#1E3A8A", "#059669", "#D97706", "#6D28D9"];
+                    const colors = ["#15803d", "#22c55e", "#D97706", "#6D28D9"];
                     return (
                       <div key={i}>
                         <div className="flex items-center justify-between mb-1.5">
@@ -313,13 +338,13 @@ export default function DashboardPage() {
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden">
             <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-slate-700">
               <h3 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-lg">Recent Leads</h3>
-              <a href="/dashboard/leads" className="text-[#1E3A8A] dark:text-blue-400 text-xs hover:underline font-semibold font-sans-body flex items-center gap-1 transition-colors">
+              <a href="/dashboard/leads" className="text-[#15803d] dark:text-green-400 text-xs hover:underline font-semibold font-sans-body flex items-center gap-1 transition-colors">
                 View all <ArrowRight className="w-3 h-3" />
               </a>
             </div>
             <p className="px-5 py-8 text-slate-400 dark:text-slate-500 text-sm font-sans-body text-center">
               Create leads to see them here, or{" "}
-              <a href="/dashboard/leads" className="text-[#1E3A8A] dark:text-blue-400 hover:underline">view the full leads page</a>.
+              <a href="/dashboard/leads" className="text-[#15803d] dark:text-green-400 hover:underline">view the full leads page</a>.
             </p>
           </div>
         </div>
@@ -353,14 +378,14 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.55, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="bg-[#0A1628] rounded-2xl p-5 relative overflow-hidden"
+            className="bg-[#14532d] rounded-2xl p-5 relative overflow-hidden"
           >
             <div className="absolute inset-0 opacity-10 dark pointer-events-none">
               <FloatingPaths position={0.5} />
             </div>
             <div className="relative">
               <div className="flex items-center gap-2 mb-4">
-                <TrendingUp className="w-4 h-4 text-[#D97706]" />
+                <TrendingUp className="w-4 h-4 text-[#22c55e]" />
                 <h3 className="font-display font-semibold text-white text-base">Attribution Summary</h3>
               </div>
               {isLoading ? (
@@ -371,7 +396,7 @@ export default function DashboardPage() {
               ) : leadsBySource.length > 0 ? (
                 <>
                   <div className="mb-3">
-                    <div className="text-[#D97706] text-xs font-semibold font-sans-body uppercase tracking-wider mb-1">
+                    <div className="text-[#22c55e] text-xs font-semibold font-sans-body uppercase tracking-wider mb-1">
                       Top Source
                     </div>
                     <div className="font-display font-bold text-3xl text-white mb-1 capitalize">
@@ -381,7 +406,7 @@ export default function DashboardPage() {
                       {leadsBySource[0]?.leads} leads this month
                     </div>
                   </div>
-                  <div className="h-px bg-[#162640] my-3" />
+                  <div className="h-px bg-[#166534] my-3" />
                   <div className="flex justify-between text-xs font-sans-body">
                     {leadsBySource.slice(0, 3).map((s, i) => (
                       <div key={i}>

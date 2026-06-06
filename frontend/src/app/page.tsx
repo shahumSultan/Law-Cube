@@ -140,7 +140,7 @@ function Navbar() {
           ))}
           <div className="flex flex-col gap-2 pt-3 border-t border-slate-100 dark:border-slate-700">
             <Link href="/login" className="text-slate-600 dark:text-slate-400 text-sm py-2 text-center font-medium font-sans-body">Sign In</Link>
-            <Link href="/signup" className="bg-[#1E3A8A] text-white text-sm font-semibold py-3 rounded-xl text-center font-sans-body">Get Started Free</Link>
+            <Link href="/signup" className="bg-[#15803d] text-white text-sm font-semibold py-3 rounded-xl text-center font-sans-body">Get Started Free</Link>
           </div>
         </div>
       )}
@@ -191,7 +191,7 @@ function Hero() {
             <div className="flex items-center gap-2">
               <div className="flex -space-x-2">
                 {["JM", "SK", "CD", "AR"].map((initials, i) => (
-                  <div key={i} className="w-7 h-7 rounded-full bg-[#1E3A8A] border-2 border-white dark:border-slate-950 flex items-center justify-center text-white text-[9px] font-bold">
+                  <div key={i} className="w-7 h-7 rounded-full bg-[#15803d] border-2 border-white dark:border-slate-950 flex items-center justify-center text-white text-[9px] font-bold">
                     {initials}
                   </div>
                 ))}
@@ -229,15 +229,15 @@ function Hero() {
               </div>
             </div>
             <div className="bg-[#F8FAFC] dark:bg-slate-900 p-4 flex gap-3" style={{ minHeight: 260 }}>
-              <div className="w-36 bg-[#0A1628] rounded-xl p-3 flex flex-col gap-1 shrink-0">
+              <div className="w-36 bg-[#14532d] rounded-xl p-3 flex flex-col gap-1 shrink-0">
                 <div className="flex items-center gap-2 mb-3 px-1">
-                  <div className="w-5 h-5 rounded bg-[#1E3A8A] flex items-center justify-center">
+                  <div className="w-5 h-5 rounded bg-[#166534] flex items-center justify-center">
                     <span className="text-white text-[7px] font-bold">LC</span>
                   </div>
-                  <span className="text-slate-300 text-[10px] font-semibold font-sans-body">Law Cube</span>
+                  <span className="text-green-100 text-[10px] font-semibold font-sans-body">Law Cube</span>
                 </div>
                 {["Dashboard", "Leads", "Calls", "Follow-Up", "Marketing"].map((item, i) => (
-                  <div key={i} className={`px-2 py-1.5 rounded-md text-[9px] font-sans-body font-medium ${i === 0 ? "bg-[#D97706]/15 text-[#D97706]" : "text-slate-500"}`}>
+                  <div key={i} className={`px-2 py-1.5 rounded-md text-[9px] font-sans-body font-medium ${i === 0 ? "bg-[#22c55e]/15 text-[#22c55e]" : "text-green-200/50"}`}>
                     {item}
                   </div>
                 ))}
@@ -245,7 +245,7 @@ function Hero() {
               <div className="flex-1 flex flex-col gap-3">
                 <div className="grid grid-cols-4 gap-2">
                   {[
-                    { label: "Total Leads", value: "1,284", trend: "+18%", color: "#1E3A8A" },
+                    { label: "Total Leads", value: "1,284", trend: "+18%", color: "#15803d" },
                     { label: "Qualified", value: "847", trend: "+12%", color: "#059669" },
                     { label: "Consultations", value: "412", trend: "+9%", color: "#D97706" },
                     { label: "Retained", value: "203", trend: "+23%", color: "#6D28D9" },
@@ -262,7 +262,7 @@ function Hero() {
                     <div className="text-slate-500 dark:text-slate-400 text-[8px] font-sans-body mb-2">Leads Over Time</div>
                     <div className="flex items-end gap-1 h-16">
                       {[40, 65, 45, 80, 55, 90, 70, 85, 60, 95, 75, 100].map((h, i) => (
-                        <div key={i} className="flex-1 rounded-t-sm" style={{ height: `${h}%`, background: `rgba(30,58,138,${0.25 + h / 250})` }} />
+                        <div key={i} className="flex-1 rounded-t-sm" style={{ height: `${h}%`, background: `rgba(21,128,61,${0.25 + h / 250})` }} />
                       ))}
                     </div>
                   </div>
@@ -303,7 +303,7 @@ function StatsStrip() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-0 lg:divide-x divide-slate-200 dark:divide-slate-700">
           {[
             { value: 68, suffix: "%", label: "Average lift in lead-to-consultation conversion", color: "#059669" },
-            { value: 2847, suffix: "+", label: "Calls analyzed and scored this month", color: "#1E3A8A" },
+            { value: 2847, suffix: "+", label: "Calls analyzed and scored this month", color: "#15803d" },
             { value: 94, suffix: "%", label: "Accuracy on AI lead classification", color: "#D97706" },
             { value: 2, suffix: "×", label: "Average marketing ROI improvement in year one", color: "#6D28D9" },
           ].map((s, i) => (
@@ -346,11 +346,11 @@ function IntegrationsBar() {
 
 /* ─── Features ─── */
 const FEATURES = [
-  { icon: PhoneCall, bg: "#EFF6FF", darkBg: "rgba(30,58,138,0.15)", iconColor: "#1E3A8A", title: "Call Intelligence", desc: "Every inbound call is automatically transcribed, summarized, and scored by AI. Know the quality of every lead before your team reviews it." },
+  { icon: PhoneCall, bg: "#f0fdf4", darkBg: "rgba(21,128,61,0.15)", iconColor: "#15803d", title: "Call Intelligence", desc: "Every inbound call is automatically transcribed, summarized, and scored by AI. Know the quality of every lead before your team reviews it." },
   { icon: Brain, bg: "#F5F3FF", darkBg: "rgba(91,33,182,0.15)", iconColor: "#5B21B6", title: "AI Lead Scoring", desc: "Leads scored 0–100 based on injury severity, case type, representation status, and jurisdiction match. Focus on your best opportunities." },
   { icon: Zap, bg: "#FFFBEB", darkBg: "rgba(180,83,9,0.15)", iconColor: "#B45309", title: "Follow-Up Automation", desc: "Missed a call? An automated SMS fires within 90 seconds. No consultation scheduled? A nurture sequence launches automatically." },
   { icon: TrendingUp, bg: "#F0FDF4", darkBg: "rgba(21,128,61,0.15)", iconColor: "#15803D", title: "Marketing Attribution", desc: "Connect Google Ads, Meta, and CallRail data to retained clients. See true cost-per-client for every campaign and keyword." },
-  { icon: Link2, bg: "#EFF6FF", darkBg: "rgba(29,78,216,0.15)", iconColor: "#1D4ED8", title: "Practice Management Sync", desc: "Bidirectional sync with Clio, NEOS, and MyCase. Retain a client in Law Cube and it appears in your practice management system instantly." },
+  { icon: Link2, bg: "#dcfce7", darkBg: "rgba(21,128,61,0.15)", iconColor: "#166534", title: "Practice Management Sync", desc: "Bidirectional sync with Clio, NEOS, and MyCase. Retain a client in Law Cube and it appears in your practice management system instantly." },
   { icon: BarChart3, bg: "#FFFBEB", darkBg: "rgba(217,119,6,0.15)", iconColor: "#D97706", title: "AI Insights Engine", desc: "Nightly analysis surfaces recommendations — which campaigns to scale, which intake reps need coaching, where leads are slipping." },
 ];
 
@@ -359,9 +359,9 @@ function Features() {
     <section id="features" className="py-28 px-6 bg-white/85 dark:bg-slate-950/85 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto">
         <Reveal className="max-w-2xl mb-16">
-          <div className="inline-flex items-center gap-2 bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 rounded-full px-4 py-1.5 mb-6 font-sans-body">
-            <Sparkles className="w-3.5 h-3.5 text-[#1E3A8A] dark:text-blue-400" />
-            <span className="text-[#1E3A8A] dark:text-blue-400 text-xs font-semibold uppercase tracking-wider">Platform Features</span>
+          <div className="inline-flex items-center gap-2 bg-green-50 dark:bg-green-950/50 border border-green-200 dark:border-green-800 rounded-full px-4 py-1.5 mb-6 font-sans-body">
+            <Sparkles className="w-3.5 h-3.5 text-[#15803d] dark:text-green-400" />
+            <span className="text-[#15803d] dark:text-green-400 text-xs font-semibold uppercase tracking-wider">Platform Features</span>
           </div>
           <h2 className="font-display font-bold text-5xl md:text-6xl text-slate-900 dark:text-slate-100 leading-tight mb-5">
             Everything your firm needs to convert more clients
@@ -392,7 +392,7 @@ function Features() {
 /* ─── How it works ─── */
 function HowItWorks() {
   const steps = [
-    { n: "01", icon: PhoneCall, color: "#1E3A8A", bg: "#EFF6FF", title: "Calls come in", desc: "CallRail captures every inbound call with tracking numbers, UTM data, and recordings. Everything flows into Law Cube automatically — zero manual entry." },
+    { n: "01", icon: PhoneCall, color: "#15803d", bg: "#f0fdf4", title: "Calls come in", desc: "CallRail captures every inbound call with tracking numbers, UTM data, and recordings. Everything flows into Law Cube automatically — zero manual entry." },
     { n: "02", icon: Brain, color: "#5B21B6", bg: "#F5F3FF", title: "AI analyzes instantly", desc: "Within 4 minutes, our AI transcribes the call, generates a summary, scores the lead 0–100, classifies the outcome, and detects sentiment." },
     { n: "03", icon: Target, color: "#D97706", bg: "#FFFBEB", title: "Your team closes", desc: "Intake specialists see scored, prioritized leads. Automated follow-ups fire for missed calls. The right leads reach the right attorneys at the right time." },
   ];
@@ -410,7 +410,7 @@ function HowItWorks() {
         </Reveal>
 
         <div className="grid md:grid-cols-3 gap-6 relative">
-          <div className="hidden md:block absolute top-14 left-[calc(33.33%+1rem)] right-[calc(33.33%+1rem)] h-px bg-gradient-to-r from-blue-800/20 via-amber-600/30 to-amber-600/20" />
+          <div className="hidden md:block absolute top-14 left-[calc(33.33%+1rem)] right-[calc(33.33%+1rem)] h-px bg-gradient-to-r from-green-800/20 via-green-600/30 to-green-600/20" />
           {steps.map((s, i) => (
             <Reveal key={i} delay={i * 0.1}>
               <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-8 shadow-sm h-full">
@@ -465,7 +465,7 @@ function Testimonials() {
                   &ldquo;{t.quote}&rdquo;
                 </blockquote>
                 <div className="flex items-center gap-3 border-t border-slate-200 dark:border-slate-700 pt-5">
-                  <div className="w-9 h-9 rounded-full bg-[#1E3A8A] flex items-center justify-center shrink-0">
+                  <div className="w-9 h-9 rounded-full bg-[#15803d] flex items-center justify-center shrink-0">
                     <span className="text-white text-xs font-bold font-sans-body">{t.name.split(" ").map(n => n[0]).join("").slice(0, 2)}</span>
                   </div>
                   <div>
@@ -503,12 +503,12 @@ function Pricing() {
             <Reveal key={i} delay={i * 0.1}>
               <div className={`relative rounded-2xl p-8 flex flex-col gap-6 transition-all h-full ${
                 p.highlight
-                  ? "bg-[#0A1628] border-2 border-[#D97706]/50 shadow-xl shadow-blue-900/20"
+                  ? "bg-[#14532d] border-2 border-[#22c55e]/50 shadow-xl shadow-green-900/20"
                   : "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm"
               }`}>
                 {p.highlight && (
                   <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                    <span className="bg-[#D97706] text-white text-xs font-bold px-4 py-1.5 rounded-full font-sans-body tracking-wide">Most Popular</span>
+                    <span className="bg-[#22c55e] text-white text-xs font-bold px-4 py-1.5 rounded-full font-sans-body tracking-wide">Most Popular</span>
                   </div>
                 )}
                 <div>
@@ -524,14 +524,14 @@ function Pricing() {
                 <ul className="flex flex-col gap-3 flex-1">
                   {p.features.map((f, j) => (
                     <li key={j} className="flex items-start gap-2.5 text-sm font-sans-body">
-                      <Check className={`w-4 h-4 mt-0.5 shrink-0 ${p.highlight ? "text-[#D97706]" : "text-emerald-600 dark:text-emerald-500"}`} />
+                      <Check className={`w-4 h-4 mt-0.5 shrink-0 ${p.highlight ? "text-[#22c55e]" : "text-emerald-600 dark:text-emerald-500"}`} />
                       <span className={p.highlight ? "text-slate-300" : "text-slate-600 dark:text-slate-400"}>{f}</span>
                     </li>
                   ))}
                 </ul>
                 {p.highlight
                   ? <GradientButton href={p.price ? "/signup" : "#"}>{p.cta}</GradientButton>
-                  : <Link href={p.price ? "/signup" : "#"} className="w-full text-center py-3.5 rounded-xl text-sm font-semibold font-sans-body transition-all bg-[#1E3A8A] hover:bg-[#1D4ED8] text-white">{p.cta}</Link>
+                  : <Link href={p.price ? "/signup" : "#"} className="w-full text-center py-3.5 rounded-xl text-sm font-semibold font-sans-body transition-all bg-[#15803d] hover:bg-[#166534] text-white">{p.cta}</Link>
                 }
               </div>
             </Reveal>
@@ -557,12 +557,12 @@ function CTA() {
     <section className="py-28 px-6 bg-white/85 dark:bg-slate-950/85 backdrop-blur-sm">
       <div className="max-w-5xl mx-auto">
         <Reveal>
-          <div className="relative rounded-3xl overflow-hidden bg-[#0A1628] p-16 text-center">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-48 bg-[#D97706]/10 blur-[80px] rounded-full pointer-events-none" />
+          <div className="relative rounded-3xl overflow-hidden bg-[#14532d] p-16 text-center">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-48 bg-[#22c55e]/10 blur-[80px] rounded-full pointer-events-none" />
             <div className="relative z-10">
-              <div className="inline-flex items-center gap-2 border border-[#D97706]/30 bg-[#D97706]/10 rounded-full px-4 py-1.5 mb-8 font-sans-body">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#D97706]" />
-                <span className="text-[#F59E0B] text-xs font-semibold tracking-widest uppercase">Start Today</span>
+              <div className="inline-flex items-center gap-2 border border-[#22c55e]/30 bg-[#22c55e]/10 rounded-full px-4 py-1.5 mb-8 font-sans-body">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e]" />
+                <span className="text-[#22c55e] text-xs font-semibold tracking-widest uppercase">Start Today</span>
               </div>
               <h2 className="font-display font-bold text-5xl md:text-6xl text-white mb-6 leading-tight">
                 Ready to know which calls become clients?
@@ -589,7 +589,7 @@ function CTA() {
 /* ─── Footer ─── */
 function Footer() {
   return (
-    <footer className="bg-[#0A1628] border-t border-[#162640] py-16 px-6">
+    <footer className="bg-[#091a0f] border-t border-[#166534] py-16 px-6">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-10 mb-14">
           <div className="col-span-2">
@@ -619,7 +619,7 @@ function Footer() {
             </div>
           ))}
         </div>
-        <div className="border-t border-[#162640] pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="border-t border-[#166534] pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           {/* FIX: was #334155 on dark bg → slate-500 */}
           <p className="text-slate-500 text-xs font-sans-body">© 2025 Enigma Cube LLC. All rights reserved.</p>
           <div className="flex gap-6">

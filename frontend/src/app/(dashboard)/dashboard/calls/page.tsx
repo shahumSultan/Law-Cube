@@ -113,7 +113,7 @@ function CallDetailModal({ call, onClose }: { call: Call; onClose: () => void })
           {/* Score breakdown */}
           <div className="px-5 py-5 border-b border-slate-100 dark:border-slate-700">
             <div className="flex items-center gap-2 mb-4">
-              <TrendingUp className="w-4 h-4 text-[#1E3A8A]" />
+              <TrendingUp className="w-4 h-4 text-[#15803d]" />
               <h4 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-sm">Score Breakdown</h4>
             </div>
             <div className="flex flex-col gap-3">
@@ -124,7 +124,7 @@ function CallDetailModal({ call, onClose }: { call: Call; onClose: () => void })
                     <span className="text-slate-900 dark:text-slate-100 text-xs font-semibold font-sans-body">{item.value}/{item.max}</span>
                   </div>
                   <div className="h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-                    <div className="h-full rounded-full bg-[#1E3A8A]" style={{ width: `${(item.value / item.max) * 100}%` }} />
+                    <div className="h-full rounded-full bg-[#15803d]" style={{ width: `${(item.value / item.max) * 100}%` }} />
                   </div>
                 </div>
               ))}
@@ -134,7 +134,7 @@ function CallDetailModal({ call, onClose }: { call: Call; onClose: () => void })
           {/* Transcript */}
           <div className="px-5 py-5">
             <div className="flex items-center gap-2 mb-4">
-              <Mic className="w-4 h-4 text-[#1E3A8A]" />
+              <Mic className="w-4 h-4 text-[#15803d]" />
               <h4 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-sm">Transcript</h4>
             </div>
             <div className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 text-slate-600 dark:text-slate-400 text-xs leading-relaxed font-mono whitespace-pre-line max-h-48 overflow-y-auto">
@@ -147,7 +147,7 @@ function CallDetailModal({ call, onClose }: { call: Call; onClose: () => void })
         {call.leadId && (
           <div className="px-5 py-4 border-t border-slate-100 dark:border-slate-700 shrink-0">
             <a href="/dashboard/leads"
-              className="flex items-center justify-center gap-2 w-full bg-[#EFF6FF] dark:bg-[#1E3A8A]/20 hover:bg-[#DBEAFE] dark:hover:bg-[#1E3A8A]/30 border border-[#BFDBFE] dark:border-[#1E3A8A]/40 text-[#1E3A8A] dark:text-blue-400 text-sm font-semibold py-2.5 rounded-xl transition-all font-sans-body">
+              className="flex items-center justify-center gap-2 w-full bg-[#f0fdf4] dark:bg-[#15803d]/20 hover:bg-[#dcfce7] dark:hover:bg-[#15803d]/30 border border-[#bbf7d0] dark:border-[#15803d]/40 text-[#15803d] dark:text-green-400 text-sm font-semibold py-2.5 rounded-xl transition-all font-sans-body">
               <ExternalLink className="w-3.5 h-3.5" />
               View Lead Record
             </a>
@@ -177,7 +177,7 @@ export default function CallsPage() {
       {/* ── Summary cards ── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
         {[
-          { label: "Total Calls",   value: mockCalls.length,                                               icon: PhoneCall, color: "#1E3A8A", bg: "#EFF6FF" },
+          { label: "Total Calls",   value: mockCalls.length,                                               icon: PhoneCall, color: "#15803d", bg: "#f0fdf4" },
           { label: "Qualified",     value: mockCalls.filter(c => c.classification === "qualified").length,  icon: TrendingUp, color: "#059669", bg: "#ECFDF5" },
           { label: "Spam / Other",  value: mockCalls.filter(c => c.classification === "spam").length,       icon: X,          color: "#DC2626", bg: "#FEF2F2" },
           { label: "Avg Duration",  value: "3:14",                                                          icon: Clock,      color: "#D97706", bg: "#FFFBEB" },
@@ -239,7 +239,7 @@ export default function CallsPage() {
                   <td className="hidden md:table-cell px-4 py-4">
                     <button
                       onClick={e => e.stopPropagation()}
-                      className="w-7 h-7 rounded-full bg-[#EFF6FF] dark:bg-[#1E3A8A]/20 border border-[#BFDBFE] dark:border-[#1E3A8A]/30 flex items-center justify-center text-[#1E3A8A] dark:text-blue-400 hover:bg-[#DBEAFE] dark:hover:bg-[#1E3A8A]/30 transition-all">
+                      className="w-7 h-7 rounded-full bg-[#f0fdf4] dark:bg-[#15803d]/20 border border-[#bbf7d0] dark:border-[#15803d]/30 flex items-center justify-center text-[#15803d] dark:text-green-400 hover:bg-[#dcfce7] dark:hover:bg-[#15803d]/30 transition-all">
                       <Play className="w-3 h-3 fill-current" />
                     </button>
                   </td>
@@ -261,7 +261,7 @@ export default function CallsPage() {
                   <td className="px-4 py-4">
                     <button
                       onClick={e => { e.stopPropagation(); setSelected(call); }}
-                      className="text-[#1E3A8A] dark:text-blue-400 text-xs hover:underline whitespace-nowrap font-semibold font-sans-body"
+                      className="text-[#15803d] dark:text-green-400 text-xs hover:underline whitespace-nowrap font-semibold font-sans-body"
                     >
                       Details
                     </button>

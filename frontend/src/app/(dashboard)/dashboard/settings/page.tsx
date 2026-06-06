@@ -22,7 +22,7 @@ const ROLE_LABELS: Record<Role, string> = {
 
 const ROLE_COLORS: Record<Role, { bg: string; text: string; border: string }> = {
   super_admin:       { bg: "#F5F3FF", text: "#5B21B6", border: "#DDD6FE" },
-  firm_owner:        { bg: "#EFF6FF", text: "#1E3A8A", border: "#BFDBFE" },
+  firm_owner:        { bg: "#f0fdf4", text: "#15803d", border: "#bbf7d0" },
   intake_manager:    { bg: "#FFFBEB", text: "#B45309", border: "#FDE68A" },
   intake_specialist: { bg: "#F0FDF4", text: "#15803D", border: "#BBF7D0" },
   attorney:          { bg: "#F8FAFC", text: "#475569", border: "#E2E8F0" },
@@ -98,7 +98,7 @@ function InviteModal({ onClose }: { onClose: () => void }) {
               <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5">
                 <span className="text-slate-600 dark:text-slate-400 text-xs font-mono flex-1 truncate">{result.invite_url}</span>
                 <button onClick={copyLink}
-                  className="text-[#1E3A8A] dark:text-blue-400 hover:text-[#1D4ED8] transition-colors shrink-0">
+                  className="text-[#15803d] dark:text-green-400 hover:text-[#166534] transition-colors shrink-0">
                   {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
                 </button>
               </div>
@@ -108,7 +108,7 @@ function InviteModal({ onClose }: { onClose: () => void }) {
             </div>
 
             <button onClick={onClose}
-              className="w-full py-2.5 rounded-xl bg-[#1E3A8A] hover:bg-[#1D4ED8] text-white text-sm font-semibold font-sans-body transition-colors">
+              className="w-full py-2.5 rounded-xl bg-[#15803d] hover:bg-[#166534] text-white text-sm font-semibold font-sans-body transition-colors">
               Done
             </button>
           </div>
@@ -128,7 +128,7 @@ function InviteModal({ onClose }: { onClose: () => void }) {
                   <input type="text" required value={form[f.key as keyof typeof form]}
                     onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))}
                     placeholder={f.placeholder}
-                    className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#1E3A8A] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors font-sans-body" />
+                    className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#15803d] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors font-sans-body" />
                 </div>
               ))}
             </div>
@@ -138,13 +138,13 @@ function InviteModal({ onClose }: { onClose: () => void }) {
               <input type="email" required value={form.email}
                 onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
                 placeholder="sarah@lawfirm.com"
-                className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#1E3A8A] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors font-sans-body" />
+                className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#15803d] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors font-sans-body" />
             </div>
 
             <div>
               <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">Role</label>
               <select value={form.role} onChange={e => setForm(p => ({ ...p, role: e.target.value }))}
-                className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#1E3A8A] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm outline-none font-sans-body">
+                className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#15803d] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm outline-none font-sans-body">
                 <option value="intake_specialist">Intake Specialist</option>
                 <option value="intake_manager">Intake Manager</option>
                 <option value="attorney">Attorney</option>
@@ -158,7 +158,7 @@ function InviteModal({ onClose }: { onClose: () => void }) {
                 Cancel
               </button>
               <button type="submit" disabled={isPending}
-                className="flex-1 py-2.5 rounded-xl bg-[#1E3A8A] hover:bg-[#1D4ED8] text-white text-sm font-semibold font-sans-body transition-colors flex items-center justify-center gap-2 disabled:opacity-60">
+                className="flex-1 py-2.5 rounded-xl bg-[#15803d] hover:bg-[#166534] text-white text-sm font-semibold font-sans-body transition-colors flex items-center justify-center gap-2 disabled:opacity-60">
                 {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Send Invite"}
               </button>
             </div>
@@ -212,7 +212,7 @@ export default function SettingsPage() {
           <button key={t.key} onClick={() => setTab(t.key)}
             className={`flex items-center gap-2 px-4 py-2.5 text-sm font-semibold font-sans-body border-b-2 transition-colors ${
               tab === t.key
-                ? "border-[#1E3A8A] text-[#1E3A8A] dark:text-blue-400 dark:border-blue-400"
+                ? "border-[#15803d] text-[#15803d] dark:text-green-400 dark:border-green-400"
                 : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
             }`}>
             <t.icon className="w-4 h-4" />
@@ -233,7 +233,7 @@ export default function SettingsPage() {
             </div>
             {canInviteUser(role) && (
               <button onClick={() => setInviteOpen(true)}
-                className="flex items-center gap-2 bg-[#1E3A8A] hover:bg-[#1D4ED8] text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors shadow-md font-sans-body">
+                className="flex items-center gap-2 bg-[#15803d] hover:bg-[#166534] text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors shadow-md font-sans-body">
                 <Plus className="w-4 h-4" />
                 <span className="hidden sm:inline">Invite Member</span>
               </button>
@@ -259,7 +259,7 @@ export default function SettingsPage() {
                 <p className="text-slate-500 dark:text-slate-400 text-sm font-sans-body">No team members yet</p>
                 {canInviteUser(role) && (
                   <button onClick={() => setInviteOpen(true)}
-                    className="mt-3 text-[#1E3A8A] dark:text-blue-400 text-sm font-semibold hover:underline font-sans-body">
+                    className="mt-3 text-[#15803d] dark:text-green-400 text-sm font-semibold hover:underline font-sans-body">
                     Invite your first team member
                   </button>
                 )}
@@ -268,7 +268,7 @@ export default function SettingsPage() {
               <div className="divide-y divide-slate-100 dark:divide-slate-700/50">
                 {members.map(member => (
                   <div key={member.id} className="flex items-center gap-4 px-5 py-4">
-                    <div className="w-10 h-10 rounded-full bg-[#1E3A8A] flex items-center justify-center border border-blue-800/20 shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-[#15803d] flex items-center justify-center border border-green-800/20 shrink-0">
                       <span className="text-white text-sm font-bold font-sans-body">
                         {member.first_name[0]}{member.last_name[0]}
                       </span>
@@ -343,7 +343,7 @@ export default function SettingsPage() {
         <div className="flex flex-col gap-5">
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-6">
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-16 h-16 rounded-full bg-[#1E3A8A] flex items-center justify-center border-2 border-blue-200 dark:border-blue-900">
+              <div className="w-16 h-16 rounded-full bg-[#15803d] flex items-center justify-center border-2 border-green-200 dark:border-green-900">
                 <span className="text-white text-xl font-bold font-sans-body">
                   {currentUser.first_name[0]}{currentUser.last_name[0]}
                 </span>
