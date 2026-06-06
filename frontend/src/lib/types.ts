@@ -139,6 +139,30 @@ export interface DashboardResponse {
   funnel: { stage: string; value: number; pct: number }[];
 }
 
+export interface IntegrationSettingsOut {
+  has_callrail_key: boolean;
+  has_openai_key: boolean;
+  has_anthropic_key: boolean;
+  has_google_key: boolean;
+  has_deepgram_key: boolean;
+  has_assemblyai_key: boolean;
+  ai_primary_provider: string;
+  transcription_provider: string;
+  callrail_account_id: string | null;
+}
+
+export interface IntegrationSettingsIn {
+  callrail_api_key?: string;
+  callrail_account_id?: string;
+  openai_api_key?: string;
+  anthropic_api_key?: string;
+  google_api_key?: string;
+  ai_primary_provider?: string;
+  deepgram_api_key?: string;
+  assemblyai_api_key?: string;
+  transcription_provider?: string;
+}
+
 // RBAC helpers
 export const MANAGER_ROLES: Role[] = ["firm_owner", "intake_manager", "super_admin"];
 export const FIRM_OWNER_ROLES: Role[] = ["firm_owner", "super_admin"];

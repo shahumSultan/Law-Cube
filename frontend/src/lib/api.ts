@@ -4,9 +4,9 @@
  */
 
 import type {
-  DashboardResponse, InviteResponse, Lead, LeadCreate,
-  LeadListResponse, LeadUpdate, Note, OrgUser,
-  TokenResponse, User, UserListResponse,
+  DashboardResponse, IntegrationSettingsIn, IntegrationSettingsOut,
+  InviteResponse, Lead, LeadCreate, LeadListResponse, LeadUpdate,
+  Note, OrgUser, TokenResponse, User, UserListResponse,
 } from "./types";
 
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
@@ -149,4 +149,13 @@ export const usersApi = {
 
 export const dashboardApi = {
   get: () => request<DashboardResponse>("/api/dashboard"),
+};
+
+// ── Settings ──────────────────────────────────────────────────────────────────
+
+export const settingsApi = {
+  getIntegrations: () =>
+    request<IntegrationSettingsOut>("/api/settings/integrations"),
+  updateIntegrations: (body: IntegrationSettingsIn) =>
+    request<IntegrationSettingsOut>("/api/settings/integrations", { method: "PUT", body }),
 };

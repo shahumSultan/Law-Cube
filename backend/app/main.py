@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import get_settings
 from app.core.logging import setup_logging
-from app.routers import auth, calls, dashboard, leads, users, webhooks
+from app.routers import auth, calls, dashboard, leads, settings as settings_router, users, webhooks
 
 settings = get_settings()
 setup_logging(debug=settings.DEBUG, env=settings.APP_ENV)
@@ -60,9 +60,15 @@ app.include_router(leads.router,     prefix="/api")
 app.include_router(calls.router,     prefix="/api")
 app.include_router(dashboard.router, prefix="/api")
 app.include_router(users.router,     prefix="/api")
+app.include_router(settings_router.router,  prefix="/api")
 app.include_router(webhooks.router,  prefix="/api")
 
 
 @app.get("/api/health")
 async def health():
     return {"status": "ok", "service": "law-cube-api"}
+
+
+if settings.DEBUG:
+    from app.routers import dev
+    app.include_router(dev.router, prefix="/api")

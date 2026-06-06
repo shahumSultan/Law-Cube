@@ -5,12 +5,12 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Users, User, Plus, Loader2, X, Copy, Check,
-  Shield, Trash2,
+  Shield, Trash2, Plug, Eye, EyeOff, CheckCircle2, AlertCircle,
 } from "lucide-react";
-import { usersApi } from "@/lib/api";
+import { usersApi, settingsApi } from "@/lib/api";
 import { useAuthStore } from "@/lib/auth-store";
 import { canInviteUser, canChangeRole, isFirmOwner } from "@/lib/types";
-import type { Role } from "@/lib/types";
+import type { Role, IntegrationSettingsIn } from "@/lib/types";
 
 const ROLE_LABELS: Record<Role, string> = {
   super_admin: "Super Admin",
@@ -169,13 +169,274 @@ function InviteModal({ onClose }: { onClose: () => void }) {
   );
 }
 
+/* ─── Integrations tab ─── */
+function IntegrationsTab() {
+  const queryClient = useQueryClient();
+  const [showKeys, setShowKeys] = useState<Record<string, boolean>>({});
+  const [form, setForm] = useState<IntegrationSettingsIn>({});
+  const [saved, setSaved] = useState(false);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["integrations"],
+    queryFn: settingsApi.getIntegrations,
+  });
+
+  const { mutate, isPending, error } = useMutation({
+    mutationFn: () => settingsApi.updateIntegrations(form),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["integrations"] });
+      setForm({});
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    },
+  });
+
+  const toggle = (key: string) =>
+    setShowKeys(p => ({ ...p, [key]: !p[key] }));
+
+  const set = (field: keyof IntegrationSettingsIn, value: string) =>
+    setForm(p => ({ ...p, [field]: value }));
+
+  const clear = (field: keyof IntegrationSettingsIn) =>
+    setForm(p => ({ ...p, [field]: "" }));
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-4">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="h-24 bg-slate-100 dark:bg-slate-800 rounded-2xl animate-pulse" />
+        ))}
+      </div>
+    );
+  }
+
+  const KeyField = ({
+    label, field, description, configured,
+  }: {
+    label: string;
+    field: keyof IntegrationSettingsIn;
+    description: string;
+    configured: boolean;
+  }) => {
+    const visible = showKeys[field];
+    const currentVal = form[field] as string | undefined;
+    return (
+      <div>
+        <div className="flex items-center justify-between mb-1.5">
+          <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold font-sans-body uppercase tracking-wider">
+            {label}
+          </label>
+          <span className={`flex items-center gap-1 text-xs font-semibold font-sans-body ${
+            configured ? "text-emerald-600 dark:text-emerald-400" : "text-slate-400"
+          }`}>
+            {configured
+              ? <><CheckCircle2 className="w-3.5 h-3.5" /> Configured</>
+              : <><AlertCircle className="w-3.5 h-3.5" /> Not set</>}
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1">
+            <input
+              type={visible ? "text" : "password"}
+              placeholder={configured ? "Enter new key to rotate…" : "Paste your API key…"}
+              value={currentVal ?? ""}
+              onChange={e => set(field, e.target.value)}
+              autoComplete="new-password"
+              className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#1E3A8A] rounded-xl px-3.5 py-2.5 pr-10 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors font-mono"
+            />
+            <button
+              type="button"
+              onClick={() => toggle(field)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+            >
+              {visible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
+          {configured && (
+            <button
+              type="button"
+              onClick={() => clear(field)}
+              title="Remove key"
+              className="w-10 h-10 rounded-xl border border-red-200 dark:border-red-800 text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center justify-center transition-all shrink-0"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+        <p className="text-slate-400 dark:text-slate-500 text-xs mt-1.5 font-sans-body">{description}</p>
+      </div>
+    );
+  };
+
+  return (
+    <form onSubmit={e => { e.preventDefault(); mutate(); }} className="flex flex-col gap-5">
+      {/* Hidden fields absorb browser autofill before it reaches real inputs */}
+      <input type="text" autoComplete="username" className="hidden" aria-hidden="true" readOnly />
+      <input type="password" autoComplete="current-password" className="hidden" aria-hidden="true" readOnly />
+      {error && (
+        <p className="text-red-600 dark:text-red-400 text-sm bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-xl px-4 py-3 font-sans-body">
+          {(error as Error).message}
+        </p>
+      )}
+
+      {/* CallRail */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 flex flex-col gap-4">
+        <div className="flex items-center gap-3 pb-3 border-b border-slate-100 dark:border-slate-700">
+          <div className="w-8 h-8 rounded-lg bg-[#EFF6FF] dark:bg-blue-950/30 flex items-center justify-center">
+            <Plug className="w-4 h-4 text-[#1E3A8A]" />
+          </div>
+          <div>
+            <h3 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-base">CallRail</h3>
+            <p className="text-slate-500 dark:text-slate-400 text-xs font-sans-body">Inbound call tracking and attribution</p>
+          </div>
+        </div>
+        <div>
+          <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">
+            Account ID
+          </label>
+          <input
+            type="text"
+            placeholder={data?.callrail_account_id ?? "e.g. AAA111222333"}
+            value={form.callrail_account_id ?? ""}
+            autoComplete="off"
+            onChange={e => set("callrail_account_id", e.target.value)}
+            className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#1E3A8A] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors font-mono"
+          />
+          <p className="text-slate-400 dark:text-slate-500 text-xs mt-1.5 font-sans-body">
+            Found in CallRail → Settings → Account → Account ID
+          </p>
+        </div>
+        <KeyField
+          label="API Key"
+          field="callrail_api_key"
+          configured={data?.has_callrail_key ?? false}
+          description="Found in CallRail → Settings → API Access. Used to download call recordings."
+        />
+      </div>
+
+      {/* Transcription */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 flex flex-col gap-4">
+        <div className="flex items-center gap-3 pb-3 border-b border-slate-100 dark:border-slate-700">
+          <div className="w-8 h-8 rounded-lg bg-[#F0FDF4] dark:bg-emerald-950/30 flex items-center justify-center">
+            <span className="text-emerald-700 text-sm font-bold">STT</span>
+          </div>
+          <div>
+            <h3 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-base">Transcription</h3>
+            <p className="text-slate-500 dark:text-slate-400 text-xs font-sans-body">Converts call recordings to text — configure at least one provider</p>
+          </div>
+        </div>
+
+        <div>
+          <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">
+            Primary Provider
+          </label>
+          <select
+            value={form.transcription_provider ?? data?.transcription_provider ?? "openai"}
+            onChange={e => set("transcription_provider", e.target.value)}
+            className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#1E3A8A] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm outline-none font-sans-body"
+          >
+            <option value="openai">OpenAI Whisper</option>
+            <option value="deepgram">Deepgram Nova-2 (free tier available)</option>
+            <option value="assemblyai">AssemblyAI (free tier available)</option>
+          </select>
+          <p className="text-slate-400 dark:text-slate-500 text-xs mt-1.5 font-sans-body">
+            Other providers with a key configured are tried automatically if the primary fails.
+          </p>
+        </div>
+
+        <KeyField
+          label="OpenAI API Key"
+          field="openai_api_key"
+          configured={data?.has_openai_key ?? false}
+          description="Used for Whisper transcription. Also used for GPT-4o mini call analysis. platform.openai.com/api-keys"
+        />
+        <KeyField
+          label="Deepgram API Key"
+          field="deepgram_api_key"
+          configured={data?.has_deepgram_key ?? false}
+          description="Nova-2 model — fast, accurate, free tier: 12,000 min/year. console.deepgram.com"
+        />
+        <KeyField
+          label="AssemblyAI API Key"
+          field="assemblyai_api_key"
+          configured={data?.has_assemblyai_key ?? false}
+          description="Free tier: 100 hours. Good accuracy on legal/medical content. app.assemblyai.com"
+        />
+      </div>
+
+      {/* AI Analysis Providers */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 flex flex-col gap-4">
+        <div className="flex items-center gap-3 pb-3 border-b border-slate-100 dark:border-slate-700">
+          <div className="w-8 h-8 rounded-lg bg-[#F5F3FF] dark:bg-purple-950/30 flex items-center justify-center">
+            <span className="text-[#5B21B6] text-sm font-bold">AI</span>
+          </div>
+          <div>
+            <h3 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-base">AI Analysis</h3>
+            <p className="text-slate-500 dark:text-slate-400 text-xs font-sans-body">Lead scoring, call classification, and sentiment analysis</p>
+          </div>
+        </div>
+
+        <div>
+          <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">
+            Primary Provider
+          </label>
+          <select
+            value={form.ai_primary_provider ?? data?.ai_primary_provider ?? "openai"}
+            onChange={e => set("ai_primary_provider", e.target.value)}
+            className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#1E3A8A] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm outline-none font-sans-body"
+          >
+            <option value="openai">OpenAI (GPT-4o mini)</option>
+            <option value="anthropic">Anthropic (Claude Haiku)</option>
+            <option value="google">Google (Gemini 1.5 Flash)</option>
+          </select>
+          <p className="text-slate-400 dark:text-slate-500 text-xs mt-1.5 font-sans-body">
+            Other providers are used as automatic fallbacks if the primary fails.
+          </p>
+        </div>
+
+        <KeyField
+          label="Anthropic API Key"
+          field="anthropic_api_key"
+          configured={data?.has_anthropic_key ?? false}
+          description="Used as fallback AI analysis provider. console.anthropic.com/settings/keys"
+        />
+        <KeyField
+          label="Google API Key"
+          field="google_api_key"
+          configured={data?.has_google_key ?? false}
+          description="Used as second fallback AI provider. aistudio.google.com/apikey"
+        />
+      </div>
+
+      <div className="flex items-center justify-between">
+        <p className="text-slate-400 dark:text-slate-500 text-xs font-sans-body">
+          Keys are stored encrypted and never returned in API responses.
+        </p>
+        <button
+          type="submit"
+          disabled={isPending || Object.keys(form).length === 0}
+          className="flex items-center gap-2 bg-[#1E3A8A] hover:bg-[#1D4ED8] text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors font-sans-body disabled:opacity-50"
+        >
+          {isPending ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : saved ? (
+            <><Check className="w-4 h-4" /> Saved</>
+          ) : (
+            "Save Changes"
+          )}
+        </button>
+      </div>
+    </form>
+  );
+}
+
 /* ─── Settings page ─── */
 export default function SettingsPage() {
   const queryClient = useQueryClient();
   const currentUser = useAuthStore(s => s.user);
   const role = currentUser?.role ?? "intake_specialist";
 
-  const [tab, setTab] = useState<"profile" | "team">("team");
+  const [tab, setTab] = useState<"profile" | "team" | "integrations">("team");
   const [inviteOpen, setInviteOpen] = useState(false);
 
   const { data: usersData, isLoading: usersLoading } = useQuery({
@@ -208,6 +469,7 @@ export default function SettingsPage() {
         {[
           { key: "team" as const, label: "Team", icon: Users },
           { key: "profile" as const, label: "Profile", icon: User },
+          { key: "integrations" as const, label: "Integrations", icon: Plug },
         ].map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
             className={`flex items-center gap-2 px-4 py-2.5 text-sm font-semibold font-sans-body border-b-2 transition-colors ${
@@ -376,6 +638,17 @@ export default function SettingsPage() {
               Profile editing will be available in a future update.
             </p>
           </div>
+        </div>
+      )}
+
+      {/* Integrations tab */}
+      {tab === "integrations" && isFirmOwner(role) && <IntegrationsTab />}
+      {tab === "integrations" && !isFirmOwner(role) && (
+        <div className="flex items-center gap-3 p-5 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-2xl">
+          <Shield className="w-5 h-5 text-amber-600 shrink-0" />
+          <p className="text-amber-800 dark:text-amber-300 text-sm font-sans-body">
+            Only Firm Owners can manage integration settings.
+          </p>
         </div>
       )}
 
