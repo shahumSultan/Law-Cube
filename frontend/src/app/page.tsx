@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
-import { motion, useInView, useScroll, useSpring } from "framer-motion";
+import { motion, AnimatePresence, useInView, useScroll, useSpring } from "framer-motion";
 import Image from "next/image";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import {

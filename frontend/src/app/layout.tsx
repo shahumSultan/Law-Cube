@@ -22,6 +22,12 @@ export const metadata: Metadata = {
   keywords: "law firm software, legal intake, call intelligence, marketing attribution, AI lead scoring, Clio integration",
 };
 
+// Theme-flash prevention script — inlined as a string so it can be passed
+// to dangerouslySetInnerHTML in a Server Component. React 19 emits a dev
+// warning for <script> tags in RSC, but the script IS executed by the browser
+// because this component is server-rendered; React's client reconciler skips it.
+const themeScript = `(function(){try{var t=localStorage.getItem('lc-theme'),d=window.matchMedia('(prefers-color-scheme:dark)').matches;if(t==='dark'||(t===null&&d)){document.documentElement.classList.add('dark')}}catch(e){}})()`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -29,9 +35,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geistMono.variable} ${oswald.variable} h-full`} suppressHydrationWarning>
+      {/* eslint-disable-next-line @next/next/no-head-element */}
       <head>
-        {/* Prevent flash of wrong theme on load */}
-        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('lc-theme'),d=window.matchMedia('(prefers-color-scheme:dark)').matches;if(t==='dark'||(t===null&&d)){document.documentElement.classList.add('dark')}}catch(e){}})()` }} />
+        {/* Runs synchronously before first paint to avoid dark-mode flash.
+            React 19 warns about <script> in RSC but this is intentional SSR. */}
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className="min-h-full flex flex-col antialiased">
         <Providers>{children}</Providers>
