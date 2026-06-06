@@ -42,7 +42,7 @@ function AcceptInviteForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 py-12 bg-white dark:bg-[#030d06] relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center px-6 py-12 bg-white dark:bg-zinc-950 relative overflow-hidden">
       <div className="absolute inset-0 opacity-[0.04] pointer-events-none">
         <FloatingPaths position={1} />
         <FloatingPaths position={-1} />
@@ -83,7 +83,7 @@ function AcceptInviteForm() {
                 <div className="relative">
                   <input type={showPw ? "text" : "password"} required value={password} onChange={e => setPassword(e.target.value)}
                     placeholder="Min. 8 characters"
-                    className="w-full bg-white dark:bg-[#0d2a18] border border-slate-200 dark:border-[#166534] focus:border-[#15803d] rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors pr-11 shadow-sm font-sans-body" />
+                    className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 focus:border-zinc-400 rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors pr-11 shadow-sm font-sans-body" />
                   <button type="button" onClick={() => setShowPw(!showPw)}
                     className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
                     {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -94,13 +94,13 @@ function AcceptInviteForm() {
                 <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">Confirm password</label>
                 <input type={showPw ? "text" : "password"} required value={confirm} onChange={e => setConfirm(e.target.value)}
                   placeholder="Re-enter password"
-                  className="w-full bg-white dark:bg-[#0d2a18] border border-slate-200 dark:border-[#166534] focus:border-[#15803d] rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors shadow-sm font-sans-body" />
+                  className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 focus:border-zinc-400 rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors shadow-sm font-sans-body" />
               </div>
 
               <div className="inline-block w-full group relative bg-gradient-to-b from-black/10 to-white/10 dark:from-white/10 dark:to-black/10 p-px rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 mt-1">
                 <Button type="submit" disabled={loading} variant="ghost"
                   className="w-full rounded-[1.15rem] py-6 text-base font-semibold backdrop-blur-md
-                    bg-[#15803d]/95 hover:bg-[#166534] text-white transition-all duration-300
+                    bg-[#16a34a] hover:bg-[#15803d] text-white transition-all duration-300
                     group-hover:-translate-y-0.5 border border-white/10 hover:shadow-md font-sans-body disabled:opacity-60">
                   {loading
                     ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -118,7 +118,7 @@ function AcceptInviteForm() {
 
 export default function AcceptInvitePage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-white dark:bg-[#030d06]" />}>
+    <Suspense fallback={<div className="min-h-screen bg-white dark:bg-zinc-950" />}>
       <AcceptInviteForm />
     </Suspense>
   );

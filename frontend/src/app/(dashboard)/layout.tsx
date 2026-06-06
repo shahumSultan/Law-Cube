@@ -10,7 +10,6 @@ import {
   TrendingUp, BarChart3, Settings, ChevronLeft,
   Bell, Search, ChevronRight, Menu, X, LogOut,
 } from "lucide-react";
-import { FloatingPaths } from "@/components/ui/background-paths";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { AuthGuard } from "@/components/auth-guard";
 import { useAuthStore } from "@/lib/auth-store";
@@ -45,18 +44,25 @@ function NavLink({
       href={item.href}
       onClick={onClick}
       className={[
-        "flex items-center gap-3 rounded-lg transition-all duration-200 group relative font-sans-body hover:scale-[1.01] active:scale-[0.99]",
-        mobile ? "px-3 py-3" : collapsed ? "px-0 py-2.5 justify-center" : "px-3 py-2.5",
+        "flex items-center gap-3 rounded-md transition-all duration-150 group relative font-sans-body",
+        mobile ? "px-3 py-2.5" : collapsed ? "px-0 py-2.5 justify-center" : "px-3 py-2",
         active
-          ? "bg-[#22c55e]/15 text-[#22c55e] shadow-[0_0_12px_rgba(34,197,94,0.15)]"
-          : "text-green-100/60 hover:bg-[#166634] hover:text-green-50",
+          ? "bg-zinc-100 dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100"
+          : "text-zinc-500 dark:text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 hover:text-zinc-800 dark:hover:text-zinc-300",
       ].join(" ")}
     >
-      <item.icon className="w-[18px] h-[18px] shrink-0" />
-      {showLabel && <span className="text-sm font-medium">{item.label}</span>}
-      {active && showLabel && <div className="ml-auto w-1 h-4 rounded-full bg-[#22c55e]" />}
+      <item.icon className={[
+        "w-[17px] h-[17px] shrink-0 transition-colors",
+        active ? "text-[#22c55e]" : "text-zinc-400 dark:text-zinc-600 group-hover:text-zinc-600 dark:group-hover:text-zinc-400",
+      ].join(" ")} />
+      {showLabel && (
+        <span className="text-[13px] font-medium tracking-[0.005em]">{item.label}</span>
+      )}
+      {active && showLabel && (
+        <div className="ml-auto w-1 h-3.5 rounded-full bg-[#22c55e]" />
+      )}
       {!mobile && collapsed && (
-        <div className="absolute left-full ml-3 px-3 py-1.5 bg-[#0d2a18] border border-[#166534] rounded-lg text-green-100 text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 font-sans-body shadow-lg">
+        <div className="absolute left-full ml-3 px-2.5 py-1.5 bg-zinc-900 dark:bg-zinc-800 border border-zinc-700 dark:border-zinc-700 rounded-md text-zinc-200 text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 font-sans-body shadow-lg">
           {item.label}
         </div>
       )}
@@ -81,34 +87,34 @@ function SidebarUser({ collapsed }: { collapsed: boolean }) {
   return (
     <div
       className={`relative p-3 shrink-0 ${collapsed ? "lg:flex lg:justify-center" : ""}`}
-      style={{ borderTop: "1px solid #166534" }}
+      style={{ borderTop: "1px solid var(--border)" }}
     >
       {collapsed ? (
         <button
           onClick={handleLogout}
           title="Sign out"
-          className="w-8 h-8 rounded-full bg-[#15803d] flex items-center justify-center border border-[#166534] hover:bg-red-800 hover:border-red-700 transition-colors group"
+          className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center border border-zinc-200 dark:border-zinc-700 hover:bg-red-50 dark:hover:bg-red-950/20 hover:border-red-200 dark:hover:border-red-800 transition-colors group"
         >
-          <span className="text-white text-xs font-bold font-sans-body group-hover:hidden">{initials}</span>
-          <LogOut className="w-3.5 h-3.5 text-white hidden group-hover:block" />
+          <span className="text-zinc-700 dark:text-zinc-300 text-xs font-bold font-sans-body group-hover:hidden">{initials}</span>
+          <LogOut className="w-3.5 h-3.5 text-red-500 hidden group-hover:block" />
         </button>
       ) : (
-        <div className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-[#166534] transition-colors">
-          <div className="w-8 h-8 rounded-full bg-[#15803d] flex items-center justify-center border border-[#166534] shrink-0">
-            <span className="text-white text-xs font-bold font-sans-body">{initials}</span>
+        <div className="flex items-center gap-2.5 px-2 py-1.5 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800/50 transition-colors cursor-default">
+          <div className="w-7 h-7 rounded-full bg-zinc-900 dark:bg-zinc-700 flex items-center justify-center shrink-0 ring-1 ring-zinc-200 dark:ring-zinc-600">
+            <span className="text-zinc-100 dark:text-zinc-200 text-[10px] font-bold font-sans-body">{initials}</span>
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-slate-200 text-xs font-semibold truncate font-sans-body">
+            <div className="text-zinc-800 dark:text-zinc-200 text-xs font-semibold truncate font-sans-body">
               {user ? `${user.first_name} ${user.last_name}` : "Loading…"}
             </div>
-            <div className="text-slate-500 text-[10px] truncate font-sans-body capitalize">
+            <div className="text-zinc-400 text-[10px] truncate font-sans-body capitalize">
               {user?.role?.replace(/_/g, " ") ?? ""}
             </div>
           </div>
           <button
             onClick={handleLogout}
             title="Sign out"
-            className="w-7 h-7 rounded-md flex items-center justify-center text-slate-500 hover:text-red-400 hover:bg-red-950/20 transition-all shrink-0"
+            className="w-6 h-6 rounded flex items-center justify-center text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all shrink-0"
           >
             <LogOut className="w-3.5 h-3.5" />
           </button>
@@ -138,60 +144,53 @@ function Sidebar({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm lg:hidden"
+            transition={{ duration: 0.15 }}
+            className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm lg:hidden"
             onClick={onMobileClose}
           />
         )}
       </AnimatePresence>
 
-      {/* Sidebar panel — overflow-hidden removed so toggle button isn't clipped */}
       <aside
         className={[
-          "fixed top-0 left-0 h-full flex flex-col bg-[#14532d] z-40 transition-all duration-300 sidebar-scroll",
-          "w-[280px]",
+          "fixed top-0 left-0 h-full flex flex-col bg-white dark:bg-[#09090b] z-40 transition-all duration-300",
+          "w-[272px]",
           mobileOpen ? "translate-x-0" : "-translate-x-full",
-          collapsed ? "lg:w-[64px] lg:translate-x-0" : "lg:w-[224px] lg:translate-x-0",
+          collapsed ? "lg:w-[60px] lg:translate-x-0" : "lg:w-[220px] lg:translate-x-0",
         ].join(" ")}
-        style={{ borderRight: "1px solid #166534" }}
+        style={{ borderRight: "1px solid var(--border)" }}
       >
-        {/* Watermark — overflow-hidden lives here instead of on aside */}
-        <div className="absolute inset-0 overflow-hidden opacity-[0.07] pointer-events-none dark">
-          <FloatingPaths position={1} />
-        </div>
-
         {/* Logo row */}
         <div
           className={[
-            "relative flex items-center h-[60px] shrink-0 px-4",
+            "flex items-center h-[58px] shrink-0 px-4",
             collapsed ? "lg:justify-center" : "justify-between",
           ].join(" ")}
-          style={{ borderBottom: "1px solid #166534" }}
+          style={{ borderBottom: "1px solid var(--border)" }}
         >
           <Link href="/" className="flex items-center gap-2.5 min-w-0">
-            <Image src="/logo.png" alt="Law Cube" width={28} height={28} className="rounded-lg shrink-0 shadow-md" />
-            <span className={`font-display font-semibold text-white text-lg tracking-tight truncate ${collapsed ? "lg:hidden" : ""}`}>
+            <Image src="/logo.png" alt="Law Cube" width={26} height={26} className="rounded-md shrink-0" />
+            <span className={`font-display font-semibold text-zinc-900 dark:text-zinc-100 text-[17px] tracking-tight truncate ${collapsed ? "lg:hidden" : ""}`}>
               Law Cube
             </span>
           </Link>
-          {/* Mobile close only — desktop toggle is rendered outside aside */}
           <button
             onClick={onMobileClose}
-            className="lg:hidden w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-200 hover:bg-[#166534] transition-all shrink-0"
+            className="lg:hidden w-7 h-7 rounded flex items-center justify-center text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all shrink-0"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Section label */}
-        <div className={`relative px-4 pt-5 pb-2 ${collapsed ? "lg:hidden" : ""}`}>
-          <span className="text-green-200/40 text-[10px] font-semibold uppercase tracking-[0.15em] font-sans-body">
-            Menu
+        <div className={`px-4 pt-4 pb-1.5 ${collapsed ? "lg:hidden" : ""}`}>
+          <span className="text-zinc-400 dark:text-zinc-600 text-[10px] font-semibold uppercase tracking-[0.12em] font-sans-body">
+            Navigation
           </span>
         </div>
 
         {/* Nav */}
-        <nav className="relative flex-1 py-2 px-2 flex flex-col gap-0.5 overflow-y-auto sidebar-scroll">
+        <nav className="flex-1 py-1 px-2 flex flex-col gap-px overflow-y-auto">
           {NAV_ITEMS.map(item => (
             <NavLink
               key={item.href}
@@ -204,36 +203,35 @@ function Sidebar({
         </nav>
 
         {/* Settings */}
-        <div className="relative px-2 pb-2" style={{ borderTop: "1px solid #166534" }}>
+        <div className="px-2 pb-2" style={{ borderTop: "1px solid var(--border)" }}>
           {!collapsed && (
-            <div className="px-1 pt-3 pb-1">
-              <span className="text-green-200/40 text-[10px] font-semibold uppercase tracking-[0.15em] font-sans-body">
+            <div className="px-1 pt-3 pb-1.5">
+              <span className="text-zinc-400 dark:text-zinc-600 text-[10px] font-semibold uppercase tracking-[0.12em] font-sans-body">
                 General
               </span>
             </div>
           )}
-          <div className="pt-1">
-            <NavLink
-              item={{ icon: Settings, label: "Settings", href: "/dashboard/settings" }}
-              collapsed={collapsed}
-              mobile={mobileOpen}
-              onClick={onMobileClose}
-            />
-          </div>
+          {collapsed && <div className="pt-2" />}
+          <NavLink
+            item={{ icon: Settings, label: "Settings", href: "/dashboard/settings" }}
+            collapsed={collapsed}
+            mobile={mobileOpen}
+            onClick={onMobileClose}
+          />
         </div>
 
         {/* User */}
         <SidebarUser collapsed={collapsed} />
       </aside>
 
-      {/* Desktop collapse/expand toggle — sibling of aside, never clipped */}
+      {/* Desktop collapse toggle */}
       <button
         onClick={onToggle}
         aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-        className="hidden lg:flex fixed z-50 top-[72px] -translate-x-1/2 w-6 h-6 rounded-full bg-[#166534] border border-[#15803d] items-center justify-center text-slate-400 hover:text-slate-200 hover:bg-[#15803d] shadow-md"
+        className="hidden lg:flex fixed z-50 top-[70px] -translate-x-1/2 w-5 h-5 rounded-full bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 items-center justify-center text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 shadow-sm hover:shadow-md transition-all"
         style={{
-          left: collapsed ? "64px" : "224px",
-          transition: "left 300ms cubic-bezier(0.4,0,0.2,1), background-color 150ms, color 150ms",
+          left: collapsed ? "60px" : "220px",
+          transition: "left 300ms cubic-bezier(0.4,0,0.2,1), box-shadow 150ms",
         }}
       >
         {collapsed ? <ChevronRight className="w-3 h-3" /> : <ChevronLeft className="w-3 h-3" />}
@@ -246,7 +244,7 @@ function OrgName() {
   const user = useAuthStore(s => s.user);
   if (!user) return null;
   return (
-    <p className="text-slate-500 dark:text-slate-400 text-xs font-sans-body hidden sm:block capitalize">
+    <p className="text-zinc-400 dark:text-zinc-600 text-xs font-sans-body hidden sm:block capitalize">
       {user.role.replace(/_/g, " ")}
     </p>
   );
@@ -284,9 +282,9 @@ function TopbarUserMenu() {
         onClick={() => setOpen(o => !o)}
         aria-label="User menu"
         aria-expanded={open}
-        className="w-9 h-9 rounded-lg bg-[#15803d] flex items-center justify-center border border-[#22c55e]/30 hover:bg-[#166534] transition-colors"
+        className="w-8 h-8 rounded-full bg-zinc-900 dark:bg-zinc-700 flex items-center justify-center ring-1 ring-zinc-200 dark:ring-zinc-600 hover:ring-zinc-300 dark:hover:ring-zinc-500 transition-all"
       >
-        <span className="text-white text-xs font-bold font-sans-body">{initials}</span>
+        <span className="text-zinc-100 text-xs font-bold font-sans-body">{initials}</span>
       </button>
 
       <AnimatePresence>
@@ -296,29 +294,29 @@ function TopbarUserMenu() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: -4 }}
             transition={{ duration: 0.12 }}
-            className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-[#091a0f] border border-slate-200 dark:border-[#166534] rounded-xl shadow-xl overflow-hidden z-50"
+            className="absolute right-0 top-full mt-2 w-52 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-lg overflow-hidden z-50"
           >
-            <div className="px-4 py-3 border-b border-slate-100 dark:border-[#166534]/60">
-              <div className="text-slate-900 dark:text-slate-100 text-sm font-semibold font-sans-body truncate">
+            <div className="px-3 py-2.5 border-b border-zinc-100 dark:border-zinc-800">
+              <div className="text-zinc-900 dark:text-zinc-100 text-sm font-semibold font-sans-body truncate">
                 {user ? `${user.first_name} ${user.last_name}` : ""}
               </div>
-              <div className="text-slate-500 dark:text-slate-400 text-xs mt-0.5 font-sans-body capitalize truncate">
+              <div className="text-zinc-400 text-xs mt-0.5 font-sans-body capitalize truncate">
                 {user?.role?.replace(/_/g, " ") ?? ""}
               </div>
             </div>
             <div className="py-1">
               <button
                 onClick={() => { router.push("/dashboard/settings"); setOpen(false); }}
-                className="w-full text-left px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#0d2a18] transition-colors flex items-center gap-3 font-sans-body"
+                className="w-full text-left px-3 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors flex items-center gap-2.5 font-sans-body"
               >
-                <Settings className="w-4 h-4 text-slate-400" />
+                <Settings className="w-3.5 h-3.5 text-zinc-400" />
                 Settings
               </button>
               <button
                 onClick={handleLogout}
-                className="w-full text-left px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors flex items-center gap-3 font-sans-body"
+                className="w-full text-left px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors flex items-center gap-2.5 font-sans-body"
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className="w-3.5 h-3.5" />
                 Sign out
               </button>
             </div>
@@ -336,34 +334,38 @@ function Topbar({ onMobileMenuOpen }: { onMobileMenuOpen: () => void }) {
 
   return (
     <header
-      className="h-[60px] bg-white dark:bg-[#091a0f] flex items-center px-4 gap-3"
+      className="h-[58px] bg-white dark:bg-[#09090b] flex items-center px-4 gap-3"
       style={{ borderBottom: "1px solid var(--border)" }}
     >
       <button
         onClick={onMobileMenuOpen}
-        className="lg:hidden w-9 h-9 rounded-lg flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#0d2a18] transition-colors shrink-0"
+        className="lg:hidden w-8 h-8 rounded flex items-center justify-center text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors shrink-0"
+        aria-label="Open menu"
       >
-        <Menu className="w-5 h-5" />
+        <Menu className="w-4.5 h-4.5" />
       </button>
 
       <div className="flex-1 min-w-0">
-        <h1 className="font-display font-bold text-slate-900 dark:text-slate-100 text-xl sm:text-2xl leading-tight tracking-tight">{label}</h1>
+        <h1 className="font-display font-semibold text-zinc-900 dark:text-zinc-100 text-xl leading-tight tracking-tight">{label}</h1>
         <OrgName />
       </div>
 
-      <div className="hidden md:flex items-center gap-2 bg-slate-50 dark:bg-[#0d2a18] border border-slate-200 dark:border-[#166534] rounded-lg px-3.5 py-2 w-56 focus-within:border-[#15803d] transition-colors">
-        <Search className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+      <div className="hidden md:flex items-center gap-2 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-md px-3 py-1.5 w-52 focus-within:border-zinc-400 dark:focus-within:border-zinc-600 transition-colors">
+        <Search className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
         <input
-          placeholder="Search leads, calls…"
-          className="bg-transparent text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none flex-1 w-full font-sans-body"
+          placeholder="Search…"
+          className="bg-transparent text-zinc-900 dark:text-zinc-100 text-sm placeholder:text-zinc-400 outline-none flex-1 w-full font-sans-body"
         />
       </div>
 
       <ThemeToggle />
 
-      <button className="relative w-9 h-9 rounded-lg bg-slate-50 dark:bg-[#0d2a18] border border-slate-200 dark:border-[#166534] hover:border-slate-300 dark:hover:border-[#15803d] flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-all shrink-0">
+      <button
+        aria-label="Notifications"
+        className="relative w-8 h-8 rounded flex items-center justify-center text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors shrink-0"
+      >
         <Bell className="w-4 h-4" />
-        <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-[#22c55e] rounded-full" />
+        <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-[#22c55e] rounded-full" />
       </button>
 
       <TopbarUserMenu />
@@ -390,7 +392,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#030d06] flex">
+      <div className="min-h-screen bg-zinc-50 dark:bg-[#09090b] flex">
         <Sidebar
           collapsed={collapsed}
           onToggle={() => setCollapsed(c => !c)}
@@ -401,7 +403,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div
           className={[
             "flex-1 flex flex-col min-h-screen transition-all duration-300",
-            collapsed ? "lg:ml-[64px]" : "lg:ml-[224px]",
+            collapsed ? "lg:ml-[60px]" : "lg:ml-[220px]",
           ].join(" ")}
         >
           <Topbar onMobileMenuOpen={() => setMobileOpen(true)} />

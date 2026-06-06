@@ -65,7 +65,7 @@ function CallDetailModal({ call, onClose }: { call: Call; onClose: () => void })
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: "100%", opacity: 0 }}
         transition={{ type: "spring", damping: 30, stiffness: 300 }}
-        className="relative z-10 w-full sm:max-w-xl sm:h-full bg-white dark:bg-[#091a0f] sm:border-l border-t sm:border-t-0 border-slate-200 dark:border-[#166534] flex flex-col overflow-hidden rounded-t-2xl sm:rounded-none"
+        className="relative z-10 w-full sm:max-w-xl sm:h-full bg-white dark:bg-zinc-950 sm:border-l border-t sm:border-t-0 border-slate-200 dark:border-[#166534] flex flex-col overflow-hidden rounded-t-2xl sm:rounded-none"
         style={{ maxHeight: "90vh" }}
       >
         {/* Header */}
@@ -75,7 +75,7 @@ function CallDetailModal({ call, onClose }: { call: Call; onClose: () => void })
             <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5 font-sans-body">{call.phone} · {call.date}</p>
           </div>
           <button onClick={onClose}
-            className="w-8 h-8 rounded-lg hover:bg-slate-100 dark:hover:bg-[#0d2a18] flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-all">
+            className="w-8 h-8 rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-800 flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-all">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -105,7 +105,7 @@ function CallDetailModal({ call, onClose }: { call: Call; onClose: () => void })
               <Brain className="w-4 h-4 text-violet-500" />
               <h4 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-sm">AI Summary</h4>
             </div>
-            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed bg-slate-50 dark:bg-[#0d2a18] rounded-xl p-4 border border-slate-200 dark:border-[#166534] font-sans-body">
+            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed bg-slate-50 dark:bg-zinc-900 rounded-xl p-4 border border-slate-200 dark:border-[#166534] font-sans-body">
               {call.summary}
             </p>
           </div>
@@ -137,7 +137,7 @@ function CallDetailModal({ call, onClose }: { call: Call; onClose: () => void })
               <Mic className="w-4 h-4 text-[#15803d]" />
               <h4 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-sm">Transcript</h4>
             </div>
-            <div className="bg-slate-50 dark:bg-[#0d2a18] border border-slate-200 dark:border-[#166534] rounded-xl p-4 text-slate-600 dark:text-slate-400 text-xs leading-relaxed font-mono whitespace-pre-line max-h-48 overflow-y-auto">
+            <div className="bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-[#166534] rounded-xl p-4 text-slate-600 dark:text-slate-400 text-xs leading-relaxed font-mono whitespace-pre-line max-h-48 overflow-y-auto">
               {call.transcript}
             </div>
           </div>
@@ -182,7 +182,7 @@ export default function CallsPage() {
           { label: "Spam / Other",  value: mockCalls.filter(c => c.classification === "spam").length,       icon: X,          color: "#DC2626", bg: "#FEF2F2" },
           { label: "Avg Duration",  value: "3:14",                                                          icon: Clock,      color: "#D97706", bg: "#FFFBEB" },
         ].map((s, i) => (
-          <div key={i} className="bg-white dark:bg-[#091a0f] border border-slate-200 dark:border-[#166534] rounded-2xl p-4 sm:p-5 flex items-center gap-3 sm:gap-4">
+          <div key={i} className="bg-white dark:bg-zinc-950 border border-slate-200 dark:border-[#166534] rounded-2xl p-4 sm:p-5 flex items-center gap-3 sm:gap-4">
             <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shrink-0"
               style={{ background: s.bg, color: s.color }}>
               <s.icon className="w-4 h-4" />
@@ -196,7 +196,7 @@ export default function CallsPage() {
       </div>
 
       {/* ── Table ── */}
-      <div className="bg-white dark:bg-[#091a0f] border border-slate-200 dark:border-[#166534] rounded-2xl overflow-hidden">
+      <div className="bg-white dark:bg-zinc-950 border border-slate-200 dark:border-[#166534] rounded-2xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
