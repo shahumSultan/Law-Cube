@@ -296,9 +296,9 @@ function TopbarUserMenu() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: -4 }}
             transition={{ duration: 0.12 }}
-            className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl overflow-hidden z-50"
+            className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-[#091a0f] border border-slate-200 dark:border-[#166534] rounded-xl shadow-xl overflow-hidden z-50"
           >
-            <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-700/60">
+            <div className="px-4 py-3 border-b border-slate-100 dark:border-[#166534]/60">
               <div className="text-slate-900 dark:text-slate-100 text-sm font-semibold font-sans-body truncate">
                 {user ? `${user.first_name} ${user.last_name}` : ""}
               </div>
@@ -309,7 +309,7 @@ function TopbarUserMenu() {
             <div className="py-1">
               <button
                 onClick={() => { router.push("/dashboard/settings"); setOpen(false); }}
-                className="w-full text-left px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center gap-3 font-sans-body"
+                className="w-full text-left px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#0d2a18] transition-colors flex items-center gap-3 font-sans-body"
               >
                 <Settings className="w-4 h-4 text-slate-400" />
                 Settings
@@ -336,12 +336,12 @@ function Topbar({ onMobileMenuOpen }: { onMobileMenuOpen: () => void }) {
 
   return (
     <header
-      className="h-[60px] bg-white dark:bg-slate-900 flex items-center px-4 gap-3"
+      className="h-[60px] bg-white dark:bg-[#091a0f] flex items-center px-4 gap-3"
       style={{ borderBottom: "1px solid var(--border)" }}
     >
       <button
         onClick={onMobileMenuOpen}
-        className="lg:hidden w-9 h-9 rounded-lg flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0"
+        className="lg:hidden w-9 h-9 rounded-lg flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#0d2a18] transition-colors shrink-0"
       >
         <Menu className="w-5 h-5" />
       </button>
@@ -351,7 +351,7 @@ function Topbar({ onMobileMenuOpen }: { onMobileMenuOpen: () => void }) {
         <OrgName />
       </div>
 
-      <div className="hidden md:flex items-center gap-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3.5 py-2 w-56 focus-within:border-[#15803d] transition-colors">
+      <div className="hidden md:flex items-center gap-2 bg-slate-50 dark:bg-[#0d2a18] border border-slate-200 dark:border-[#166534] rounded-lg px-3.5 py-2 w-56 focus-within:border-[#15803d] transition-colors">
         <Search className="w-3.5 h-3.5 text-slate-400 shrink-0" />
         <input
           placeholder="Search leads, calls…"
@@ -361,7 +361,7 @@ function Topbar({ onMobileMenuOpen }: { onMobileMenuOpen: () => void }) {
 
       <ThemeToggle />
 
-      <button className="relative w-9 h-9 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-all shrink-0">
+      <button className="relative w-9 h-9 rounded-lg bg-slate-50 dark:bg-[#0d2a18] border border-slate-200 dark:border-[#166534] hover:border-slate-300 dark:hover:border-[#15803d] flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-all shrink-0">
         <Bell className="w-4 h-4" />
         <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-[#22c55e] rounded-full" />
       </button>

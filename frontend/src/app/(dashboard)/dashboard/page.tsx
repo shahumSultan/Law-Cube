@@ -19,7 +19,7 @@ import { useAuthStore } from "@/lib/auth-store";
 function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number }>; label?: string }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 shadow-lg">
+    <div className="bg-white dark:bg-[#0d2a18] border border-slate-200 dark:border-[#166534] rounded-xl px-3 py-2.5 shadow-lg">
       <p className="text-slate-500 dark:text-slate-400 text-xs mb-1 font-sans-body">{label}</p>
       <p className="font-display font-bold text-slate-900 dark:text-slate-100 text-sm">{payload[0].value}</p>
     </div>
@@ -29,13 +29,13 @@ function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: 
 /* ─── KPI Skeleton ─── */
 function KpiSkeleton() {
   return (
-    <div className="lc-card-hover bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5">
+    <div className="lc-card-hover bg-white dark:bg-[#091a0f] border border-slate-200 dark:border-[#166534] rounded-2xl p-5">
       <div className="flex items-start justify-between mb-4">
-        <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
-        <div className="w-14 h-5 rounded-full bg-slate-100 dark:bg-slate-800 animate-pulse" />
+        <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-[#0d2a18] animate-pulse" />
+        <div className="w-14 h-5 rounded-full bg-slate-100 dark:bg-[#0d2a18] animate-pulse" />
       </div>
-      <div className="w-20 h-8 rounded bg-slate-100 dark:bg-slate-800 animate-pulse mb-2" />
-      <div className="w-24 h-4 rounded bg-slate-100 dark:bg-slate-800 animate-pulse" />
+      <div className="w-20 h-8 rounded bg-slate-100 dark:bg-[#0d2a18] animate-pulse mb-2" />
+      <div className="w-24 h-4 rounded bg-slate-100 dark:bg-[#0d2a18] animate-pulse" />
     </div>
   );
 }
@@ -239,7 +239,7 @@ export default function DashboardPage() {
         <div className="lg:col-span-2 flex flex-col gap-5">
 
           {/* Leads over time */}
-          <div className="lc-card-hover bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5">
+          <div className="lc-card-hover bg-white dark:bg-[#091a0f] border border-slate-200 dark:border-[#166534] rounded-2xl p-5">
             <div className="flex items-center justify-between mb-5">
               <div>
                 <h3 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-lg">Leads Over Time</h3>
@@ -247,7 +247,7 @@ export default function DashboardPage() {
               </div>
             </div>
             {isLoading ? (
-              <div className="h-[180px] bg-slate-50 dark:bg-slate-800 rounded-xl animate-pulse" />
+              <div className="h-[180px] bg-slate-50 dark:bg-[#0d2a18] rounded-xl animate-pulse" />
             ) : leadsOverTime.length === 0 ? (
               <div className="h-[180px] flex items-center justify-center text-slate-400 text-sm font-sans-body">
                 No leads yet — create your first lead to see data here.
@@ -274,10 +274,10 @@ export default function DashboardPage() {
 
           {/* Source bar + funnel */}
           <div className="grid md:grid-cols-2 gap-5">
-            <div className="lc-card-hover bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5">
+            <div className="lc-card-hover bg-white dark:bg-[#091a0f] border border-slate-200 dark:border-[#166534] rounded-2xl p-5">
               <h3 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-lg mb-5">Leads by Source</h3>
               {isLoading ? (
-                <div className="h-[150px] bg-slate-50 dark:bg-slate-800 rounded-xl animate-pulse" />
+                <div className="h-[150px] bg-slate-50 dark:bg-[#0d2a18] rounded-xl animate-pulse" />
               ) : leadsBySource.length === 0 ? (
                 <div className="h-[150px] flex items-center justify-center text-slate-400 text-sm font-sans-body">No data yet</div>
               ) : (
@@ -296,7 +296,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Funnel */}
-            <div className="lc-card-hover bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5">
+            <div className="lc-card-hover bg-white dark:bg-[#091a0f] border border-slate-200 dark:border-[#166534] rounded-2xl p-5">
               <div className="flex items-center justify-between mb-5">
                 <h3 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-lg">Conversion Funnel</h3>
                 <button className="text-slate-500 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
@@ -306,7 +306,7 @@ export default function DashboardPage() {
               {isLoading ? (
                 <div className="space-y-3">
                   {Array.from({ length: 4 }).map((_, i) => (
-                    <div key={i} className="h-8 bg-slate-50 dark:bg-slate-800 rounded animate-pulse" />
+                    <div key={i} className="h-8 bg-slate-50 dark:bg-[#0d2a18] rounded animate-pulse" />
                   ))}
                 </div>
               ) : (
@@ -335,8 +335,8 @@ export default function DashboardPage() {
           </div>
 
           {/* Recent leads — link to full page */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-slate-700">
+          <div className="bg-white dark:bg-[#091a0f] border border-slate-200 dark:border-[#166534] rounded-2xl overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-[#166534]">
               <h3 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-lg">Recent Leads</h3>
               <a href="/dashboard/leads" className="text-[#15803d] dark:text-green-400 text-xs hover:underline font-semibold font-sans-body flex items-center gap-1 transition-colors">
                 View all <ArrowRight className="w-3 h-3" />
@@ -357,7 +357,7 @@ export default function DashboardPage() {
           className="flex flex-col gap-4"
         >
           {/* AI Insights */}
-          <div className="lc-card-hover bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5">
+          <div className="lc-card-hover bg-white dark:bg-[#091a0f] border border-slate-200 dark:border-[#166534] rounded-2xl p-5">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2.5">
                 <div className="w-7 h-7 rounded-lg bg-[#F5F3FF] border border-[#DDD6FE] flex items-center justify-center">

@@ -109,7 +109,7 @@ export default function LoginPage() {
       </div>
 
       {/* ── Right form panel ── */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12 bg-white dark:bg-slate-950 relative overflow-hidden">
+      <div className="flex-1 flex items-center justify-center px-6 py-12 bg-white dark:bg-[#030d06] relative overflow-hidden">
         <motion.div initial={{ opacity: 0, y: 32 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
           className="relative z-10 w-full max-w-[400px]">
@@ -153,7 +153,7 @@ export default function LoginPage() {
               <input
                 type="email" required value={email} onChange={e => setEmail(e.target.value)}
                 placeholder="you@lawfirm.com"
-                className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#15803d] rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors shadow-sm font-sans-body"
+                className="w-full bg-white dark:bg-[#0d2a18] border border-slate-200 dark:border-[#166534] focus:border-[#15803d] rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors shadow-sm font-sans-body"
               />
             </div>
             <div>
@@ -167,7 +167,7 @@ export default function LoginPage() {
                 <input
                   type={showPw ? "text" : "password"} required value={password} onChange={e => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#15803d] rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors pr-11 shadow-sm font-sans-body"
+                  className="w-full bg-white dark:bg-[#0d2a18] border border-slate-200 dark:border-[#166534] focus:border-[#15803d] rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors pr-11 shadow-sm font-sans-body"
                 />
                 <button type="button" onClick={() => setShowPw(!showPw)}
                   className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">

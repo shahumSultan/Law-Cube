@@ -107,7 +107,7 @@ function OutlineButton({ href, children, className = "" }: { href: string; child
       transition={{ type: "spring", stiffness: 400, damping: 20 }}
     >
       <Link href={href}
-        className="group flex items-center gap-2 px-6 py-4 rounded-2xl text-base font-medium font-sans-body border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-[#22c55e] hover:text-[#15803d] dark:hover:text-[#4ade80] dark:hover:border-[#22c55e] bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm transition-all duration-200">
+        className="group flex items-center gap-2 px-6 py-4 rounded-2xl text-base font-medium font-sans-body border border-slate-200 dark:border-[#166534] text-slate-700 dark:text-slate-300 hover:border-[#22c55e] hover:text-[#15803d] dark:hover:text-[#4ade80] dark:hover:border-[#22c55e] bg-white/60 dark:bg-[#091a0f]/60 backdrop-blur-sm transition-all duration-200">
         <span>{children}</span>
         <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform duration-200" />
       </Link>
@@ -128,7 +128,7 @@ function Navbar() {
   return (
     <nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
       scrolled
-        ? "bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 shadow-sm"
+        ? "bg-white/95 dark:bg-[#091a0f]/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 shadow-sm"
         : "bg-transparent"
     }`}>
       <div className="max-w-7xl mx-auto px-6 h-[68px] flex items-center justify-between">
@@ -164,7 +164,7 @@ function Navbar() {
       </div>
 
       {mobileOpen && (
-        <div className="md:hidden bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-700 px-6 py-4 flex flex-col gap-3 shadow-lg">
+        <div className="md:hidden bg-white dark:bg-[#091a0f] border-t border-slate-100 dark:border-slate-700 px-6 py-4 flex flex-col gap-3 shadow-lg">
           {["Features", "Integrations", "Pricing"].map(item => (
             <a key={item} href={`#${item.toLowerCase()}`} onClick={() => setMobileOpen(false)}
               className="text-slate-600 dark:text-slate-400 text-sm font-medium py-2 font-sans-body">{item}</a>
@@ -219,7 +219,7 @@ function Hero() {
             <div className="flex items-center gap-2">
               <div className="flex -space-x-2">
                 {["JM", "SK", "CD", "AR"].map((initials, i) => (
-                  <div key={i} className="w-7 h-7 rounded-full bg-[#15803d] border-2 border-white dark:border-slate-950 flex items-center justify-center text-white text-[9px] font-bold">
+                  <div key={i} className="w-7 h-7 rounded-full bg-[#15803d] border-2 border-white dark:border-[#030d06] flex items-center justify-center text-white text-[9px] font-bold">
                     {initials}
                   </div>
                 ))}
@@ -245,7 +245,7 @@ function Hero() {
           transition={{ delay: 1.5, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
           className="mt-16 sm:mt-20 w-full max-w-6xl mx-auto hidden sm:block">
           <div className="relative rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-2xl shadow-slate-900/10 dark:shadow-black/40">
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/60 dark:to-slate-950/60 pointer-events-none z-10" />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/60 dark:to-[#030d06]/70 pointer-events-none z-10" />
             <div className="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
               <div className="flex items-center gap-2 px-4 py-3">
                 <div className="w-3 h-3 rounded-full bg-red-400/70" />
@@ -256,7 +256,7 @@ function Hero() {
                 </div>
               </div>
             </div>
-            <div className="bg-[#F8FAFC] dark:bg-slate-900 p-4 flex gap-3" style={{ minHeight: 260 }}>
+            <div className="bg-[#F8FAFC] dark:bg-[#091a0f] p-4 flex gap-3" style={{ minHeight: 260 }}>
               <div className="w-36 bg-[#14532d] rounded-xl p-3 flex flex-col gap-1 shrink-0">
                 <div className="flex items-center gap-2 mb-3 px-1">
                   <div className="w-5 h-5 rounded bg-[#166534] flex items-center justify-center">
@@ -354,7 +354,7 @@ function StatsStrip() {
 /* ─── Integrations bar ─── */
 function IntegrationsBar() {
   return (
-    <section id="integrations" className="py-10 bg-slate-50/80 dark:bg-slate-900/50 backdrop-blur-sm border-b border-slate-200 dark:border-slate-700">
+    <section id="integrations" className="py-10 bg-slate-50/80 dark:bg-[#091a0f]/80 backdrop-blur-sm border-b border-slate-200 dark:border-slate-700">
       <div className="max-w-7xl mx-auto px-6">
         <Reveal>
           {/* FIX: was #94A3B8 on slate-50 → slate-500 */}
@@ -387,7 +387,7 @@ const FEATURES = [
 
 function Features() {
   return (
-    <section id="features" className="py-28 px-6 bg-white/85 dark:bg-slate-950/85 backdrop-blur-sm">
+    <section id="features" className="py-28 px-6 bg-white/85 dark:bg-[#030d06]/90 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto">
         <Reveal className="max-w-2xl mb-16">
           <div className="inline-flex items-center gap-2 bg-green-50 dark:bg-green-950/50 border border-green-200 dark:border-green-800 rounded-full px-4 py-1.5 mb-6 font-sans-body">
@@ -425,7 +425,7 @@ function Features() {
                   </div>
                 </div>
               ) : (
-                <div className="lc-feature-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-7 h-full overflow-hidden">
+                <div className="lc-feature-card bg-white dark:bg-[#0d2a18] border border-slate-200 dark:border-[#166534] rounded-2xl p-7 h-full overflow-hidden">
                   <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-5" style={{ background: f.bg }}>
                     <f.icon className="w-5 h-5" style={{ color: f.iconColor }} />
                   </div>
@@ -450,7 +450,7 @@ function HowItWorks() {
   ];
 
   return (
-    <section className="py-28 px-6 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-sm">
+    <section className="py-28 px-6 bg-slate-50/80 dark:bg-[#091a0f]/90 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto">
         <Reveal className="text-center mb-16">
           <h2 className="font-display font-bold text-5xl md:text-6xl text-slate-900 dark:text-slate-100 mb-5 leading-tight">
@@ -498,7 +498,7 @@ const TESTIMONIALS = [
 
 function Testimonials() {
   return (
-    <section className="py-28 px-6 bg-white/85 dark:bg-slate-950/85 backdrop-blur-sm">
+    <section className="py-28 px-6 bg-white/85 dark:bg-[#030d06]/90 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto">
         <Reveal className="text-center mb-16">
           <div className="flex justify-center gap-1 mb-5">
@@ -512,7 +512,7 @@ function Testimonials() {
         <div className="grid md:grid-cols-3 gap-6">
           {TESTIMONIALS.map((t, i) => (
             <Reveal key={i} delay={i * 0.1}>
-              <div className="lc-card-hover flex flex-col bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-8 h-full border-t-2 border-t-[#22c55e]">
+              <div className="lc-card-hover flex flex-col bg-slate-50 dark:bg-[#0d2a18] border border-slate-200 dark:border-[#166534] rounded-2xl p-8 h-full border-t-2 border-t-[#22c55e]">
                 <div className="flex gap-1 mb-4">
                   {Array.from({ length: t.stars }).map((_, j) => <Star key={j} className="w-3.5 h-3.5 fill-[#D97706] text-[#D97706]" />)}
                 </div>
@@ -549,7 +549,7 @@ const PLANS = [
 
 function Pricing() {
   return (
-    <section id="pricing" className="py-28 px-6 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-sm">
+    <section id="pricing" className="py-28 px-6 bg-slate-50/80 dark:bg-[#091a0f]/90 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto">
         <Reveal className="text-center mb-16">
           <h2 className="font-display font-bold text-5xl md:text-6xl text-slate-900 dark:text-slate-100 mb-5 leading-tight">Simple, transparent pricing</h2>
@@ -617,7 +617,7 @@ function Pricing() {
 /* ─── CTA ─── */
 function CTA() {
   return (
-    <section className="py-28 px-6 bg-white/85 dark:bg-slate-950/85 backdrop-blur-sm">
+    <section className="py-28 px-6 bg-white/85 dark:bg-[#030d06]/90 backdrop-blur-sm">
       <div className="max-w-5xl mx-auto">
         <Reveal>
           <div className="relative rounded-3xl overflow-hidden bg-[#14532d] p-16 text-center">
@@ -700,7 +700,7 @@ function Footer() {
 
 export default function LandingPage() {
   return (
-    <main className="min-h-screen bg-white dark:bg-slate-950 relative">
+    <main className="min-h-screen bg-white dark:bg-[#030d06] relative">
       <ScrollProgress />
 
       {/* Fixed full-page background — stays in place as user scrolls */}

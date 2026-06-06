@@ -69,12 +69,12 @@ function InviteModal({ onClose }: { onClose: () => void }) {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96, y: 16 }}
         transition={{ type: "spring", damping: 30, stiffness: 350 }}
-        className="relative z-10 w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden"
+        className="relative z-10 w-full max-w-md bg-white dark:bg-[#091a0f] rounded-2xl shadow-2xl border border-slate-200 dark:border-[#166534] overflow-hidden"
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-700">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-[#166534]">
           <h2 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-lg">Invite Team Member</h2>
           <button onClick={onClose}
-            className="w-8 h-8 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-all">
+            className="w-8 h-8 rounded-lg hover:bg-slate-100 dark:hover:bg-[#0d2a18] flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-all">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -95,7 +95,7 @@ function InviteModal({ onClose }: { onClose: () => void }) {
               <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">
                 Invite Link
               </label>
-              <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5">
+              <div className="flex items-center gap-2 bg-slate-50 dark:bg-[#0d2a18] border border-slate-200 dark:border-[#166534] rounded-xl px-3.5 py-2.5">
                 <span className="text-slate-600 dark:text-slate-400 text-xs font-mono flex-1 truncate">{result.invite_url}</span>
                 <button onClick={copyLink}
                   className="text-[#15803d] dark:text-green-400 hover:text-[#166534] transition-colors shrink-0">
@@ -128,7 +128,7 @@ function InviteModal({ onClose }: { onClose: () => void }) {
                   <input type="text" required value={form[f.key as keyof typeof form]}
                     onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))}
                     placeholder={f.placeholder}
-                    className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#15803d] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors font-sans-body" />
+                    className="w-full bg-white dark:bg-[#0d2a18] border border-slate-200 dark:border-[#166534] focus:border-[#15803d] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors font-sans-body" />
                 </div>
               ))}
             </div>
@@ -138,13 +138,13 @@ function InviteModal({ onClose }: { onClose: () => void }) {
               <input type="email" required value={form.email}
                 onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
                 placeholder="sarah@lawfirm.com"
-                className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#15803d] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors font-sans-body" />
+                className="w-full bg-white dark:bg-[#0d2a18] border border-slate-200 dark:border-[#166534] focus:border-[#15803d] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors font-sans-body" />
             </div>
 
             <div>
               <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">Role</label>
               <select value={form.role} onChange={e => setForm(p => ({ ...p, role: e.target.value }))}
-                className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#15803d] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm outline-none font-sans-body">
+                className="w-full bg-white dark:bg-[#0d2a18] border border-slate-200 dark:border-[#166534] focus:border-[#15803d] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm outline-none font-sans-body">
                 <option value="intake_specialist">Intake Specialist</option>
                 <option value="intake_manager">Intake Manager</option>
                 <option value="attorney">Attorney</option>
@@ -154,7 +154,7 @@ function InviteModal({ onClose }: { onClose: () => void }) {
 
             <div className="flex gap-3 pt-1">
               <button type="button" onClick={onClose}
-                className="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-sm font-semibold font-sans-body hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                className="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-[#166534] text-slate-600 dark:text-slate-400 text-sm font-semibold font-sans-body hover:bg-slate-50 dark:hover:bg-[#0d2a18] transition-colors">
                 Cancel
               </button>
               <button type="submit" disabled={isPending}
@@ -204,7 +204,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 border-b border-slate-200 dark:border-slate-700">
+      <div className="flex gap-1 border-b border-slate-200 dark:border-[#166534]">
         {[
           { key: "team" as const, label: "Team", icon: Users },
           { key: "profile" as const, label: "Profile", icon: User },
@@ -240,15 +240,15 @@ export default function SettingsPage() {
             )}
           </div>
 
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden">
+          <div className="bg-white dark:bg-[#091a0f] border border-slate-200 dark:border-[#166534] rounded-2xl overflow-hidden">
             {usersLoading ? (
               <div className="p-6 space-y-4">
                 {Array.from({ length: 3 }).map((_, i) => (
                   <div key={i} className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 animate-pulse" />
+                    <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-[#0d2a18] animate-pulse" />
                     <div className="flex-1 space-y-2">
-                      <div className="h-4 w-32 bg-slate-100 dark:bg-slate-800 rounded animate-pulse" />
-                      <div className="h-3 w-48 bg-slate-100 dark:bg-slate-800 rounded animate-pulse" />
+                      <div className="h-4 w-32 bg-slate-100 dark:bg-[#0d2a18] rounded animate-pulse" />
+                      <div className="h-3 w-48 bg-slate-100 dark:bg-[#0d2a18] rounded animate-pulse" />
                     </div>
                   </div>
                 ))}
@@ -283,7 +283,7 @@ export default function SettingsPage() {
                           )}
                         </span>
                         {!member.is_active && (
-                          <span className="text-xs bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded-full font-sans-body">
+                          <span className="text-xs bg-slate-100 dark:bg-[#0d2a18] text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded-full font-sans-body">
                             Pending
                           </span>
                         )}
@@ -329,7 +329,7 @@ export default function SettingsPage() {
             )}
           </div>
 
-          <div className="flex items-start gap-3 p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl">
+          <div className="flex items-start gap-3 p-4 bg-slate-50 dark:bg-[#0d2a18]/50 border border-slate-200 dark:border-[#166534] rounded-xl">
             <Shield className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
             <p className="text-slate-500 dark:text-slate-400 text-xs font-sans-body leading-relaxed">
               All user actions are audit-logged. Role changes take effect immediately. Deactivated users retain their data but cannot log in.
@@ -341,7 +341,7 @@ export default function SettingsPage() {
       {/* Profile tab */}
       {tab === "profile" && currentUser && (
         <div className="flex flex-col gap-5">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-6">
+          <div className="bg-white dark:bg-[#091a0f] border border-slate-200 dark:border-[#166534] rounded-2xl p-6">
             <div className="flex items-center gap-4 mb-6">
               <div className="w-16 h-16 rounded-full bg-[#15803d] flex items-center justify-center border-2 border-green-200 dark:border-green-900">
                 <span className="text-white text-xl font-bold font-sans-body">
@@ -365,7 +365,7 @@ export default function SettingsPage() {
               ].map(f => (
                 <div key={f.label}>
                   <label className="text-slate-500 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">{f.label}</label>
-                  <div className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 text-sm font-sans-body">
+                  <div className="bg-slate-50 dark:bg-[#0d2a18] border border-slate-200 dark:border-[#166534] rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 text-sm font-sans-body">
                     {f.value}
                   </div>
                 </div>

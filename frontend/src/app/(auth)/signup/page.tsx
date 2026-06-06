@@ -138,7 +138,7 @@ export default function SignupPage() {
       </div>
 
       {/* ── Right form panel ── */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12 bg-white dark:bg-slate-950 relative overflow-hidden">
+      <div className="flex-1 flex items-center justify-center px-6 py-12 bg-white dark:bg-[#030d06] relative overflow-hidden">
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
           <FloatingPaths position={0.3} />
         </div>
@@ -184,25 +184,25 @@ export default function SignupPage() {
                 <div key={f.key}>
                   <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">{f.label}</label>
                   <input type="text" required value={form[f.key]} onChange={set(f.key)} placeholder={f.placeholder}
-                    className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#15803d] rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors shadow-sm font-sans-body" />
+                    className="w-full bg-white dark:bg-[#0d2a18] border border-slate-200 dark:border-[#166534] focus:border-[#15803d] rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors shadow-sm font-sans-body" />
                 </div>
               ))}
             </div>
             <div>
               <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">Firm name</label>
               <input type="text" required value={form.firm_name} onChange={set("firm_name")} placeholder="Mitchell & Associates"
-                className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#15803d] rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors shadow-sm font-sans-body" />
+                className="w-full bg-white dark:bg-[#0d2a18] border border-slate-200 dark:border-[#166534] focus:border-[#15803d] rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors shadow-sm font-sans-body" />
             </div>
             <div>
               <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">Work email</label>
               <input type="email" required value={form.email} onChange={set("email")} placeholder="james@mitchelllaw.com"
-                className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#15803d] rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors shadow-sm font-sans-body" />
+                className="w-full bg-white dark:bg-[#0d2a18] border border-slate-200 dark:border-[#166534] focus:border-[#15803d] rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors shadow-sm font-sans-body" />
             </div>
             <div>
               <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">Password</label>
               <div className="relative">
                 <input type={showPw ? "text" : "password"} required value={form.password} onChange={set("password")} placeholder="Min. 8 characters"
-                  className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#15803d] rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors pr-11 shadow-sm font-sans-body" />
+                  className="w-full bg-white dark:bg-[#0d2a18] border border-slate-200 dark:border-[#166534] focus:border-[#15803d] rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors pr-11 shadow-sm font-sans-body" />
                 <button type="button" onClick={() => setShowPw(!showPw)}
                   className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
                   {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
