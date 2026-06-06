@@ -139,6 +139,10 @@ async def test_call(
         try:
             result = await analyze_call(effective_transcript, api_keys=org_settings)
             call.ai_summary       = result.summary
+            call.caller_intent    = result.caller_intent
+            call.case_type        = result.case_type
+            call.key_facts        = json.dumps(result.key_facts)
+            call.next_steps       = json.dumps(result.next_steps)
             call.lead_score       = result.lead_score
             call.score_breakdown  = json.dumps(result.score_breakdown)
             call.classification   = result.classification
@@ -155,6 +159,10 @@ async def test_call(
                 "sentiment_score": result.sentiment_score,
                 "score_breakdown": result.score_breakdown,
                 "summary":        result.summary,
+                "caller_intent":  result.caller_intent,
+                "case_type":      result.case_type,
+                "key_facts":      result.key_facts,
+                "next_steps":     result.next_steps,
                 "provider":       result.provider_used,
             }
         except Exception as exc:

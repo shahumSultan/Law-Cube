@@ -74,6 +74,10 @@ async def process_call(ctx: dict, call_id: str) -> None:
 
         # ── Step 3: Persist results ───────────────────────────────────────────
         call.ai_summary = analysis.summary
+        call.caller_intent = analysis.caller_intent
+        call.case_type = analysis.case_type
+        call.key_facts = json.dumps(analysis.key_facts)
+        call.next_steps = json.dumps(analysis.next_steps)
         call.lead_score = analysis.lead_score
         call.score_breakdown = json.dumps(analysis.score_breakdown)
         call.classification = analysis.classification

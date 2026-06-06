@@ -14,6 +14,10 @@ class CallOut(BaseModel):
     direction: str
     transcript: str | None
     ai_summary: str | None
+    caller_intent: str | None
+    case_type: str | None
+    key_facts: str | None    # JSON array
+    next_steps: str | None   # JSON array
     lead_score: int | None
     classification: str | None
     sentiment: str | None

@@ -16,7 +16,11 @@ settings = get_settings()
 CALL_ANALYSIS_PROMPT = """You are an expert legal intake analyst. Analyze the following call transcript from a personal injury law firm.
 
 Return a JSON object with these exact keys:
-- summary: string — 2-4 sentence plain-English summary of the call
+- summary: string — 2-4 sentence plain-English overview of the entire call
+- caller_intent: string — what the caller was trying to achieve, in one sentence (e.g. "Seeking legal representation after a commercial truck accident on Highway 101")
+- case_type: string — category of the legal matter (e.g. "Motor vehicle accident", "Slip and fall", "Workers compensation", "Premises liability", "Medical malpractice", "Unknown")
+- key_facts: array of up to 5 strings — the most important facts about the case (injuries sustained, liability details, timeline, witnesses, insurance status)
+- next_steps: array of strings — concrete next steps discussed or implied during the call (e.g. "Schedule free consultation", "Gather police report and medical records", "Follow up with orthopedic specialist")
 - lead_score: integer 0-100
 - score_breakdown: object with keys: injury_severity (0-35), case_potential (0-25), representation_status (0-20), jurisdiction_match (0-12), accident_type (0-8)
 - classification: one of "qualified" | "unqualified" | "existing_client" | "spam" | "vendor" | "wrong_number"
@@ -30,6 +34,8 @@ Scoring guide:
 - jurisdiction_match: 12=perfect match, 0=out of jurisdiction
 - accident_type: 8=commercial vehicle/DUI, 0=minor property damage only
 
+If the transcript is a mock/placeholder or contains no real call content, still return valid JSON with empty arrays for key_facts and next_steps, caller_intent "Unknown", case_type "Unknown", and lead_score 0.
+
 Transcript:
 {transcript}"""
 
@@ -37,6 +43,10 @@ Transcript:
 @dataclass
 class CallAnalysis:
     summary: str
+    caller_intent: str
+    case_type: str
+    key_facts: list
+    next_steps: list
     lead_score: int
     score_breakdown: dict
     classification: str
@@ -86,8 +96,14 @@ async def _try_google(transcript: str, api_key: str | None = None) -> CallAnalys
 
 def _parse_analysis(data: dict, provider: str) -> CallAnalysis:
     breakdown = data.get("score_breakdown", {})
+    key_facts = data.get("key_facts", [])
+    next_steps = data.get("next_steps", [])
     return CallAnalysis(
         summary=str(data.get("summary", "")),
+        caller_intent=str(data.get("caller_intent", "")),
+        case_type=str(data.get("case_type", "Unknown")),
+        key_facts=key_facts if isinstance(key_facts, list) else [],
+        next_steps=next_steps if isinstance(next_steps, list) else [],
         lead_score=min(100, max(0, int(data.get("lead_score", 0)))),
         score_breakdown=breakdown,
         classification=str(data.get("classification", "unqualified")),

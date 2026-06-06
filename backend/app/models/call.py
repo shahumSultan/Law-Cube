@@ -27,6 +27,10 @@ class Call(Base):
     # AI processing results
     transcript: Mapped[str | None] = mapped_column(Text)
     ai_summary: Mapped[str | None] = mapped_column(Text)
+    caller_intent: Mapped[str | None] = mapped_column(Text)
+    case_type: Mapped[str | None] = mapped_column(String(100))
+    key_facts: Mapped[str | None] = mapped_column(Text)   # JSON array
+    next_steps: Mapped[str | None] = mapped_column(Text)  # JSON array
     lead_score: Mapped[int | None] = mapped_column(Integer)               # 0–100
     score_breakdown: Mapped[str | None] = mapped_column(Text)             # JSON
     classification: Mapped[str | None] = mapped_column(String(50))        # qualified | unqualified | existing_client | spam | vendor | wrong_number
