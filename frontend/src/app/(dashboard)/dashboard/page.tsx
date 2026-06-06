@@ -29,7 +29,7 @@ function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: 
 /* ─── KPI Skeleton ─── */
 function KpiSkeleton() {
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5">
+    <div className="lc-card-hover bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5">
       <div className="flex items-start justify-between mb-4">
         <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
         <div className="w-14 h-5 rounded-full bg-slate-100 dark:bg-slate-800 animate-pulse" />
@@ -53,7 +53,7 @@ function KpiCard({ label, value, trend }: { label: string; value: number; trend:
 
   if (cfg.hero) {
     return (
-      <div className="bg-[#14532d] rounded-2xl p-5 hover:shadow-lg transition-all duration-200 relative overflow-hidden">
+      <div className="lc-card-hover bg-[#14532d] rounded-2xl p-5 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10 pointer-events-none dark">
           <FloatingPaths position={0.3} />
         </div>
@@ -77,7 +77,7 @@ function KpiCard({ label, value, trend }: { label: string; value: number; trend:
   }
 
   return (
-    <div className="bg-white dark:bg-[#0d2a18] border border-slate-200 dark:border-[#166534] rounded-2xl p-5 hover:shadow-md transition-all duration-200 relative overflow-hidden">
+    <div className="lc-card-hover bg-white dark:bg-[#0d2a18] border border-slate-200 dark:border-[#166534] rounded-2xl p-5 relative overflow-hidden">
       <div className="absolute top-0 left-0 right-0 h-0.5 rounded-t-2xl" style={{ background: cfg.borderTop }} />
       <div className="flex items-start justify-between mb-4">
         <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
@@ -239,7 +239,7 @@ export default function DashboardPage() {
         <div className="lg:col-span-2 flex flex-col gap-5">
 
           {/* Leads over time */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5">
+          <div className="lc-card-hover bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5">
             <div className="flex items-center justify-between mb-5">
               <div>
                 <h3 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-lg">Leads Over Time</h3>
@@ -274,7 +274,7 @@ export default function DashboardPage() {
 
           {/* Source bar + funnel */}
           <div className="grid md:grid-cols-2 gap-5">
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5">
+            <div className="lc-card-hover bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5">
               <h3 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-lg mb-5">Leads by Source</h3>
               {isLoading ? (
                 <div className="h-[150px] bg-slate-50 dark:bg-slate-800 rounded-xl animate-pulse" />
@@ -296,7 +296,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Funnel */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5">
+            <div className="lc-card-hover bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5">
               <div className="flex items-center justify-between mb-5">
                 <h3 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-lg">Conversion Funnel</h3>
                 <button className="text-slate-500 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
@@ -357,7 +357,7 @@ export default function DashboardPage() {
           className="flex flex-col gap-4"
         >
           {/* AI Insights */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5">
+          <div className="lc-card-hover bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2.5">
                 <div className="w-7 h-7 rounded-lg bg-[#F5F3FF] border border-[#DDD6FE] flex items-center justify-center">

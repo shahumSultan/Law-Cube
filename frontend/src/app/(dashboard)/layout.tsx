@@ -45,11 +45,11 @@ function NavLink({
       href={item.href}
       onClick={onClick}
       className={[
-        "flex items-center gap-3 rounded-lg transition-all duration-150 group relative font-sans-body",
+        "flex items-center gap-3 rounded-lg transition-all duration-200 group relative font-sans-body hover:scale-[1.01] active:scale-[0.99]",
         mobile ? "px-3 py-3" : collapsed ? "px-0 py-2.5 justify-center" : "px-3 py-2.5",
         active
-          ? "bg-[#22c55e]/15 text-[#22c55e]"
-          : "text-green-100/60 hover:bg-[#166534] hover:text-green-50",
+          ? "bg-[#22c55e]/15 text-[#22c55e] shadow-[0_0_12px_rgba(34,197,94,0.15)]"
+          : "text-green-100/60 hover:bg-[#166634] hover:text-green-50",
       ].join(" ")}
     >
       <item.icon className="w-[18px] h-[18px] shrink-0" />

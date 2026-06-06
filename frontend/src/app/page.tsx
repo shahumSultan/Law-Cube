@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useScroll, useSpring } from "framer-motion";
 import { FloatingPaths } from "@/components/ui/background-paths";
 import Image from "next/image";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
@@ -13,13 +13,23 @@ import {
   Shield, Sparkles, Clock, Target,
 } from "lucide-react";
 
-/* ─── Scroll-reveal wrapper ─── */
+/* ─── Scroll progress bar ─── */
+function ScrollProgress() {
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, { stiffness: 200, damping: 30, restDelta: 0.001 });
+  return <motion.div className="lc-progress" style={{ scaleX }} />;
+}
+
+/* ─── Scroll-reveal wrapper (fade + scale + translateY) ─── */
 function Reveal({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
+  const inView = useInView(ref, { once: true, margin: "-60px" });
   return (
-    <motion.div ref={ref} initial={{ opacity: 0, y: 36 }} animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.65, delay, ease: [0.22, 1, 0.36, 1] }} className={className}>
+    <motion.div ref={ref}
+      initial={{ opacity: 0, y: 28, scale: 0.97 }}
+      animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
+      transition={{ duration: 0.65, delay, ease: [0.22, 1, 0.36, 1] }}
+      className={className}>
       {children}
     </motion.div>
   );
@@ -65,22 +75,43 @@ function AnimatedTitle({ text, className = "" }: { text: string; className?: str
   );
 }
 
-/* ─── Gradient-border CTA button ─── */
-function GradientButton({ href, children, className = "" }: { href: string; children: React.ReactNode; className?: string }) {
+/* ─── Primary solid CTA button ─── */
+function GradientButton({ href, children, className = "", dark = false }: { href: string; children: React.ReactNode; className?: string; dark?: boolean }) {
   return (
-    <div className={`inline-block group relative bg-gradient-to-b from-black/10 to-white/10 dark:from-white/10 dark:to-black/10 p-px rounded-2xl backdrop-blur-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 ${className}`}>
-      <Link href={href}>
-        <Button variant="ghost"
-          className="rounded-[1.15rem] px-8 py-6 text-lg font-semibold backdrop-blur-md
-            bg-white/95 hover:bg-white/100 dark:bg-slate-900/95 dark:hover:bg-slate-900
-            text-black dark:text-white transition-all duration-300
-            group-hover:-translate-y-0.5 border border-black/10 dark:border-white/10
-            hover:shadow-md font-sans-body">
-          <span className="opacity-90 group-hover:opacity-100 transition-opacity">{children}</span>
-          <span className="ml-3 opacity-70 group-hover:opacity-100 group-hover:translate-x-1.5 transition-all duration-300">→</span>
-        </Button>
+    <motion.div
+      className={`inline-block ${className}`}
+      whileHover={{ scale: 1.02, y: -2 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ type: "spring", stiffness: 400, damping: 20 }}
+    >
+      <Link href={href}
+        className={`group flex items-center gap-3 px-8 py-4 rounded-2xl text-base font-semibold font-sans-body transition-all duration-200 shadow-lg hover:shadow-xl ${
+          dark
+            ? "bg-white text-[#14532d] hover:bg-[#dcfce7]"
+            : "bg-[#15803d] hover:bg-[#166534] text-white shadow-[#15803d]/30 hover:shadow-[#166534]/40"
+        }`}>
+        <span>{children}</span>
+        <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
       </Link>
-    </div>
+    </motion.div>
+  );
+}
+
+/* ─── Ghost outline button ─── */
+function OutlineButton({ href, children, className = "" }: { href: string; children: React.ReactNode; className?: string }) {
+  return (
+    <motion.div
+      className={`inline-block ${className}`}
+      whileHover={{ scale: 1.02, y: -2 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ type: "spring", stiffness: 400, damping: 20 }}
+    >
+      <Link href={href}
+        className="group flex items-center gap-2 px-6 py-4 rounded-2xl text-base font-medium font-sans-body border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-[#22c55e] hover:text-[#15803d] dark:hover:text-[#4ade80] dark:hover:border-[#22c55e] bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm transition-all duration-200">
+        <span>{children}</span>
+        <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform duration-200" />
+      </Link>
+    </motion.div>
   );
 }
 
@@ -109,7 +140,7 @@ function Navbar() {
         <div className="hidden md:flex items-center gap-8">
           {[{ label: "Features", href: "#features" }, { label: "Integrations", href: "#integrations" }, { label: "Pricing", href: "#pricing" }].map(item => (
             <a key={item.label} href={item.href}
-              className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 text-sm font-medium transition-colors duration-200 font-sans-body">
+              className="nav-link-hover text-slate-600 dark:text-slate-400 hover:text-[#15803d] dark:hover:text-[#4ade80] text-sm font-medium transition-colors duration-200 font-sans-body">
               {item.label}
             </a>
           ))}
@@ -118,10 +149,10 @@ function Navbar() {
         <div className="hidden md:flex items-center gap-3">
           <ThemeToggle />
           <Link href="/login"
-            className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 text-sm font-medium px-4 py-2 transition-colors font-sans-body">
+            className="nav-link-hover text-slate-600 dark:text-slate-400 hover:text-[#15803d] dark:hover:text-[#4ade80] text-sm font-medium px-4 py-2 transition-colors font-sans-body">
             Sign In
           </Link>
-          <GradientButton href="/signup">Get Started</GradientButton>
+          <GradientButton href="/signup">Get Started Free</GradientButton>
         </div>
 
         <div className="flex md:hidden items-center gap-2">
@@ -156,9 +187,9 @@ function Hero() {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.5 }} className="max-w-5xl mx-auto">
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-full px-4 py-1.5 mb-10 shadow-sm">
-            <Sparkles className="w-3.5 h-3.5 text-[#D97706]" />
-            <span className="text-slate-600 dark:text-slate-300 text-xs font-semibold tracking-widest uppercase font-sans-body">
+            className="inline-flex items-center gap-2 border border-[#22c55e]/30 bg-[#f0fdf4]/90 dark:bg-[#0d2a18]/80 backdrop-blur-sm rounded-full px-4 py-1.5 mb-10 shadow-sm">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-pulse" />
+            <span className="text-[#15803d] dark:text-[#4ade80] text-xs font-semibold tracking-widest uppercase font-sans-body">
               AI-Powered Legal Intake Platform
             </span>
           </motion.div>
@@ -179,10 +210,7 @@ function Hero() {
             transition={{ delay: 1.1, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
             <GradientButton href="/signup">Start Free Trial</GradientButton>
-            <Link href="/dashboard"
-              className="flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 font-medium text-base px-6 py-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-200 font-sans-body">
-              View Live Demo <ChevronRight className="w-4 h-4" />
-            </Link>
+            <OutlineButton href="/dashboard">View Live Demo</OutlineButton>
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
@@ -292,26 +320,29 @@ function Hero() {
 /* ─── Stats strip ─── */
 function StatsStrip() {
   return (
-    <section className="bg-white/85 dark:bg-slate-900/85 backdrop-blur-sm border-y border-slate-200 dark:border-slate-700 py-14 px-6">
-      <div className="max-w-7xl mx-auto">
+    <section className="bg-[#14532d] py-16 px-6 relative overflow-hidden">
+      <div className="absolute inset-0 opacity-5 pointer-events-none">
+        <FloatingPaths position={0.3} />
+      </div>
+      <div className="max-w-7xl mx-auto relative">
         <Reveal className="text-center mb-12">
-          {/* FIX: was #94A3B8 on white → slate-500 */}
-          <p className="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-widest font-sans-body">
+          <p className="text-green-200/60 text-xs font-semibold uppercase tracking-widest font-sans-body">
             Trusted by 200+ law firms · Based on aggregated customer data after 90 days
           </p>
         </Reveal>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-0 lg:divide-x divide-slate-200 dark:divide-slate-700">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-0">
           {[
-            { value: 68, suffix: "%", label: "Average lift in lead-to-consultation conversion", color: "#059669" },
-            { value: 2847, suffix: "+", label: "Calls analyzed and scored this month", color: "#15803d" },
-            { value: 94, suffix: "%", label: "Accuracy on AI lead classification", color: "#D97706" },
-            { value: 2, suffix: "×", label: "Average marketing ROI improvement in year one", color: "#6D28D9" },
+            { value: 68, suffix: "%", label: "Lead-to-consultation lift" },
+            { value: 2847, suffix: "+", label: "Calls scored this month" },
+            { value: 94, suffix: "%", label: "AI classification accuracy" },
+            { value: 2, suffix: "×", label: "Marketing ROI improvement" },
           ].map((s, i) => (
-            <Reveal key={i} delay={i * 0.1} className="text-center px-8">
-              <div className="font-display font-bold mb-2" style={{ fontSize: "3.5rem", lineHeight: 1, color: s.color }}>
+            <Reveal key={i} delay={i * 0.08}
+              className={`text-center px-8 py-4 ${i < 3 ? "border-r border-[#166534]" : ""} ${i >= 2 ? "lg:border-r-0" : ""}`}>
+              <div className="font-display font-bold text-[#22c55e] mb-2" style={{ fontSize: "3.25rem", lineHeight: 1 }}>
                 <Counter target={s.value} suffix={s.suffix} />
               </div>
-              <div className="text-slate-500 dark:text-slate-400 text-sm leading-snug max-w-[180px] mx-auto font-sans-body">{s.label}</div>
+              <div className="text-green-200/70 text-sm leading-snug max-w-[160px] mx-auto font-sans-body">{s.label}</div>
             </Reveal>
           ))}
         </div>
@@ -373,14 +404,35 @@ function Features() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {FEATURES.map((f, i) => (
-            <Reveal key={i} delay={i * 0.06}>
-              <div className="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-7 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-md transition-all duration-300 h-full">
-                <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-5" style={{ background: f.bg }}>
-                  <f.icon className="w-5 h-5" style={{ color: f.iconColor }} />
+            <Reveal key={i} delay={i * 0.06}
+              className={i === 0 ? "md:col-span-2 lg:col-span-1" : ""}>
+              {i === 0 ? (
+                /* Hero feature card — dark green */
+                <div className="lc-feature-card bg-[#14532d] border border-[#166534] rounded-2xl p-7 h-full relative overflow-hidden">
+                  <div className="absolute inset-0 opacity-10 pointer-events-none">
+                    <FloatingPaths position={0.5} />
+                  </div>
+                  <div className="relative">
+                    <div className="w-11 h-11 rounded-xl bg-[#166534] border border-[#22c55e]/20 flex items-center justify-center mb-5">
+                      <f.icon className="w-5 h-5 text-[#22c55e]" />
+                    </div>
+                    <h3 className="font-display font-semibold text-white text-xl mb-2.5">{f.title}</h3>
+                    <p className="text-green-200/70 text-sm leading-relaxed font-sans-body">{f.desc}</p>
+                    <div className="mt-5 inline-flex items-center gap-1.5 text-[#22c55e] text-xs font-semibold font-sans-body uppercase tracking-wider">
+                      <span>Learn more</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </div>
+                  </div>
                 </div>
-                <h3 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-xl mb-2.5">{f.title}</h3>
-                <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed font-sans-body">{f.desc}</p>
-              </div>
+              ) : (
+                <div className="lc-feature-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-7 h-full overflow-hidden">
+                  <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-5" style={{ background: f.bg }}>
+                    <f.icon className="w-5 h-5" style={{ color: f.iconColor }} />
+                  </div>
+                  <h3 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-xl mb-2.5">{f.title}</h3>
+                  <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed font-sans-body">{f.desc}</p>
+                </div>
+              )}
             </Reveal>
           ))}
         </div>
@@ -410,15 +462,21 @@ function HowItWorks() {
         </Reveal>
 
         <div className="grid md:grid-cols-3 gap-6 relative">
-          <div className="hidden md:block absolute top-14 left-[calc(33.33%+1rem)] right-[calc(33.33%+1rem)] h-px bg-gradient-to-r from-green-800/20 via-green-600/30 to-green-600/20" />
+          <div className="hidden md:block absolute top-[3.5rem] left-[calc(33.33%+2rem)] right-[calc(33.33%+2rem)] h-px"
+            style={{ background: "linear-gradient(90deg, #22c55e30, #22c55e60, #22c55e30)" }} />
           {steps.map((s, i) => (
             <Reveal key={i} delay={i * 0.1}>
-              <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-8 shadow-sm h-full">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: s.bg }}>
+              <div className="lc-feature-card bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-8 shadow-sm h-full relative overflow-hidden">
+                {/* Decorative step number watermark */}
+                <div className="absolute top-4 right-5 font-display font-bold text-[5rem] leading-none select-none pointer-events-none"
+                  style={{ color: "rgba(34,197,94,0.06)" }}>
+                  {s.n}
+                </div>
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0" style={{ background: s.bg }}>
                     <s.icon className="w-5 h-5" style={{ color: s.color }} />
                   </div>
-                  <span className="font-display font-bold text-4xl text-slate-200 dark:text-slate-700">{s.n}</span>
+                  <span className="font-display font-bold text-sm text-[#22c55e] tracking-widest uppercase">{s.n}</span>
                 </div>
                 <h3 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-2xl mb-3">{s.title}</h3>
                 <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed font-sans-body">{s.desc}</p>
@@ -454,7 +512,7 @@ function Testimonials() {
         <div className="grid md:grid-cols-3 gap-6">
           {TESTIMONIALS.map((t, i) => (
             <Reveal key={i} delay={i * 0.1}>
-              <div className="flex flex-col bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-8 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-md transition-all duration-300 h-full">
+              <div className="lc-card-hover flex flex-col bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-8 h-full border-t-2 border-t-[#22c55e]">
                 <div className="flex gap-1 mb-4">
                   {Array.from({ length: t.stars }).map((_, j) => <Star key={j} className="w-3.5 h-3.5 fill-[#D97706] text-[#D97706]" />)}
                 </div>
@@ -501,37 +559,42 @@ function Pricing() {
         <div className="grid md:grid-cols-3 gap-6 items-start">
           {PLANS.map((p, i) => (
             <Reveal key={i} delay={i * 0.1}>
-              <div className={`relative rounded-2xl p-8 flex flex-col gap-6 transition-all h-full ${
+              <div className={`lc-card-hover relative rounded-2xl p-8 flex flex-col gap-6 h-full ${
                 p.highlight
-                  ? "bg-[#14532d] border-2 border-[#22c55e]/50 shadow-xl shadow-green-900/20"
+                  ? "bg-[#14532d] border-2 border-[#22c55e]/40 shadow-2xl shadow-green-900/30"
                   : "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm"
               }`}>
                 {p.highlight && (
                   <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                    <span className="bg-[#22c55e] text-white text-xs font-bold px-4 py-1.5 rounded-full font-sans-body tracking-wide">Most Popular</span>
+                    <span className="bg-[#22c55e] text-white text-xs font-bold px-4 py-1.5 rounded-full font-sans-body tracking-widest uppercase shadow-lg shadow-green-500/20">Most Popular</span>
                   </div>
                 )}
                 <div>
                   <h3 className={`font-display font-bold text-2xl mb-1 ${p.highlight ? "text-white" : "text-slate-900 dark:text-slate-100"}`}>{p.name}</h3>
-                  <p className={`text-sm font-sans-body ${p.highlight ? "text-slate-400" : "text-slate-600 dark:text-slate-400"}`}>{p.desc}</p>
+                  <p className={`text-sm font-sans-body ${p.highlight ? "text-green-200/60" : "text-slate-600 dark:text-slate-400"}`}>{p.desc}</p>
                 </div>
                 <div>
                   {p.price
-                    ? <div className="flex items-end gap-1"><span className={`font-display font-bold text-5xl ${p.highlight ? "text-white" : "text-slate-900 dark:text-slate-100"}`}>${p.price}</span><span className={`text-sm mb-2 font-sans-body ${p.highlight ? "text-slate-500" : "text-slate-500 dark:text-slate-500"}`}>/month</span></div>
+                    ? <div className="flex items-end gap-1">
+                        <span className={`font-display font-bold text-5xl ${p.highlight ? "text-white" : "text-slate-900 dark:text-slate-100"}`}>${p.price}</span>
+                        <span className={`text-sm mb-2 font-sans-body ${p.highlight ? "text-green-200/50" : "text-slate-500"}`}>/month</span>
+                      </div>
                     : <div className="font-display font-bold text-4xl text-slate-900 dark:text-slate-100">Custom</div>
                   }
                 </div>
                 <ul className="flex flex-col gap-3 flex-1">
                   {p.features.map((f, j) => (
                     <li key={j} className="flex items-start gap-2.5 text-sm font-sans-body">
-                      <Check className={`w-4 h-4 mt-0.5 shrink-0 ${p.highlight ? "text-[#22c55e]" : "text-emerald-600 dark:text-emerald-500"}`} />
-                      <span className={p.highlight ? "text-slate-300" : "text-slate-600 dark:text-slate-400"}>{f}</span>
+                      <Check className={`w-4 h-4 mt-0.5 shrink-0 ${p.highlight ? "text-[#22c55e]" : "text-[#15803d] dark:text-emerald-500"}`} />
+                      <span className={p.highlight ? "text-green-100/80" : "text-slate-600 dark:text-slate-400"}>{f}</span>
                     </li>
                   ))}
                 </ul>
                 {p.highlight
-                  ? <GradientButton href={p.price ? "/signup" : "#"}>{p.cta}</GradientButton>
-                  : <Link href={p.price ? "/signup" : "#"} className="w-full text-center py-3.5 rounded-xl text-sm font-semibold font-sans-body transition-all bg-[#15803d] hover:bg-[#166534] text-white">{p.cta}</Link>
+                  ? <GradientButton href={p.price ? "/signup" : "#"} dark>{p.cta}</GradientButton>
+                  : <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
+                      <Link href={p.price ? "/signup" : "#"} className="block w-full text-center py-3.5 rounded-xl text-sm font-semibold font-sans-body bg-[#15803d] hover:bg-[#166534] text-white transition-colors shadow-lg shadow-green-900/20">{p.cta}</Link>
+                    </motion.div>
                 }
               </div>
             </Reveal>
@@ -571,10 +634,14 @@ function CTA() {
                 Join 200+ law firms using Law Cube to turn marketing spend into measurable retained revenue.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <GradientButton href="/signup">Start 14-Day Free Trial</GradientButton>
-                <button className="border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white font-medium text-base px-8 py-4 rounded-xl transition-all font-sans-body">
+                <GradientButton href="/signup" dark>Start 14-Day Free Trial</GradientButton>
+                <motion.button
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                  className="border border-[#22c55e]/30 hover:border-[#22c55e]/60 text-green-200 hover:text-white font-medium text-base px-8 py-4 rounded-2xl transition-colors font-sans-body">
                   Talk to Sales
-                </button>
+                </motion.button>
               </div>
               {/* FIX: was #475569 on dark bg → slate-400 */}
               <p className="text-slate-500 text-sm mt-6 font-sans-body">14-day free trial · No credit card required · Cancel anytime</p>
@@ -634,6 +701,8 @@ function Footer() {
 export default function LandingPage() {
   return (
     <main className="min-h-screen bg-white dark:bg-slate-950 relative">
+      <ScrollProgress />
+
       {/* Fixed full-page background — stays in place as user scrolls */}
       <div className="fixed inset-0 pointer-events-none z-0" aria-hidden>
         <FloatingPaths position={1} />
