@@ -2,11 +2,13 @@
 arq worker task: process a call through the AI pipeline.
 
 Pipeline:
+  pending → transcribing → analyzing → complete | failed
+
   1. Load Call + org integration settings
   2. Download recording (CallRail API if key configured, direct URL fallback)
-  3. Transcribe with Whisper (org OpenAI key → global fallback)
-  4. Analyse with AI (org keys + failover)
-  5. Persist results + update linked Lead score
+  3. Transcribe audio (Whisper / Deepgram / AssemblyAI)
+  4. Analyse with AI (summary + score + classification + sentiment in one call)
+  5. Persist results, sync lead score + status, append timeline entry
 """
 import json
 import logging
@@ -19,12 +21,19 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import AsyncSessionLocal
 from app.models.call import Call
-from app.models.lead import Lead
+from app.models.lead import Lead, LeadTimeline
 from app.models.organization import Organization
 from app.services.ai import analyze_call, transcribe_audio_bytes
 from app.services.callrail import CallRailClient, CallRailError, download_recording_direct
 
 logger = structlog.get_logger()
+
+# Classification → Lead status mapping (only override for terminal states)
+CLASSIFICATION_TO_LEAD_STATUS: dict[str, str] = {
+    "spam": "spam",
+    "wrong_number": "spam",
+    "vendor": "spam",
+}
 
 
 async def process_call(ctx: dict, call_id: str) -> None:
@@ -42,13 +51,14 @@ async def process_call(ctx: dict, call_id: str) -> None:
         # ── Step 1: Download + transcribe ─────────────────────────────────────
         transcript = call.transcript
         if not transcript:
+            await _set_status(db, call, "transcribing")
+
             audio_bytes = await _download_recording(call, org_settings, log)
             if audio_bytes:
                 try:
                     transcript = await transcribe_audio_bytes(
                         audio_bytes, api_keys=org_settings
                     )
-                    # Whisper/Deepgram/AssemblyAI return "" for silent or sub-second audio
                     if not transcript or not transcript.strip():
                         log.warning("call_audio_silent_or_too_short", bytes=len(audio_bytes))
                         transcript = None
@@ -58,17 +68,24 @@ async def process_call(ctx: dict, call_id: str) -> None:
                         log.info("call_transcribed", chars=len(transcript))
                 except Exception as exc:
                     log.error("transcription_failed", error=str(exc))
+                    await _set_status(db, call, "failed", str(exc))
+                    await db.commit()
+                    return
 
         if not transcript:
             log.warning("call_no_transcript_skipping_analysis")
+            await _set_status(db, call, "failed", "No transcript available")
             await db.commit()
             return
 
         # ── Step 2: AI analysis ───────────────────────────────────────────────
+        await _set_status(db, call, "analyzing")
+
         try:
             analysis = await analyze_call(transcript, api_keys=org_settings)
         except Exception as exc:
             log.error("ai_analysis_failed", error=str(exc))
+            await _set_status(db, call, "failed", str(exc))
             await db.commit()
             return
 
@@ -85,15 +102,42 @@ async def process_call(ctx: dict, call_id: str) -> None:
         call.sentiment_score = analysis.sentiment_score
         call.ai_processed_at = datetime.now(UTC)
         call.ai_provider = analysis.provider_used
+        call.processing_status = "complete"
+        call.processing_error = None
 
         # ── Step 4: Update linked lead ────────────────────────────────────────
         if call.lead_id:
             lead_result = await db.execute(select(Lead).where(Lead.id == call.lead_id))
             lead = lead_result.scalar_one_or_none()
-            if lead and (lead.score is None or analysis.lead_score > lead.score):
-                lead.score = analysis.lead_score
-                lead.ai_summary = analysis.summary
-                lead.score_breakdown = json.dumps(analysis.score_breakdown)
+            if lead:
+                # Write score back only if this call scored higher
+                if lead.score is None or analysis.lead_score > lead.score:
+                    lead.score = analysis.lead_score
+                    lead.ai_summary = analysis.summary
+                    lead.score_breakdown = json.dumps(analysis.score_breakdown)
+
+                # Auto-update lead status for terminal classifications (spam/vendor/wrong number)
+                terminal_status = CLASSIFICATION_TO_LEAD_STATUS.get(analysis.classification)
+                if terminal_status and lead.status not in ("retained", "lost"):
+                    lead.status = terminal_status
+
+                # Append timeline entry
+                desc = (
+                    f"AI call analysis complete — {analysis.classification.replace('_', ' ').title()} "
+                    f"(score {analysis.lead_score}/100, {analysis.sentiment} sentiment)"
+                )
+                db.add(LeadTimeline(
+                    lead_id=lead.id,
+                    event_type="call",
+                    description=desc,
+                    event_metadata=json.dumps({
+                        "call_id": str(call.id),
+                        "classification": analysis.classification,
+                        "lead_score": analysis.lead_score,
+                        "sentiment": analysis.sentiment,
+                        "provider": analysis.provider_used,
+                    }),
+                ))
 
         await db.commit()
         log.info(
@@ -105,6 +149,13 @@ async def process_call(ctx: dict, call_id: str) -> None:
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
+
+async def _set_status(db: AsyncSession, call: Call, status: str, error: str | None = None) -> None:
+    call.processing_status = status
+    if error:
+        call.processing_error = error
+    await db.flush()
+
 
 async def _get_call(db: AsyncSession, call_id: str) -> Call | None:
     result = await db.execute(select(Call).where(Call.id == UUID(call_id)))
@@ -118,7 +169,6 @@ async def _get_org_settings(db: AsyncSession, org_id: UUID) -> dict:
         return {}
     try:
         s = json.loads(org.settings)
-        # Attach callrail_account_id so the download step can use it
         if org.callrail_account_id:
             s.setdefault("callrail_account_id", org.callrail_account_id)
         return s
@@ -127,12 +177,6 @@ async def _get_org_settings(db: AsyncSession, org_id: UUID) -> dict:
 
 
 async def _download_recording(call: Call, org_settings: dict, log) -> bytes | None:
-    """
-    Try to get recording audio bytes:
-      1. CallRail API (authenticated) — requires callrail_api_key + callrail_account_id
-      2. Direct URL download (no auth) — uses call.recording_url from webhook payload
-      3. Nothing available → return None
-    """
     callrail_key = org_settings.get("callrail_api_key")
     callrail_account_id = org_settings.get("callrail_account_id")
 
@@ -147,7 +191,6 @@ async def _download_recording(call: Call, org_settings: dict, log) -> bytes | No
         except Exception as exc:
             log.error("callrail_download_error", error=str(exc))
 
-    # Fallback: try the URL stored directly from the webhook payload
     if call.recording_url:
         try:
             audio_bytes = await download_recording_direct(call.recording_url)

@@ -151,6 +151,64 @@ export const dashboardApi = {
   get: () => request<DashboardResponse>("/api/dashboard"),
 };
 
+// ── Calls ─────────────────────────────────────────────────────────────────────
+
+export interface CallRecord {
+  id: string;
+  organization_id: string;
+  lead_id: string | null;
+  callrail_id: string | null;
+  caller_number: string | null;
+  duration_seconds: number | null;
+  direction: string;
+  recording_url: string | null;
+  processing_status: "pending" | "transcribing" | "analyzing" | "complete" | "failed";
+  processing_error: string | null;
+  transcript: string | null;
+  ai_summary: string | null;
+  caller_intent: string | null;
+  case_type: string | null;
+  key_facts: string[];
+  next_steps: string[];
+  lead_score: number | null;
+  score_breakdown: Record<string, number> | null;
+  classification: string | null;
+  sentiment: string | null;
+  sentiment_score: number | null;
+  ai_processed_at: string | null;
+  ai_provider: string | null;
+  campaign: string | null;
+  utm_source: string | null;
+  utm_medium: string | null;
+  called_at: string;
+  created_at: string;
+}
+
+export interface CallListResponse {
+  items: CallRecord[];
+  total: number;
+  page: number;
+  page_size: number;
+}
+
+export const callsApi = {
+  list: (params: {
+    page?: number;
+    page_size?: number;
+    classification?: string;
+    lead_id?: string;
+  } = {}) => {
+    const qs = new URLSearchParams();
+    if (params.page) qs.set("page", String(params.page));
+    if (params.page_size) qs.set("page_size", String(params.page_size));
+    if (params.classification) qs.set("classification", params.classification);
+    if (params.lead_id) qs.set("lead_id", params.lead_id);
+    return request<CallListResponse>(`/api/calls?${qs}`);
+  },
+
+  get: (id: string) => request<CallRecord>(`/api/calls/${id}`),
+};
+
 // ── Settings ──────────────────────────────────────────────────────────────────
 
 export const settingsApi = {

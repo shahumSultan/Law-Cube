@@ -24,3 +24,5 @@ class WorkerSettings:
     max_jobs = 10
     job_timeout = 300       # 5 minutes per job
     keep_result = 3600      # keep results 1 hour
+    max_tries = 3           # retry transient failures up to 3 times
+    retry_jobs = True
