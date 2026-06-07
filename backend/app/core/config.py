@@ -43,6 +43,12 @@ class Settings(BaseSettings):
     GOOGLE_API_KEY: str = ""
     AI_PRIMARY_PROVIDER: str = "openai"          # openai | anthropic | google
 
+    # Transcription providers
+    DEEPGRAM_API_KEY: str = ""
+    ASSEMBLYAI_API_KEY: str = ""
+    TRANSCRIPTION_PRIMARY_PROVIDER: str = "openai"  # openai | deepgram | assemblyai
+    TRANSCRIPTION_MOCK: bool = False               # True = skip real transcription (dev/test)
+
     # CallRail
     CALLRAIL_API_KEY: str = ""
     CALLRAIL_WEBHOOK_SECRET: str = ""
