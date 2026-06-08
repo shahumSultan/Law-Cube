@@ -193,6 +193,7 @@ function IntegrationsTab() {
   const [saved, setSaved] = useState(false);
   const [clioNotice, setClioNotice] = useState<"connected" | "error" | null>(null);
   const [clioConnecting, setClioConnecting] = useState(false);
+  const [clioConnectError, setClioConnectError] = useState<string | null>(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ["integrations"],
@@ -461,11 +462,13 @@ function IntegrationsTab() {
 
         const connectClio = async () => {
           setClioConnecting(true);
+          setClioConnectError(null);
           try {
             const { url } = await clioApi.getAuthUrl();
             window.location.href = url;
-          } catch {
+          } catch (err) {
             setClioConnecting(false);
+            setClioConnectError((err as Error).message ?? "Failed to start Clio connection. Check that CLIO_CLIENT_ID is set in your backend .env.");
           }
         };
 
@@ -563,6 +566,12 @@ function IntegrationsTab() {
                   </div>
                 ))}
               </div>
+              {clioConnectError && (
+                <div className="flex items-start gap-2.5 p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-xl">
+                  <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+                  <p className="text-xs text-red-700 dark:text-red-300 font-sans-body">{clioConnectError}</p>
+                </div>
+              )}
               <button
                 type="button"
                 onClick={connectClio}
