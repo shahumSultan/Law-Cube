@@ -23,8 +23,11 @@ from app.core.database import AsyncSessionLocal
 from app.models.call import Call
 from app.models.lead import Lead, LeadTimeline
 from app.models.organization import Organization
+from app.models.user import User
 from app.services.ai import analyze_call, transcribe_audio_bytes
 from app.services.callrail import CallRailClient, CallRailError, download_recording_direct
+from app.services.email import send_email, qualified_lead_email
+from app.services.notifications import notify_org_role
 
 logger = structlog.get_logger()
 
@@ -147,6 +150,10 @@ async def process_call(ctx: dict, call_id: str) -> None:
             provider=analysis.provider_used,
         )
 
+        # ── Step 5: Qualified lead notifications ──────────────────────────────
+        if analysis.lead_score >= 70 and analysis.classification == "qualified" and call.lead_id:
+            await _notify_qualified_lead(db, call, analysis, org_settings, log)
+
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -174,6 +181,68 @@ async def _get_org_settings(db: AsyncSession, org_id: UUID) -> dict:
         return s
     except (json.JSONDecodeError, TypeError):
         return {}
+
+
+async def _notify_qualified_lead(db, call: Call, analysis, org_settings: dict, log) -> None:
+    """Send in-app + email notifications to intake team for a qualified lead."""
+    from sqlalchemy import select as _select
+    from app.models.lead import Lead as _Lead
+
+    lead_result = await db.execute(_select(_Lead).where(_Lead.id == call.lead_id))
+    lead = lead_result.scalar_one_or_none()
+    if not lead:
+        return
+
+    org_result = await db.execute(_select(Organization).where(Organization.id == call.organization_id))
+    org = org_result.scalar_one_or_none()
+    firm_name = org.name if org else "Law Cube"
+
+    idempotency_prefix = f"qualified_lead:{call.id}"
+    title = f"New Qualified Lead — {analysis.case_type or 'Unknown case type'}"
+    body = f"{lead.full_name} · Score {analysis.lead_score}/100 · {analysis.sentiment} sentiment"
+
+    await notify_org_role(
+        db,
+        organization_id=call.organization_id,
+        roles=["firm_owner", "intake_manager", "intake_specialist"],
+        event_type="qualified_lead",
+        title=title,
+        body=body,
+        link=f"/dashboard/leads",
+        idempotency_key_prefix=idempotency_prefix,
+    )
+    await db.commit()
+
+    # Email notifications
+    users_result = await db.execute(
+        _select(User).where(
+            User.organization_id == call.organization_id,
+            User.role.in_(["firm_owner", "intake_manager", "intake_specialist"]),
+            User.is_active == True,
+        )
+    )
+    users = users_result.scalars().all()
+    for user in users:
+        if not user.email:
+            continue
+        try:
+            html = qualified_lead_email(
+                lead_name=lead.full_name,
+                case_type=analysis.case_type or "Unknown",
+                lead_score=analysis.lead_score,
+                ai_summary=analysis.summary,
+                caller_number=call.caller_number or "Unknown",
+                lead_url=f"/dashboard/leads",
+                firm_name=firm_name,
+            )
+            await send_email(
+                user.email,
+                subject=title,
+                html_body=html,
+                api_keys=org_settings,
+            )
+        except Exception as exc:
+            log.warning("qualified_lead_email_failed", user_id=str(user.id), error=str(exc))
 
 
 async def _download_recording(call: Call, org_settings: dict, log) -> bytes | None:

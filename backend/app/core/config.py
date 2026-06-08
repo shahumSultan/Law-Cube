@@ -56,6 +56,15 @@ class Settings(BaseSettings):
     # Google OAuth
     GOOGLE_CLIENT_ID: str = ""
 
+    # Email (SendGrid primary / SMTP fallback)
+    SENDGRID_API_KEY: str = ""
+    SMTP_HOST: str = ""
+    SMTP_PORT: int = 587
+    SMTP_USERNAME: str = ""
+    SMTP_PASSWORD: str = ""
+    NOTIFICATION_FROM_EMAIL: str = "noreply@lawcube.app"
+    NOTIFICATION_FROM_NAME: str = "Law Cube"
+
     # Clio
     CLIO_CLIENT_ID: str = ""
     CLIO_CLIENT_SECRET: str = ""

@@ -1,7 +1,7 @@
 import uuid
 from datetime import UTC, datetime
 
-from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text
+from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -39,6 +39,9 @@ class Lead(Base):
     # Status
     status: Mapped[str] = mapped_column(String(50), default="new", index=True)
     # new | contacted | consultation_scheduled | consultation_completed | retained | lost | spam
+
+    # SMS
+    sms_opted_out: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     # Practice management sync
     clio_contact_id: Mapped[str | None] = mapped_column(String(100))

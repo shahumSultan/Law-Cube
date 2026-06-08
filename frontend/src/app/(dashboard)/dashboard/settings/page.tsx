@@ -408,6 +408,233 @@ function IntegrationsTab() {
         />
       </div>
 
+      {/* Twilio SMS */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 flex flex-col gap-4">
+        <div className="flex items-center gap-3 pb-3 border-b border-slate-100 dark:border-slate-700">
+          <div className="w-8 h-8 rounded-lg bg-[#FFF7ED] dark:bg-orange-950/30 flex items-center justify-center">
+            <span className="text-orange-600 text-xs font-bold font-sans-body">SMS</span>
+          </div>
+          <div>
+            <h3 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-base">Twilio SMS</h3>
+            <p className="text-slate-500 dark:text-slate-400 text-xs font-sans-body">Automated missed-call SMS and follow-up sequences</p>
+          </div>
+        </div>
+        <div>
+          <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">
+            Account SID
+          </label>
+          <input
+            type="text"
+            placeholder={data?.has_twilio ? "Configured — enter to rotate" : "ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}
+            value={form.twilio_account_sid ?? ""}
+            autoComplete="off"
+            onChange={e => set("twilio_account_sid", e.target.value)}
+            className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#1E3A8A] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors font-mono"
+          />
+          <p className="text-slate-400 dark:text-slate-500 text-xs mt-1.5 font-sans-body">
+            Found in Twilio Console → Account Info
+          </p>
+        </div>
+        <KeyField
+          label="Auth Token"
+          field="twilio_auth_token"
+          configured={data?.has_twilio ?? false}
+          description="Found in Twilio Console → Account Info. Kept encrypted, never returned to the client."
+        />
+        <div>
+          <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">
+            From Number
+          </label>
+          <input
+            type="text"
+            placeholder={data?.twilio_from_number ?? "+15550001234"}
+            value={form.twilio_from_number ?? ""}
+            autoComplete="off"
+            onChange={e => set("twilio_from_number", e.target.value)}
+            className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#1E3A8A] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors font-mono"
+          />
+          <p className="text-slate-400 dark:text-slate-500 text-xs mt-1.5 font-sans-body">
+            Your Twilio phone number in E.164 format (e.g. +15550001234)
+          </p>
+        </div>
+      </div>
+
+      {/* Email / Notifications */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 flex flex-col gap-4">
+        <div className="flex items-center gap-3 pb-3 border-b border-slate-100 dark:border-slate-700">
+          <div className="w-8 h-8 rounded-lg bg-[#EFF6FF] dark:bg-blue-950/30 flex items-center justify-center">
+            <span className="text-blue-600 font-bold text-sm font-sans-body">@</span>
+          </div>
+          <div>
+            <h3 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-base">Email Notifications</h3>
+            <p className="text-slate-500 dark:text-slate-400 text-xs font-sans-body">Qualified lead alerts and follow-up emails to prospects</p>
+          </div>
+        </div>
+        <KeyField
+          label="SendGrid API Key"
+          field="sendgrid_api_key"
+          configured={data?.has_sendgrid_key ?? false}
+          description="Used to send transactional email. app.sendgrid.com/settings/api_keys — Full Access or Mail Send scope."
+        />
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">
+              From Email
+            </label>
+            <input
+              type="email"
+              placeholder={data?.notification_from_email ?? "intake@yourfirm.com"}
+              value={form.notification_from_email ?? ""}
+              autoComplete="off"
+              onChange={e => set("notification_from_email", e.target.value)}
+              className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#1E3A8A] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors font-sans-body"
+            />
+          </div>
+          <div>
+            <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">
+              From Name
+            </label>
+            <input
+              type="text"
+              placeholder={data?.notification_from_name ?? "Law Cube Intake"}
+              value={form.notification_from_name ?? ""}
+              autoComplete="off"
+              onChange={e => set("notification_from_name", e.target.value)}
+              className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#1E3A8A] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors font-sans-body"
+            />
+          </div>
+        </div>
+        <p className="text-slate-400 dark:text-slate-500 text-xs font-sans-body -mt-2">
+          The sending address must be verified in SendGrid before emails will deliver.
+        </p>
+      </div>
+
+      {/* Follow-Up Automation */}
+      {(() => {
+        const ToggleField = ({
+          label, description, value, onChange,
+        }: { label: string; description: string; value: boolean; onChange: (v: boolean) => void }) => (
+          <div className="flex items-start justify-between gap-4 py-0.5">
+            <div>
+              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 font-sans-body">{label}</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5 font-sans-body">{description}</p>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={value}
+              onClick={() => onChange(!value)}
+              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${
+                value ? "bg-[#15803d]" : "bg-slate-200 dark:bg-slate-700"
+              }`}
+            >
+              <span className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${value ? "translate-x-5" : "translate-x-0"}`} />
+            </button>
+          </div>
+        );
+
+        const missedEnabled = form.missed_call_sms_enabled !== undefined ? form.missed_call_sms_enabled : (data?.missed_call_sms_enabled ?? false);
+        const f24hEnabled   = form.followup_24h_enabled !== undefined   ? form.followup_24h_enabled   : (data?.followup_24h_enabled ?? false);
+        const f72hEnabled   = form.followup_72h_enabled !== undefined   ? form.followup_72h_enabled   : (data?.followup_72h_enabled ?? false);
+
+        return (
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 flex flex-col gap-5">
+            <div className="flex items-center gap-3 pb-3 border-b border-slate-100 dark:border-slate-700">
+              <div className="w-8 h-8 rounded-lg bg-[#F0FDF4] dark:bg-emerald-950/30 flex items-center justify-center">
+                <span className="text-emerald-700 text-xs font-bold font-sans-body">AUTO</span>
+              </div>
+              <div>
+                <h3 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-base">Follow-Up Automation</h3>
+                <p className="text-slate-500 dark:text-slate-400 text-xs font-sans-body">Automatic SMS and email sequences after missed calls</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <ToggleField
+                label="Missed Call SMS"
+                description="Send an SMS immediately when a call is missed and goes unanswered"
+                value={missedEnabled}
+                onChange={v => setForm(p => ({ ...p, missed_call_sms_enabled: v }))}
+              />
+              {missedEnabled && (
+                <div>
+                  <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">
+                    Missed Call Template
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={form.missed_call_sms_template ?? (data?.missed_call_sms_template ?? "Hi {first_name}, we missed your call at {firm_name}. We'd love to help — reply or call back to speak with our intake team.")}
+                    onChange={e => set("missed_call_sms_template", e.target.value)}
+                    className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#1E3A8A] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors font-sans-body resize-none"
+                  />
+                  <p className="text-slate-400 dark:text-slate-500 text-xs mt-1.5 font-sans-body">
+                    Variables: {"{first_name}"}, {"{firm_name}"}, {"{case_type}"}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="h-px bg-slate-100 dark:bg-slate-700" />
+
+            <div className="flex flex-col gap-4">
+              <ToggleField
+                label="24-Hour Follow-Up"
+                description="Automatically contact leads who haven't responded 24 hours after a missed call"
+                value={f24hEnabled}
+                onChange={v => setForm(p => ({ ...p, followup_24h_enabled: v }))}
+              />
+              {f24hEnabled && (
+                <div>
+                  <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">
+                    24h Follow-Up Template
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={form.followup_24h_sms_template ?? (data?.followup_24h_sms_template ?? "Hi {first_name}, just following up on your call yesterday. We're here to help — reply anytime to schedule a free consultation.")}
+                    onChange={e => set("followup_24h_sms_template", e.target.value)}
+                    className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#1E3A8A] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors font-sans-body resize-none"
+                  />
+                  <p className="text-slate-400 dark:text-slate-500 text-xs mt-1.5 font-sans-body">
+                    Variables: {"{first_name}"}, {"{firm_name}"}, {"{case_type}"}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="h-px bg-slate-100 dark:bg-slate-700" />
+
+            <div className="flex flex-col gap-4">
+              <ToggleField
+                label="72-Hour Follow-Up"
+                description="Send a final follow-up to leads who still haven't responded after 72 hours"
+                value={f72hEnabled}
+                onChange={v => setForm(p => ({ ...p, followup_72h_enabled: v }))}
+              />
+              {f72hEnabled && (
+                <div>
+                  <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">
+                    72h Follow-Up Template
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={form.followup_72h_sms_template ?? (data?.followup_72h_sms_template ?? "Hi {first_name}, we're still here if you need help. Schedule a free consultation at your convenience — no obligation.")}
+                    onChange={e => set("followup_72h_sms_template", e.target.value)}
+                    className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#1E3A8A] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors font-sans-body resize-none"
+                  />
+                  <p className="text-slate-400 dark:text-slate-500 text-xs mt-1.5 font-sans-body">
+                    Variables: {"{first_name}"}, {"{firm_name}"}, {"{case_type}"}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <p className="text-slate-400 dark:text-slate-500 text-xs font-sans-body">
+              Sequences respect opt-outs. Leads reply STOP to unsubscribe; UNSTOP to resubscribe.
+            </p>
+          </div>
+        );
+      })()}
+
       <div className="flex items-center justify-between">
         <p className="text-slate-400 dark:text-slate-500 text-xs font-sans-body">
           Keys are stored encrypted and never returned in API responses.
