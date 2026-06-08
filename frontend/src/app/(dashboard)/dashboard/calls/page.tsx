@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { callsApi, type CallRecord } from "@/lib/api";
 import {
   Play, X, ExternalLink, PhoneCall, Clock, TrendingUp, Brain, Mic,
-  Loader2, AlertCircle, Filter,
+  Loader2, AlertCircle, Filter, Check, ChevronDown,
 } from "lucide-react";
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -299,6 +300,75 @@ function CallDetailModal({ call, onClose }: { call: CallRecord; onClose: () => v
 
 const CLASSIFICATIONS = ["qualified", "unqualified", "existing_client", "spam", "vendor", "wrong_number"];
 
+function ClassificationFilterDropdown({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
+  const [coords, setCoords] = useState({ top: 0, left: 0 });
+
+  const openMenu = () => {
+    if (!triggerRef.current) return;
+    const r = triggerRef.current.getBoundingClientRect();
+    setCoords({ top: r.bottom + 4, left: r.left });
+    setOpen(true);
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    const close = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onScroll = () => setOpen(false);
+    document.addEventListener("mousedown", close);
+    document.addEventListener("scroll", onScroll, true);
+    return () => {
+      document.removeEventListener("mousedown", close);
+      document.removeEventListener("scroll", onScroll, true);
+    };
+  }, [open]);
+
+  const options = [
+    { value: "", label: "All classifications" },
+    ...CLASSIFICATIONS.map(c => ({ value: c, label: c.replace(/_/g, " ") })),
+  ];
+
+  const menu = open && createPortal(
+    <div
+      ref={menuRef}
+      style={{ position: "fixed", top: coords.top, left: coords.left, zIndex: 9999 }}
+      className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xl py-1.5 min-w-[200px]"
+    >
+      {options.map(o => (
+        <button
+          key={o.value}
+          onClick={(e) => { e.stopPropagation(); onChange(o.value); setOpen(false); }}
+          className={`w-full text-left px-3 py-2 flex items-center justify-between text-sm font-sans-body capitalize transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900 ${
+            o.value === value ? "bg-zinc-50 dark:bg-zinc-900/60 text-zinc-900 dark:text-zinc-100" : "text-zinc-600 dark:text-zinc-400"
+          }`}
+        >
+          <span>{o.label}</span>
+          {o.value === value && <Check className="w-3.5 h-3.5 text-[#22c55e] shrink-0" />}
+        </button>
+      ))}
+    </div>,
+    document.body
+  );
+
+  return (
+    <>
+      <button
+        ref={triggerRef}
+        onClick={openMenu}
+        className="flex items-center gap-2 text-sm bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg px-3 py-1.5 text-zinc-700 dark:text-zinc-300 font-sans-body hover:border-zinc-300 dark:hover:border-zinc-600 transition-colors"
+      >
+        <span className="capitalize">{value ? value.replace(/_/g, " ") : "All classifications"}</span>
+        <ChevronDown className="w-3.5 h-3.5 text-zinc-400" />
+      </button>
+      {menu}
+    </>
+  );
+}
+
 export default function CallsPage() {
   const [selected, setSelected] = useState<CallRecord | null>(null);
   const [classFilter, setClassFilter] = useState<string>("");
@@ -330,16 +400,10 @@ export default function CallsPage() {
         </div>
         <div className="flex items-center gap-2">
           <Filter className="w-4 h-4 text-zinc-400" />
-          <select
+          <ClassificationFilterDropdown
             value={classFilter}
-            onChange={e => { setClassFilter(e.target.value); setPage(1); }}
-            className="text-sm bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg px-3 py-1.5 text-zinc-700 dark:text-zinc-300 font-sans-body outline-none focus:border-zinc-400 dark:focus:border-zinc-500"
-          >
-            <option value="">All classifications</option>
-            {CLASSIFICATIONS.map(c => (
-              <option key={c} value={c}>{c.replace(/_/g, " ")}</option>
-            ))}
-          </select>
+            onChange={v => { setClassFilter(v); setPage(1); }}
+          />
         </div>
       </div>
 
