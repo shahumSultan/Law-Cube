@@ -229,6 +229,22 @@ OPT_OUT_KEYWORDS = {"stop", "unsubscribe", "quit", "cancel", "end"}
 OPT_IN_KEYWORDS = {"start", "unstop", "yes"}
 
 
+async def _resolve_org_by_twilio_number(db, to_number: str) -> Organization | None:
+    """Return the org whose Twilio from-number matches the inbound `To` field."""
+    if not to_number:
+        return None
+    normalized = _normalize_phone(to_number)
+    result = await db.execute(select(Organization))
+    for org in result.scalars().all():
+        try:
+            s = json.loads(org.settings or "{}")
+        except (json.JSONDecodeError, TypeError):
+            s = {}
+        if _normalize_phone(s.get("twilio_from_number", "")) == normalized:
+            return org
+    return None
+
+
 @router.post("/twilio")
 async def twilio_webhook(request: Request, db: DB):
     """Handles Twilio inbound SMS and message status callbacks."""
@@ -236,6 +252,7 @@ async def twilio_webhook(request: Request, db: DB):
     msg_status = form.get("MessageStatus")
     body = str(form.get("Body", "")).strip().lower()
     from_number = _normalize_phone(str(form.get("From", "")))
+    to_number = str(form.get("To", ""))
 
     # Status callback (sent/delivered/failed) — just log
     if msg_status:
@@ -248,26 +265,33 @@ async def twilio_webhook(request: Request, db: DB):
 
     word = body.split()[0] if body else ""
 
+    if word not in OPT_OUT_KEYWORDS and word not in OPT_IN_KEYWORDS:
+        return {"status": "ignored"}
+
+    # Resolve org from the receiving Twilio number so we only affect that tenant's leads
+    org = await _resolve_org_by_twilio_number(db, to_number)
+    org_filter = Lead.organization_id == org.id if org else None
+
+    base_query = select(Lead).where(Lead.phone == from_number)
+    if org_filter is not None:
+        base_query = base_query.where(org_filter)
+
+    result = await db.execute(base_query)
+    leads = result.scalars().all()
+
     if word in OPT_OUT_KEYWORDS:
-        result = await db.execute(select(Lead).where(Lead.phone == from_number))
-        leads = result.scalars().all()
         for lead in leads:
             lead.sms_opted_out = True
         await db.commit()
-        logger.info("twilio_sms_opt_out", from_number=from_number, leads_updated=len(leads))
-        # Return TwiML opt-out confirmation
+        logger.info("twilio_sms_opt_out", from_number=from_number, org_id=str(org.id) if org else None, leads_updated=len(leads))
         return _twiml_response("You have been unsubscribed and will receive no further messages.")
 
-    if word in OPT_IN_KEYWORDS:
-        result = await db.execute(select(Lead).where(Lead.phone == from_number))
-        leads = result.scalars().all()
-        for lead in leads:
-            lead.sms_opted_out = False
-        await db.commit()
-        logger.info("twilio_sms_opt_in", from_number=from_number)
-        return _twiml_response("You have been re-subscribed.")
-
-    return {"status": "ignored"}
+    # OPT_IN
+    for lead in leads:
+        lead.sms_opted_out = False
+    await db.commit()
+    logger.info("twilio_sms_opt_in", from_number=from_number, org_id=str(org.id) if org else None)
+    return _twiml_response("You have been re-subscribed.")
 
 
 def _twiml_response(message: str):

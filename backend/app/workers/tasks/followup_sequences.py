@@ -67,7 +67,7 @@ async def check_followup_sequences(ctx: dict) -> None:
                 if not org_settings.get(step_cfg["sms_key"], True):
                     continue
 
-                # Check if already sent for this step
+                # Check if already sent for this step (any channel)
                 already_sent = await db.execute(
                     select(FollowUpLog).where(
                         and_(
@@ -76,7 +76,7 @@ async def check_followup_sequences(ctx: dict) -> None:
                         )
                     )
                 )
-                if already_sent.scalar_one_or_none():
+                if already_sent.scalars().first() is not None:
                     continue
 
                 firm_name = org.name if org else "our firm"
