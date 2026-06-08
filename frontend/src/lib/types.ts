@@ -146,9 +146,20 @@ export interface IntegrationSettingsOut {
   has_google_key: boolean;
   has_deepgram_key: boolean;
   has_assemblyai_key: boolean;
+  has_twilio: boolean;
+  has_sendgrid_key: boolean;
   ai_primary_provider: string;
   transcription_provider: string;
   callrail_account_id: string | null;
+  notification_from_email: string | null;
+  notification_from_name: string | null;
+  twilio_from_number: string | null;
+  missed_call_sms_enabled: boolean;
+  followup_24h_enabled: boolean;
+  followup_72h_enabled: boolean;
+  missed_call_sms_template: string | null;
+  followup_24h_sms_template: string | null;
+  followup_72h_sms_template: string | null;
 }
 
 export interface IntegrationSettingsIn {
@@ -161,6 +172,18 @@ export interface IntegrationSettingsIn {
   deepgram_api_key?: string;
   assemblyai_api_key?: string;
   transcription_provider?: string;
+  twilio_account_sid?: string;
+  twilio_auth_token?: string;
+  twilio_from_number?: string;
+  sendgrid_api_key?: string;
+  notification_from_email?: string;
+  notification_from_name?: string;
+  missed_call_sms_enabled?: boolean;
+  followup_24h_enabled?: boolean;
+  followup_72h_enabled?: boolean;
+  missed_call_sms_template?: string;
+  followup_24h_sms_template?: string;
+  followup_72h_sms_template?: string;
 }
 
 // RBAC helpers

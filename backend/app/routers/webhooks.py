@@ -59,7 +59,7 @@ def _parse_called_at(raw: str | None) -> datetime:
 
 # ── Background task ───────────────────────────────────────────────────────────
 
-async def _process_callrail_call(payload: dict, org_id: str) -> None:
+async def _process_callrail_call(payload: dict, org_id: str, event_type: str = "call.completed") -> None:
     """
     Runs outside the request cycle:
     1. Deduplicate by callrail_id
@@ -150,11 +150,18 @@ async def _process_callrail_call(payload: dict, org_id: str) -> None:
 
             await db.commit()
 
-            # ── Enqueue AI pipeline ───────────────────────────────────────────
+            # ── Enqueue arq tasks ─────────────────────────────────────────────
             from arq import create_pool
             from arq.connections import RedisSettings
             redis = await create_pool(RedisSettings.from_dsn(settings.REDIS_URL))
+
             await redis.enqueue_job("process_call", str(call.id))
+
+            # Missed/no-answer calls → auto SMS (duration 0 or event is call.missed)
+            is_missed = event_type == "call.missed" or (payload.get("duration") or 0) == 0
+            if is_missed:
+                await redis.enqueue_job("send_missed_call_sms", str(call.id))
+
             await redis.aclose()
 
             logger.info(
@@ -210,10 +217,63 @@ async def callrail_webhook(
         logger.warning("callrail_org_not_found", company_id=company_id)
         raise HTTPException(status_code=404, detail="No organization mapped to this CallRail account")
 
-    background_tasks.add_task(_process_callrail_call, payload, str(org.id))
+    background_tasks.add_task(_process_callrail_call, payload, str(org.id), event_type)
 
     logger.info("callrail_webhook_accepted", event_type=event_type, company_id=company_id)
     return {"status": "accepted"}
+
+
+# ── Twilio inbound SMS (opt-out handling) ─────────────────────────────────────
+
+OPT_OUT_KEYWORDS = {"stop", "unsubscribe", "quit", "cancel", "end"}
+OPT_IN_KEYWORDS = {"start", "unstop", "yes"}
+
+
+@router.post("/twilio")
+async def twilio_webhook(request: Request, db: DB):
+    """Handles Twilio inbound SMS and message status callbacks."""
+    form = await request.form()
+    msg_status = form.get("MessageStatus")
+    body = str(form.get("Body", "")).strip().lower()
+    from_number = _normalize_phone(str(form.get("From", "")))
+
+    # Status callback (sent/delivered/failed) — just log
+    if msg_status:
+        logger.info("twilio_status_callback", status=msg_status, from_number=from_number)
+        return {"status": "ok"}
+
+    # Inbound message — check for opt-out keywords
+    if not from_number or not body:
+        return {"status": "ignored"}
+
+    word = body.split()[0] if body else ""
+
+    if word in OPT_OUT_KEYWORDS:
+        result = await db.execute(select(Lead).where(Lead.phone == from_number))
+        leads = result.scalars().all()
+        for lead in leads:
+            lead.sms_opted_out = True
+        await db.commit()
+        logger.info("twilio_sms_opt_out", from_number=from_number, leads_updated=len(leads))
+        # Return TwiML opt-out confirmation
+        return _twiml_response("You have been unsubscribed and will receive no further messages.")
+
+    if word in OPT_IN_KEYWORDS:
+        result = await db.execute(select(Lead).where(Lead.phone == from_number))
+        leads = result.scalars().all()
+        for lead in leads:
+            lead.sms_opted_out = False
+        await db.commit()
+        logger.info("twilio_sms_opt_in", from_number=from_number)
+        return _twiml_response("You have been re-subscribed.")
+
+    return {"status": "ignored"}
+
+
+def _twiml_response(message: str):
+    from fastapi.responses import Response
+    xml = f'<?xml version="1.0" encoding="UTF-8"?><Response><Message>{message}</Message></Response>'
+    return Response(content=xml, media_type="application/xml")
 
 
 # ── Clio (stub — M4) ─────────────────────────────────────────────────────────

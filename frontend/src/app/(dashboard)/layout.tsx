@@ -5,14 +5,16 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   LayoutDashboard, Users, PhoneCall, Zap, Calendar,
   TrendingUp, BarChart3, Settings, ChevronLeft,
-  Bell, Search, ChevronRight, Menu, X, LogOut,
+  Bell, Search, ChevronRight, Menu, X, LogOut, CheckCheck,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { AuthGuard } from "@/components/auth-guard";
 import { useAuthStore } from "@/lib/auth-store";
+import { notificationsApi, type NotificationRecord } from "@/lib/api";
 
 const NAV_ITEMS = [
   { icon: LayoutDashboard, label: "Dashboard",  href: "/dashboard" },
@@ -327,6 +329,131 @@ function TopbarUserMenu() {
   );
 }
 
+function timeAgo(iso: string): string {
+  const diff = (Date.now() - new Date(iso).getTime()) / 1000;
+  if (diff < 60) return "just now";
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+  return `${Math.floor(diff / 86400)}d ago`;
+}
+
+function NotificationBell() {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const qc = useQueryClient();
+
+  const { data: countData } = useQuery({
+    queryKey: ["notif-count"],
+    queryFn: notificationsApi.unreadCount,
+    refetchInterval: 30_000,
+  });
+
+  const { data: listData } = useQuery({
+    queryKey: ["notif-list"],
+    queryFn: () => notificationsApi.list({ page_size: 10 }),
+    enabled: open,
+  });
+
+  const markAllRead = useMutation({
+    mutationFn: notificationsApi.markAllRead,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["notif-count"] });
+      qc.invalidateQueries({ queryKey: ["notif-list"] });
+    },
+  });
+
+  const markRead = useMutation({
+    mutationFn: (id: string) => notificationsApi.markRead(id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["notif-count"] });
+      qc.invalidateQueries({ queryKey: ["notif-list"] });
+    },
+  });
+
+  useEffect(() => {
+    if (!open) return;
+    const close = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, [open]);
+
+  const unread = countData?.count ?? 0;
+  const notifications: NotificationRecord[] = listData?.items ?? [];
+
+  return (
+    <div ref={ref} className="relative shrink-0">
+      <button
+        onClick={() => setOpen(o => !o)}
+        aria-label="Notifications"
+        className="relative w-8 h-8 rounded flex items-center justify-center text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+      >
+        <Bell className="w-4 h-4" />
+        {unread > 0 && (
+          <span className="absolute top-1 right-1 w-2 h-2 bg-[#22c55e] rounded-full border-2 border-white dark:border-[#09090b]" />
+        )}
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96, y: -4 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.96, y: -4 }}
+            transition={{ duration: 0.12 }}
+            className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xl overflow-hidden z-50"
+          >
+            <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-100 dark:border-zinc-800">
+              <span className="font-display font-semibold text-zinc-900 dark:text-zinc-100 text-sm">
+                Notifications {unread > 0 && <span className="ml-1 text-[#22c55e]">({unread})</span>}
+              </span>
+              {unread > 0 && (
+                <button
+                  onClick={() => markAllRead.mutate()}
+                  className="flex items-center gap-1 text-xs text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors font-sans-body"
+                >
+                  <CheckCheck className="w-3.5 h-3.5" />
+                  Mark all read
+                </button>
+              )}
+            </div>
+
+            <div className="max-h-80 overflow-y-auto divide-y divide-zinc-50 dark:divide-zinc-800">
+              {notifications.length === 0 && (
+                <p className="text-center text-zinc-400 dark:text-zinc-600 text-sm font-sans-body py-8">
+                  No notifications yet
+                </p>
+              )}
+              {notifications.map(n => (
+                <div
+                  key={n.id}
+                  onClick={() => { if (!n.read) markRead.mutate(n.id); }}
+                  className={`px-4 py-3 cursor-pointer transition-colors ${
+                    n.read
+                      ? "hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
+                      : "bg-[#22c55e]/5 hover:bg-[#22c55e]/10"
+                  }`}
+                >
+                  <div className="flex items-start gap-2.5">
+                    {!n.read && <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] mt-1.5 shrink-0" />}
+                    {n.read && <span className="w-1.5 h-1.5 shrink-0" />}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-zinc-900 dark:text-zinc-100 text-xs font-semibold font-sans-body leading-snug">{n.title}</p>
+                      <p className="text-zinc-500 dark:text-zinc-400 text-xs font-sans-body mt-0.5 leading-snug">{n.body}</p>
+                      <p className="text-zinc-400 dark:text-zinc-600 text-[10px] font-sans-body mt-1">{timeAgo(n.created_at)}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 function Topbar({ onMobileMenuOpen }: { onMobileMenuOpen: () => void }) {
   const pathname = usePathname();
   const current = NAV_ITEMS.find(n => n.href === pathname);
@@ -360,13 +487,7 @@ function Topbar({ onMobileMenuOpen }: { onMobileMenuOpen: () => void }) {
 
       <ThemeToggle />
 
-      <button
-        aria-label="Notifications"
-        className="relative w-8 h-8 rounded flex items-center justify-center text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors shrink-0"
-      >
-        <Bell className="w-4 h-4" />
-        <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-[#22c55e] rounded-full" />
-      </button>
+      <NotificationBell />
 
       <TopbarUserMenu />
     </header>

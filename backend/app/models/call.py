@@ -39,6 +39,10 @@ class Call(Base):
     ai_processed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     ai_provider: Mapped[str | None] = mapped_column(String(50))           # openai | anthropic | google
 
+    # SMS follow-up
+    sms_status: Mapped[str | None] = mapped_column(String(20))            # sent | failed | skipped
+    sms_sent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
     # Processing pipeline state
     processing_status: Mapped[str] = mapped_column(String(20), default="pending", index=True)  # pending | transcribing | analyzing | complete | failed
     processing_error: Mapped[str | None] = mapped_column(Text)

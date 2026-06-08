@@ -209,6 +209,40 @@ export const callsApi = {
   get: (id: string) => request<CallRecord>(`/api/calls/${id}`),
 };
 
+// ── Notifications ─────────────────────────────────────────────────────────────
+
+export interface NotificationRecord {
+  id: string;
+  organization_id: string;
+  user_id: string;
+  event_type: string;
+  title: string;
+  body: string;
+  link: string | null;
+  read: boolean;
+  created_at: string;
+}
+
+export interface NotificationListResponse {
+  items: NotificationRecord[];
+  total: number;
+  page: number;
+  page_size: number;
+}
+
+export const notificationsApi = {
+  list: (params: { page?: number; page_size?: number; unread?: boolean } = {}) => {
+    const qs = new URLSearchParams();
+    if (params.page) qs.set("page", String(params.page));
+    if (params.page_size) qs.set("page_size", String(params.page_size));
+    if (params.unread !== undefined) qs.set("unread", String(params.unread));
+    return request<NotificationListResponse>(`/api/notifications?${qs}`);
+  },
+  unreadCount: () => request<{ count: number }>("/api/notifications/unread-count"),
+  markRead: (id: string) => request<NotificationRecord>(`/api/notifications/${id}/read`, { method: "PATCH" }),
+  markAllRead: () => request<{ count: number }>("/api/notifications/read-all", { method: "PATCH" }),
+};
+
 // ── Settings ──────────────────────────────────────────────────────────────────
 
 export const settingsApi = {
