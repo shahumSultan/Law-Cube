@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Users, User, Plus, Loader2, X, Copy, Check,
-  Shield, Trash2, Plug, Eye, EyeOff, CheckCircle2, AlertCircle,
+  Users, User, Plus, Loader2, X, Copy, Check, Shield, Trash2,
+  Plug, Eye, EyeOff, CheckCircle2, AlertCircle,
+  Phone, Mic, Brain, MessageSquare, Mail, Zap,
 } from "lucide-react";
 import { usersApi, settingsApi } from "@/lib/api";
 import { useAuthStore } from "@/lib/auth-store";
@@ -170,8 +171,20 @@ function InviteModal({ onClose }: { onClose: () => void }) {
 }
 
 /* ─── Integrations tab ─── */
+type SectionKey = "callrail" | "transcription" | "ai" | "sms" | "email" | "followup";
+
+const SECTIONS: { key: SectionKey; label: string; subtitle: string; Icon: React.ElementType }[] = [
+  { key: "callrail",      label: "CallRail",      subtitle: "Call tracking",  Icon: Phone },
+  { key: "transcription", label: "Transcription", subtitle: "Speech-to-text", Icon: Mic },
+  { key: "ai",            label: "AI Analysis",   subtitle: "Lead scoring",   Icon: Brain },
+  { key: "sms",           label: "Twilio SMS",    subtitle: "Automated SMS",  Icon: MessageSquare },
+  { key: "email",         label: "Email",         subtitle: "Notifications",  Icon: Mail },
+  { key: "followup",      label: "Follow-Up",     subtitle: "Sequences",      Icon: Zap },
+];
+
 function IntegrationsTab() {
   const queryClient = useQueryClient();
+  const [section, setSection] = useState<SectionKey>("callrail");
   const [showKeys, setShowKeys] = useState<Record<string, boolean>>({});
   const [form, setForm] = useState<IntegrationSettingsIn>({});
   const [saved, setSaved] = useState(false);
@@ -191,74 +204,52 @@ function IntegrationsTab() {
     },
   });
 
-  const toggle = (key: string) =>
-    setShowKeys(p => ({ ...p, [key]: !p[key] }));
+  const toggleShow = (key: string) => setShowKeys(p => ({ ...p, [key]: !p[key] }));
+  const set = (field: keyof IntegrationSettingsIn, value: string) => setForm(p => ({ ...p, [field]: value }));
+  const clear = (field: keyof IntegrationSettingsIn) => setForm(p => ({ ...p, [field]: "" }));
 
-  const set = (field: keyof IntegrationSettingsIn, value: string) =>
-    setForm(p => ({ ...p, [field]: value }));
+  const isConfigured = (key: SectionKey): boolean => {
+    if (!data) return false;
+    switch (key) {
+      case "callrail":      return data.has_callrail_key;
+      case "transcription": return data.has_openai_key || data.has_deepgram_key || data.has_assemblyai_key;
+      case "ai":            return data.has_openai_key || data.has_anthropic_key || data.has_google_key;
+      case "sms":           return data.has_twilio;
+      case "email":         return data.has_sendgrid_key;
+      case "followup":      return !!(data.missed_call_sms_enabled || data.followup_24h_enabled || data.followup_72h_enabled);
+    }
+  };
 
-  const clear = (field: keyof IntegrationSettingsIn) =>
-    setForm(p => ({ ...p, [field]: "" }));
+  // ── Inner field components ────────────────────────────────────────────────
 
-  if (isLoading) {
-    return (
-      <div className="flex flex-col gap-4">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="h-24 bg-slate-100 dark:bg-slate-800 rounded-2xl animate-pulse" />
-        ))}
-      </div>
-    );
-  }
-
-  const KeyField = ({
-    label, field, description, configured,
-  }: {
-    label: string;
-    field: keyof IntegrationSettingsIn;
-    description: string;
-    configured: boolean;
+  const KeyField = ({ label, field, description, configured }: {
+    label: string; field: keyof IntegrationSettingsIn; description: string; configured: boolean;
   }) => {
-    const visible = showKeys[field];
+    const visible = showKeys[field as string];
     const currentVal = form[field] as string | undefined;
     return (
       <div>
         <div className="flex items-center justify-between mb-1.5">
-          <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold font-sans-body uppercase tracking-wider">
-            {label}
-          </label>
-          <span className={`flex items-center gap-1 text-xs font-semibold font-sans-body ${
-            configured ? "text-emerald-600 dark:text-emerald-400" : "text-slate-400"
-          }`}>
-            {configured
-              ? <><CheckCircle2 className="w-3.5 h-3.5" /> Configured</>
-              : <><AlertCircle className="w-3.5 h-3.5" /> Not set</>}
+          <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold font-sans-body uppercase tracking-wider">{label}</label>
+          <span className={`flex items-center gap-1 text-xs font-semibold font-sans-body ${configured ? "text-emerald-600 dark:text-emerald-400" : "text-slate-400 dark:text-slate-500"}`}>
+            {configured ? <><CheckCircle2 className="w-3.5 h-3.5" />Configured</> : <><AlertCircle className="w-3.5 h-3.5" />Not set</>}
           </span>
         </div>
         <div className="flex items-center gap-2">
           <div className="relative flex-1">
-            <input
-              type={visible ? "text" : "password"}
+            <input type={visible ? "text" : "password"}
               placeholder={configured ? "Enter new key to rotate…" : "Paste your API key…"}
-              value={currentVal ?? ""}
-              onChange={e => set(field, e.target.value)}
+              value={currentVal ?? ""} onChange={e => set(field, e.target.value)}
               autoComplete="new-password"
-              className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#1E3A8A] rounded-xl px-3.5 py-2.5 pr-10 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors font-mono"
-            />
-            <button
-              type="button"
-              onClick={() => toggle(field)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
-            >
+              className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 focus:border-[#15803d] rounded-xl px-3.5 py-2.5 pr-10 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors font-mono" />
+            <button type="button" onClick={() => toggleShow(field as string)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
               {visible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
           {configured && (
-            <button
-              type="button"
-              onClick={() => clear(field)}
-              title="Remove key"
-              className="w-10 h-10 rounded-xl border border-red-200 dark:border-red-800 text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center justify-center transition-all shrink-0"
-            >
+            <button type="button" onClick={() => clear(field)} title="Remove key"
+              className="w-10 h-10 rounded-xl border border-red-200 dark:border-red-800 text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center justify-center transition-all shrink-0">
               <X className="w-4 h-4" />
             </button>
           )}
@@ -268,392 +259,264 @@ function IntegrationsTab() {
     );
   };
 
-  return (
-    <form onSubmit={e => { e.preventDefault(); mutate(); }} className="flex flex-col gap-5">
-      {/* Hidden fields absorb browser autofill before it reaches real inputs */}
-      <input type="text" autoComplete="username" className="hidden" aria-hidden="true" readOnly />
-      <input type="password" autoComplete="current-password" className="hidden" aria-hidden="true" readOnly />
-      {error && (
-        <p className="text-red-600 dark:text-red-400 text-sm bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-xl px-4 py-3 font-sans-body">
-          {(error as Error).message}
-        </p>
-      )}
+  const TextField = ({ label, field, placeholder, description, type = "text" }: {
+    label: string; field: keyof IntegrationSettingsIn; placeholder: string; description?: string; type?: string;
+  }) => (
+    <div>
+      <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">{label}</label>
+      <input type={type} placeholder={placeholder} value={(form[field] as string | undefined) ?? ""}
+        autoComplete="off" onChange={e => set(field, e.target.value)}
+        className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 focus:border-[#15803d] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors font-mono" />
+      {description && <p className="text-slate-400 dark:text-slate-500 text-xs mt-1.5 font-sans-body">{description}</p>}
+    </div>
+  );
 
-      {/* CallRail */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 flex flex-col gap-4">
-        <div className="flex items-center gap-3 pb-3 border-b border-slate-100 dark:border-slate-700">
-          <div className="w-8 h-8 rounded-lg bg-[#EFF6FF] dark:bg-blue-950/30 flex items-center justify-center">
-            <Plug className="w-4 h-4 text-[#1E3A8A]" />
-          </div>
-          <div>
-            <h3 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-base">CallRail</h3>
-            <p className="text-slate-500 dark:text-slate-400 text-xs font-sans-body">Inbound call tracking and attribution</p>
-          </div>
-        </div>
-        <div>
-          <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">
-            Account ID
-          </label>
-          <input
-            type="text"
+  const ToggleField = ({ label, description, value, onChange }: {
+    label: string; description: string; value: boolean; onChange: (v: boolean) => void;
+  }) => (
+    <div className="flex items-start justify-between gap-4">
+      <div>
+        <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 font-sans-body">{label}</p>
+        <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5 font-sans-body">{description}</p>
+      </div>
+      <button type="button" role="switch" aria-checked={value} onClick={() => onChange(!value)}
+        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${value ? "bg-[#15803d]" : "bg-slate-200 dark:bg-zinc-700"}`}>
+        <span className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${value ? "translate-x-5" : "translate-x-0"}`} />
+      </button>
+    </div>
+  );
+
+  // ── Section content ────────────────────────────────────────────────────────
+
+  const missedEnabled = form.missed_call_sms_enabled !== undefined ? form.missed_call_sms_enabled : (data?.missed_call_sms_enabled ?? false);
+  const f24hEnabled   = form.followup_24h_enabled   !== undefined ? form.followup_24h_enabled   : (data?.followup_24h_enabled   ?? false);
+  const f72hEnabled   = form.followup_72h_enabled   !== undefined ? form.followup_72h_enabled   : (data?.followup_72h_enabled   ?? false);
+
+  const renderContent = () => {
+    switch (section) {
+      case "callrail":
+        return <>
+          <TextField label="Account ID" field="callrail_account_id"
             placeholder={data?.callrail_account_id ?? "e.g. AAA111222333"}
-            value={form.callrail_account_id ?? ""}
-            autoComplete="off"
-            onChange={e => set("callrail_account_id", e.target.value)}
-            className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#1E3A8A] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors font-mono"
-          />
-          <p className="text-slate-400 dark:text-slate-500 text-xs mt-1.5 font-sans-body">
-            Found in CallRail → Settings → Account → Account ID
-          </p>
-        </div>
-        <KeyField
-          label="API Key"
-          field="callrail_api_key"
-          configured={data?.has_callrail_key ?? false}
-          description="Found in CallRail → Settings → API Access. Used to download call recordings."
-        />
-      </div>
+            description="Found in CallRail → Settings → Account → Account ID" />
+          <KeyField label="API Key" field="callrail_api_key" configured={data?.has_callrail_key ?? false}
+            description="Found in CallRail → Settings → API Access. Used to download call recordings." />
+        </>;
 
-      {/* Transcription */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 flex flex-col gap-4">
-        <div className="flex items-center gap-3 pb-3 border-b border-slate-100 dark:border-slate-700">
-          <div className="w-8 h-8 rounded-lg bg-[#F0FDF4] dark:bg-emerald-950/30 flex items-center justify-center">
-            <span className="text-emerald-700 text-sm font-bold">STT</span>
-          </div>
+      case "transcription":
+        return <>
           <div>
-            <h3 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-base">Transcription</h3>
-            <p className="text-slate-500 dark:text-slate-400 text-xs font-sans-body">Converts call recordings to text — configure at least one provider</p>
+            <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">Primary Provider</label>
+            <select value={form.transcription_provider ?? data?.transcription_provider ?? "openai"}
+              onChange={e => set("transcription_provider", e.target.value)}
+              className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 focus:border-[#15803d] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm outline-none font-sans-body">
+              <option value="openai">OpenAI Whisper</option>
+              <option value="deepgram">Deepgram Nova-2 (free tier available)</option>
+              <option value="assemblyai">AssemblyAI (free tier available)</option>
+            </select>
+            <p className="text-slate-400 dark:text-slate-500 text-xs mt-1.5 font-sans-body">Other configured providers are tried automatically on failure.</p>
           </div>
-        </div>
+          <KeyField label="OpenAI API Key" field="openai_api_key" configured={data?.has_openai_key ?? false}
+            description="Whisper transcription + GPT-4o mini fallback analysis. platform.openai.com/api-keys" />
+          <KeyField label="Deepgram API Key" field="deepgram_api_key" configured={data?.has_deepgram_key ?? false}
+            description="Nova-2 — fast, accurate, free tier: 12,000 min/year. console.deepgram.com" />
+          <KeyField label="AssemblyAI API Key" field="assemblyai_api_key" configured={data?.has_assemblyai_key ?? false}
+            description="Free tier: 100 hours. Strong accuracy on legal/medical content. app.assemblyai.com" />
+        </>;
 
-        <div>
-          <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">
-            Primary Provider
-          </label>
-          <select
-            value={form.transcription_provider ?? data?.transcription_provider ?? "openai"}
-            onChange={e => set("transcription_provider", e.target.value)}
-            className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#1E3A8A] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm outline-none font-sans-body"
-          >
-            <option value="openai">OpenAI Whisper</option>
-            <option value="deepgram">Deepgram Nova-2 (free tier available)</option>
-            <option value="assemblyai">AssemblyAI (free tier available)</option>
-          </select>
-          <p className="text-slate-400 dark:text-slate-500 text-xs mt-1.5 font-sans-body">
-            Other providers with a key configured are tried automatically if the primary fails.
-          </p>
-        </div>
-
-        <KeyField
-          label="OpenAI API Key"
-          field="openai_api_key"
-          configured={data?.has_openai_key ?? false}
-          description="Used for Whisper transcription. Also used for GPT-4o mini call analysis. platform.openai.com/api-keys"
-        />
-        <KeyField
-          label="Deepgram API Key"
-          field="deepgram_api_key"
-          configured={data?.has_deepgram_key ?? false}
-          description="Nova-2 model — fast, accurate, free tier: 12,000 min/year. console.deepgram.com"
-        />
-        <KeyField
-          label="AssemblyAI API Key"
-          field="assemblyai_api_key"
-          configured={data?.has_assemblyai_key ?? false}
-          description="Free tier: 100 hours. Good accuracy on legal/medical content. app.assemblyai.com"
-        />
-      </div>
-
-      {/* AI Analysis Providers */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 flex flex-col gap-4">
-        <div className="flex items-center gap-3 pb-3 border-b border-slate-100 dark:border-slate-700">
-          <div className="w-8 h-8 rounded-lg bg-[#F5F3FF] dark:bg-purple-950/30 flex items-center justify-center">
-            <span className="text-[#5B21B6] text-sm font-bold">AI</span>
-          </div>
+      case "ai":
+        return <>
           <div>
-            <h3 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-base">AI Analysis</h3>
-            <p className="text-slate-500 dark:text-slate-400 text-xs font-sans-body">Lead scoring, call classification, and sentiment analysis</p>
+            <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">Primary Provider</label>
+            <select value={form.ai_primary_provider ?? data?.ai_primary_provider ?? "openai"}
+              onChange={e => set("ai_primary_provider", e.target.value)}
+              className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 focus:border-[#15803d] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm outline-none font-sans-body">
+              <option value="openai">OpenAI (GPT-4o mini)</option>
+              <option value="anthropic">Anthropic (Claude Haiku)</option>
+              <option value="google">Google (Gemini 1.5 Flash)</option>
+            </select>
+            <p className="text-slate-400 dark:text-slate-500 text-xs mt-1.5 font-sans-body">Other providers are used as automatic fallbacks if the primary fails.</p>
           </div>
-        </div>
+          <KeyField label="Anthropic API Key" field="anthropic_api_key" configured={data?.has_anthropic_key ?? false}
+            description="Claude Haiku — fallback analysis provider. console.anthropic.com/settings/keys" />
+          <KeyField label="Google API Key" field="google_api_key" configured={data?.has_google_key ?? false}
+            description="Gemini 1.5 Flash — second fallback. aistudio.google.com/apikey" />
+        </>;
 
-        <div>
-          <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">
-            Primary Provider
-          </label>
-          <select
-            value={form.ai_primary_provider ?? data?.ai_primary_provider ?? "openai"}
-            onChange={e => set("ai_primary_provider", e.target.value)}
-            className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#1E3A8A] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm outline-none font-sans-body"
-          >
-            <option value="openai">OpenAI (GPT-4o mini)</option>
-            <option value="anthropic">Anthropic (Claude Haiku)</option>
-            <option value="google">Google (Gemini 1.5 Flash)</option>
-          </select>
-          <p className="text-slate-400 dark:text-slate-500 text-xs mt-1.5 font-sans-body">
-            Other providers are used as automatic fallbacks if the primary fails.
-          </p>
-        </div>
-
-        <KeyField
-          label="Anthropic API Key"
-          field="anthropic_api_key"
-          configured={data?.has_anthropic_key ?? false}
-          description="Used as fallback AI analysis provider. console.anthropic.com/settings/keys"
-        />
-        <KeyField
-          label="Google API Key"
-          field="google_api_key"
-          configured={data?.has_google_key ?? false}
-          description="Used as second fallback AI provider. aistudio.google.com/apikey"
-        />
-      </div>
-
-      {/* Twilio SMS */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 flex flex-col gap-4">
-        <div className="flex items-center gap-3 pb-3 border-b border-slate-100 dark:border-slate-700">
-          <div className="w-8 h-8 rounded-lg bg-[#FFF7ED] dark:bg-orange-950/30 flex items-center justify-center">
-            <span className="text-orange-600 text-xs font-bold font-sans-body">SMS</span>
-          </div>
-          <div>
-            <h3 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-base">Twilio SMS</h3>
-            <p className="text-slate-500 dark:text-slate-400 text-xs font-sans-body">Automated missed-call SMS and follow-up sequences</p>
-          </div>
-        </div>
-        <div>
-          <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">
-            Account SID
-          </label>
-          <input
-            type="text"
+      case "sms":
+        return <>
+          <TextField label="Account SID" field="twilio_account_sid"
             placeholder={data?.has_twilio ? "Configured — enter to rotate" : "ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}
-            value={form.twilio_account_sid ?? ""}
-            autoComplete="off"
-            onChange={e => set("twilio_account_sid", e.target.value)}
-            className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#1E3A8A] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors font-mono"
-          />
-          <p className="text-slate-400 dark:text-slate-500 text-xs mt-1.5 font-sans-body">
-            Found in Twilio Console → Account Info
-          </p>
-        </div>
-        <KeyField
-          label="Auth Token"
-          field="twilio_auth_token"
-          configured={data?.has_twilio ?? false}
-          description="Found in Twilio Console → Account Info. Kept encrypted, never returned to the client."
-        />
-        <div>
-          <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">
-            From Number
-          </label>
-          <input
-            type="text"
+            description="Found in Twilio Console → Account Info" />
+          <KeyField label="Auth Token" field="twilio_auth_token" configured={data?.has_twilio ?? false}
+            description="Found in Twilio Console → Account Info. Encrypted at rest, never returned." />
+          <TextField label="From Number" field="twilio_from_number"
             placeholder={data?.twilio_from_number ?? "+15550001234"}
-            value={form.twilio_from_number ?? ""}
-            autoComplete="off"
-            onChange={e => set("twilio_from_number", e.target.value)}
-            className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#1E3A8A] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors font-mono"
-          />
-          <p className="text-slate-400 dark:text-slate-500 text-xs mt-1.5 font-sans-body">
-            Your Twilio phone number in E.164 format (e.g. +15550001234)
+            description="Your Twilio phone number in E.164 format (e.g. +15550001234)" />
+        </>;
+
+      case "email":
+        return <>
+          <KeyField label="SendGrid API Key" field="sendgrid_api_key" configured={data?.has_sendgrid_key ?? false}
+            description="app.sendgrid.com/settings/api_keys — Full Access or Mail Send scope required." />
+          <div className="grid sm:grid-cols-2 gap-4">
+            <TextField label="From Email" field="notification_from_email" type="email"
+              placeholder={data?.notification_from_email ?? "intake@yourfirm.com"} />
+            <TextField label="From Name" field="notification_from_name"
+              placeholder={data?.notification_from_name ?? "Law Cube Intake"} />
+          </div>
+          <p className="text-slate-400 dark:text-slate-500 text-xs font-sans-body -mt-1">
+            The sending address must be verified in SendGrid before emails will deliver.
           </p>
-        </div>
-      </div>
+        </>;
 
-      {/* Email / Notifications */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 flex flex-col gap-4">
-        <div className="flex items-center gap-3 pb-3 border-b border-slate-100 dark:border-slate-700">
-          <div className="w-8 h-8 rounded-lg bg-[#EFF6FF] dark:bg-blue-950/30 flex items-center justify-center">
-            <span className="text-blue-600 font-bold text-sm font-sans-body">@</span>
-          </div>
-          <div>
-            <h3 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-base">Email Notifications</h3>
-            <p className="text-slate-500 dark:text-slate-400 text-xs font-sans-body">Qualified lead alerts and follow-up emails to prospects</p>
-          </div>
-        </div>
-        <KeyField
-          label="SendGrid API Key"
-          field="sendgrid_api_key"
-          configured={data?.has_sendgrid_key ?? false}
-          description="Used to send transactional email. app.sendgrid.com/settings/api_keys — Full Access or Mail Send scope."
-        />
-        <div className="grid sm:grid-cols-2 gap-4">
-          <div>
-            <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">
-              From Email
-            </label>
-            <input
-              type="email"
-              placeholder={data?.notification_from_email ?? "intake@yourfirm.com"}
-              value={form.notification_from_email ?? ""}
-              autoComplete="off"
-              onChange={e => set("notification_from_email", e.target.value)}
-              className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#1E3A8A] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors font-sans-body"
-            />
-          </div>
-          <div>
-            <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">
-              From Name
-            </label>
-            <input
-              type="text"
-              placeholder={data?.notification_from_name ?? "Law Cube Intake"}
-              value={form.notification_from_name ?? ""}
-              autoComplete="off"
-              onChange={e => set("notification_from_name", e.target.value)}
-              className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#1E3A8A] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors font-sans-body"
-            />
-          </div>
-        </div>
-        <p className="text-slate-400 dark:text-slate-500 text-xs font-sans-body -mt-2">
-          The sending address must be verified in SendGrid before emails will deliver.
-        </p>
-      </div>
-
-      {/* Follow-Up Automation */}
-      {(() => {
-        const ToggleField = ({
-          label, description, value, onChange,
-        }: { label: string; description: string; value: boolean; onChange: (v: boolean) => void }) => (
-          <div className="flex items-start justify-between gap-4 py-0.5">
+      case "followup":
+        return <>
+          <ToggleField label="Missed Call SMS"
+            description="Send an SMS immediately when a call is missed and goes unanswered"
+            value={missedEnabled} onChange={v => setForm(p => ({ ...p, missed_call_sms_enabled: v }))} />
+          {missedEnabled && (
             <div>
-              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 font-sans-body">{label}</p>
-              <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5 font-sans-body">{description}</p>
+              <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">Missed Call Template</label>
+              <textarea rows={3}
+                value={form.missed_call_sms_template ?? (data?.missed_call_sms_template ?? "Hi {first_name}, we missed your call at {firm_name}. We'd love to help — reply or call back to speak with our intake team.")}
+                onChange={e => set("missed_call_sms_template", e.target.value)}
+                className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 focus:border-[#15803d] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm outline-none transition-colors font-sans-body resize-none" />
+              <p className="text-slate-400 dark:text-slate-500 text-xs mt-1.5 font-sans-body">Variables: {"{first_name}"}, {"{firm_name}"}, {"{case_type}"}</p>
             </div>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={value}
-              onClick={() => onChange(!value)}
-              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${
-                value ? "bg-[#15803d]" : "bg-slate-200 dark:bg-slate-700"
-              }`}
-            >
-              <span className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${value ? "translate-x-5" : "translate-x-0"}`} />
-            </button>
-          </div>
-        );
-
-        const missedEnabled = form.missed_call_sms_enabled !== undefined ? form.missed_call_sms_enabled : (data?.missed_call_sms_enabled ?? false);
-        const f24hEnabled   = form.followup_24h_enabled !== undefined   ? form.followup_24h_enabled   : (data?.followup_24h_enabled ?? false);
-        const f72hEnabled   = form.followup_72h_enabled !== undefined   ? form.followup_72h_enabled   : (data?.followup_72h_enabled ?? false);
-
-        return (
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 flex flex-col gap-5">
-            <div className="flex items-center gap-3 pb-3 border-b border-slate-100 dark:border-slate-700">
-              <div className="w-8 h-8 rounded-lg bg-[#F0FDF4] dark:bg-emerald-950/30 flex items-center justify-center">
-                <span className="text-emerald-700 text-xs font-bold font-sans-body">AUTO</span>
-              </div>
-              <div>
-                <h3 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-base">Follow-Up Automation</h3>
-                <p className="text-slate-500 dark:text-slate-400 text-xs font-sans-body">Automatic SMS and email sequences after missed calls</p>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-4">
-              <ToggleField
-                label="Missed Call SMS"
-                description="Send an SMS immediately when a call is missed and goes unanswered"
-                value={missedEnabled}
-                onChange={v => setForm(p => ({ ...p, missed_call_sms_enabled: v }))}
-              />
-              {missedEnabled && (
-                <div>
-                  <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">
-                    Missed Call Template
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={form.missed_call_sms_template ?? (data?.missed_call_sms_template ?? "Hi {first_name}, we missed your call at {firm_name}. We'd love to help — reply or call back to speak with our intake team.")}
-                    onChange={e => set("missed_call_sms_template", e.target.value)}
-                    className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#1E3A8A] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors font-sans-body resize-none"
-                  />
-                  <p className="text-slate-400 dark:text-slate-500 text-xs mt-1.5 font-sans-body">
-                    Variables: {"{first_name}"}, {"{firm_name}"}, {"{case_type}"}
-                  </p>
-                </div>
-              )}
-            </div>
-
-            <div className="h-px bg-slate-100 dark:bg-slate-700" />
-
-            <div className="flex flex-col gap-4">
-              <ToggleField
-                label="24-Hour Follow-Up"
-                description="Automatically contact leads who haven't responded 24 hours after a missed call"
-                value={f24hEnabled}
-                onChange={v => setForm(p => ({ ...p, followup_24h_enabled: v }))}
-              />
-              {f24hEnabled && (
-                <div>
-                  <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">
-                    24h Follow-Up Template
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={form.followup_24h_sms_template ?? (data?.followup_24h_sms_template ?? "Hi {first_name}, just following up on your call yesterday. We're here to help — reply anytime to schedule a free consultation.")}
-                    onChange={e => set("followup_24h_sms_template", e.target.value)}
-                    className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#1E3A8A] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors font-sans-body resize-none"
-                  />
-                  <p className="text-slate-400 dark:text-slate-500 text-xs mt-1.5 font-sans-body">
-                    Variables: {"{first_name}"}, {"{firm_name}"}, {"{case_type}"}
-                  </p>
-                </div>
-              )}
-            </div>
-
-            <div className="h-px bg-slate-100 dark:bg-slate-700" />
-
-            <div className="flex flex-col gap-4">
-              <ToggleField
-                label="72-Hour Follow-Up"
-                description="Send a final follow-up to leads who still haven't responded after 72 hours"
-                value={f72hEnabled}
-                onChange={v => setForm(p => ({ ...p, followup_72h_enabled: v }))}
-              />
-              {f72hEnabled && (
-                <div>
-                  <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">
-                    72h Follow-Up Template
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={form.followup_72h_sms_template ?? (data?.followup_72h_sms_template ?? "Hi {first_name}, we're still here if you need help. Schedule a free consultation at your convenience — no obligation.")}
-                    onChange={e => set("followup_72h_sms_template", e.target.value)}
-                    className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:border-[#1E3A8A] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors font-sans-body resize-none"
-                  />
-                  <p className="text-slate-400 dark:text-slate-500 text-xs mt-1.5 font-sans-body">
-                    Variables: {"{first_name}"}, {"{firm_name}"}, {"{case_type}"}
-                  </p>
-                </div>
-              )}
-            </div>
-
-            <p className="text-slate-400 dark:text-slate-500 text-xs font-sans-body">
-              Sequences respect opt-outs. Leads reply STOP to unsubscribe; UNSTOP to resubscribe.
-            </p>
-          </div>
-        );
-      })()}
-
-      <div className="flex items-center justify-between">
-        <p className="text-slate-400 dark:text-slate-500 text-xs font-sans-body">
-          Keys are stored encrypted and never returned in API responses.
-        </p>
-        <button
-          type="submit"
-          disabled={isPending || Object.keys(form).length === 0}
-          className="flex items-center gap-2 bg-[#1E3A8A] hover:bg-[#1D4ED8] text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors font-sans-body disabled:opacity-50"
-        >
-          {isPending ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : saved ? (
-            <><Check className="w-4 h-4" /> Saved</>
-          ) : (
-            "Save Changes"
           )}
-        </button>
+          <div className="h-px bg-slate-100 dark:bg-zinc-800" />
+          <ToggleField label="24-Hour Follow-Up"
+            description="Contact leads who haven't responded 24 hours after a missed call"
+            value={f24hEnabled} onChange={v => setForm(p => ({ ...p, followup_24h_enabled: v }))} />
+          {f24hEnabled && (
+            <div>
+              <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">24h Template</label>
+              <textarea rows={3}
+                value={form.followup_24h_sms_template ?? (data?.followup_24h_sms_template ?? "Hi {first_name}, just following up on your call yesterday. We're here to help — reply anytime to schedule a free consultation.")}
+                onChange={e => set("followup_24h_sms_template", e.target.value)}
+                className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 focus:border-[#15803d] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm outline-none transition-colors font-sans-body resize-none" />
+              <p className="text-slate-400 dark:text-slate-500 text-xs mt-1.5 font-sans-body">Variables: {"{first_name}"}, {"{firm_name}"}, {"{case_type}"}</p>
+            </div>
+          )}
+          <div className="h-px bg-slate-100 dark:bg-zinc-800" />
+          <ToggleField label="72-Hour Follow-Up"
+            description="Send a final follow-up to leads who still haven't responded after 72 hours"
+            value={f72hEnabled} onChange={v => setForm(p => ({ ...p, followup_72h_enabled: v }))} />
+          {f72hEnabled && (
+            <div>
+              <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">72h Template</label>
+              <textarea rows={3}
+                value={form.followup_72h_sms_template ?? (data?.followup_72h_sms_template ?? "Hi {first_name}, we're still here if you need help. Schedule a free consultation at your convenience — no obligation.")}
+                onChange={e => set("followup_72h_sms_template", e.target.value)}
+                className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 focus:border-[#15803d] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm outline-none transition-colors font-sans-body resize-none" />
+              <p className="text-slate-400 dark:text-slate-500 text-xs mt-1.5 font-sans-body">Variables: {"{first_name}"}, {"{firm_name}"}, {"{case_type}"}</p>
+            </div>
+          )}
+          <p className="text-slate-400 dark:text-slate-500 text-xs font-sans-body">
+            Sequences respect opt-outs — leads reply STOP to unsubscribe, UNSTOP to resubscribe.
+          </p>
+        </>;
+    }
+  };
+
+  // ── Render ─────────────────────────────────────────────────────────────────
+
+  if (isLoading) {
+    return (
+      <div className="bg-white dark:bg-zinc-950 border border-slate-200 dark:border-[#166534] rounded-2xl overflow-hidden flex" style={{ minHeight: 520 }}>
+        <div className="w-52 shrink-0 border-r border-slate-100 dark:border-zinc-800 bg-slate-50/40 dark:bg-zinc-900/40 p-2 flex flex-col gap-1.5">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="h-14 rounded-xl bg-slate-100 dark:bg-zinc-800 animate-pulse" />
+          ))}
+        </div>
+        <div className="flex-1 p-6 flex flex-col gap-5">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="h-14 rounded-xl bg-slate-100 dark:bg-zinc-800 animate-pulse" />
+          ))}
+        </div>
       </div>
-    </form>
+    );
+  }
+
+  const activeSection = SECTIONS.find(s => s.key === section)!;
+
+  return (
+    <div className="bg-white dark:bg-zinc-950 border border-slate-200 dark:border-[#166534] rounded-2xl overflow-hidden flex" style={{ minHeight: 540 }}>
+
+      {/* ── Left sidebar ── */}
+      <div className="w-52 shrink-0 border-r border-slate-100 dark:border-zinc-800 flex flex-col bg-slate-50/40 dark:bg-zinc-900/30">
+        {SECTIONS.map(({ key, label, subtitle, Icon }) => {
+          const active = section === key;
+          const configured = isConfigured(key);
+          return (
+            <button key={key} type="button" onClick={() => setSection(key)}
+              className={`relative flex items-center gap-3 px-4 py-3.5 text-left transition-colors group ${
+                active ? "bg-white dark:bg-zinc-950" : "hover:bg-white/60 dark:hover:bg-zinc-950/40"
+              }`}>
+              {active && <div className="absolute left-0 top-3 bottom-3 w-[3px] rounded-r-full bg-[#15803d]" />}
+              <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+                active ? "bg-[#f0fdf4] dark:bg-emerald-950/50" : "bg-slate-100 dark:bg-zinc-800 group-hover:bg-slate-50 dark:group-hover:bg-zinc-700/50"
+              }`}>
+                <Icon className={`w-3.5 h-3.5 transition-colors ${active ? "text-[#15803d]" : "text-slate-400 dark:text-slate-500"}`} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className={`text-xs font-semibold font-sans-body leading-tight ${active ? "text-slate-900 dark:text-slate-100" : "text-slate-600 dark:text-slate-400"}`}>{label}</p>
+                <p className="text-[11px] text-slate-400 dark:text-slate-500 font-sans-body mt-0.5">{subtitle}</p>
+              </div>
+              <div className={`w-1.5 h-1.5 rounded-full shrink-0 transition-colors ${configured ? "bg-[#22c55e]" : "bg-slate-200 dark:bg-zinc-700"}`} />
+            </button>
+          );
+        })}
+      </div>
+
+      {/* ── Right content panel ── */}
+      <form onSubmit={e => { e.preventDefault(); mutate(); }} className="flex-1 flex flex-col overflow-hidden">
+        <input type="text" autoComplete="username" className="hidden" aria-hidden="true" readOnly />
+        <input type="password" autoComplete="current-password" className="hidden" aria-hidden="true" readOnly />
+
+        {/* Panel header */}
+        <div className="shrink-0 px-6 py-4 border-b border-slate-100 dark:border-zinc-800 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-[#f0fdf4] dark:bg-emerald-950/50 flex items-center justify-center">
+              <activeSection.Icon className="w-4 h-4 text-[#15803d]" />
+            </div>
+            <div>
+              <h3 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-base leading-tight">{activeSection.label}</h3>
+              <p className="text-slate-500 dark:text-slate-400 text-xs font-sans-body">{activeSection.subtitle}</p>
+            </div>
+          </div>
+          {isConfigured(section) && (
+            <span className="flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 font-sans-body bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 px-2.5 py-1 rounded-full">
+              <CheckCircle2 className="w-3.5 h-3.5" />Configured
+            </span>
+          )}
+        </div>
+
+        {/* Error banner */}
+        {error && (
+          <div className="mx-6 mt-4 shrink-0 text-red-600 dark:text-red-400 text-sm bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-xl px-4 py-3 font-sans-body">
+            {(error as Error).message}
+          </div>
+        )}
+
+        {/* Scrollable fields */}
+        <div className="flex-1 overflow-y-auto px-6 py-5 flex flex-col gap-5">
+          {renderContent()}
+        </div>
+
+        {/* Sticky footer */}
+        <div className="shrink-0 border-t border-slate-100 dark:border-zinc-800 px-6 py-4 flex items-center justify-between bg-slate-50/40 dark:bg-zinc-900/30">
+          <p className="text-slate-400 dark:text-slate-500 text-xs font-sans-body">
+            Keys are encrypted at rest and never returned to the client.
+          </p>
+          <button type="submit" disabled={isPending || Object.keys(form).length === 0}
+            className="flex items-center gap-2 bg-[#15803d] hover:bg-[#166534] text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors font-sans-body disabled:opacity-50">
+            {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : saved ? <><Check className="w-4 h-4" />Saved</> : "Save Changes"}
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }
 
