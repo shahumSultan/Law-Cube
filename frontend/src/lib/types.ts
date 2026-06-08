@@ -160,6 +160,23 @@ export interface IntegrationSettingsOut {
   missed_call_sms_template: string | null;
   followup_24h_sms_template: string | null;
   followup_72h_sms_template: string | null;
+  has_clio: boolean;
+  clio_connected_at: string | null;
+}
+
+export interface ClioSyncLog {
+  id: string;
+  lead_id: string | null;
+  operation: string;
+  status: string;
+  clio_entity_id: string | null;
+  error_message: string | null;
+  created_at: string;
+}
+
+export interface ClioSyncLogListResponse {
+  items: ClioSyncLog[];
+  total: number;
 }
 
 export interface IntegrationSettingsIn {

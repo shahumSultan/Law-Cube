@@ -5,6 +5,7 @@ from app.core.config import get_settings
 from app.workers.tasks.call_processing import process_call
 from app.workers.tasks.missed_call_sms import send_missed_call_sms
 from app.workers.tasks.followup_sequences import check_followup_sequences
+from app.workers.tasks.clio_sync import sync_lead_to_clio
 
 settings = get_settings()
 
@@ -19,7 +20,7 @@ async def shutdown(ctx: dict) -> None:
 
 
 class WorkerSettings:
-    functions = [process_call, send_missed_call_sms]
+    functions = [process_call, send_missed_call_sms, sync_lead_to_clio]
     cron_jobs = [
         cron(check_followup_sequences, minute={0, 15, 30, 45}),  # every 15 minutes
     ]

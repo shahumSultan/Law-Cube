@@ -68,6 +68,9 @@ class Settings(BaseSettings):
     # Clio
     CLIO_CLIENT_ID: str = ""
     CLIO_CLIENT_SECRET: str = ""
+    CLIO_WEBHOOK_SECRET: str = ""
+    APP_BASE_URL: str = "http://localhost:8000"
+    FRONTEND_URL: str = "http://localhost:3000"
 
     # CORS — comma-separated list of allowed origins, e.g. https://app.vercel.app,http://localhost:3000
     CORS_ORIGINS: str = "http://localhost:3000"

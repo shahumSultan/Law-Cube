@@ -46,6 +46,8 @@ def _to_out(org: Organization, s: dict) -> IntegrationSettingsOut:
         missed_call_sms_template=s.get("missed_call_sms_template"),
         followup_24h_sms_template=s.get("followup_24h_sms_template"),
         followup_72h_sms_template=s.get("followup_72h_sms_template"),
+        has_clio=bool(s.get("clio_access_token")),
+        clio_connected_at=s.get("clio_connected_at"),
     )
 
 

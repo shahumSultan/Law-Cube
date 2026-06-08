@@ -4,6 +4,7 @@
  */
 
 import type {
+  ClioSyncLog, ClioSyncLogListResponse,
   DashboardResponse, IntegrationSettingsIn, IntegrationSettingsOut,
   InviteResponse, Lead, LeadCreate, LeadListResponse, LeadUpdate,
   Note, OrgUser, TokenResponse, User, UserListResponse,
@@ -250,4 +251,25 @@ export const settingsApi = {
     request<IntegrationSettingsOut>("/api/settings/integrations"),
   updateIntegrations: (body: IntegrationSettingsIn) =>
     request<IntegrationSettingsOut>("/api/settings/integrations", { method: "PUT", body }),
+};
+
+// ── Clio ──────────────────────────────────────────────────────────────────────
+
+export const clioApi = {
+  getAuthUrl: () =>
+    request<{ url: string }>("/api/clio/auth-url"),
+
+  disconnect: () =>
+    request<{ status: string; message: string }>("/api/clio/disconnect", { method: "DELETE" }),
+
+  getSyncLogs: (params: { lead_id?: string; page?: number; page_size?: number } = {}) => {
+    const qs = new URLSearchParams();
+    if (params.lead_id) qs.set("lead_id", params.lead_id);
+    if (params.page) qs.set("page", String(params.page));
+    if (params.page_size) qs.set("page_size", String(params.page_size));
+    return request<ClioSyncLogListResponse>(`/api/clio/sync-logs?${qs}`);
+  },
+
+  syncLead: (leadId: string) =>
+    request<{ status: string; message: string }>(`/api/leads/${leadId}/clio-sync`, { method: "POST" }),
 };

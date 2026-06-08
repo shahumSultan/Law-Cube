@@ -1,17 +1,18 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Users, User, Plus, Loader2, X, Copy, Check, Shield, Trash2,
   Plug, Eye, EyeOff, CheckCircle2, AlertCircle,
-  Phone, Mic, Brain, MessageSquare, Mail, Zap,
+  Phone, Mic, Brain, MessageSquare, Mail, Zap, Link2, ExternalLink,
 } from "lucide-react";
-import { usersApi, settingsApi } from "@/lib/api";
+import { usersApi, settingsApi, clioApi } from "@/lib/api";
 import { useAuthStore } from "@/lib/auth-store";
 import { canInviteUser, canChangeRole, isFirmOwner } from "@/lib/types";
-import type { Role, IntegrationSettingsIn } from "@/lib/types";
+import type { Role, IntegrationSettingsIn, ClioSyncLog } from "@/lib/types";
 
 const ROLE_LABELS: Record<Role, string> = {
   super_admin: "Super Admin",
@@ -171,7 +172,7 @@ function InviteModal({ onClose }: { onClose: () => void }) {
 }
 
 /* ─── Integrations tab ─── */
-type SectionKey = "callrail" | "transcription" | "ai" | "sms" | "email" | "followup";
+type SectionKey = "callrail" | "transcription" | "ai" | "sms" | "email" | "followup" | "clio";
 
 const SECTIONS: { key: SectionKey; label: string; subtitle: string; Icon: React.ElementType }[] = [
   { key: "callrail",      label: "CallRail",      subtitle: "Call tracking",  Icon: Phone },
@@ -180,18 +181,36 @@ const SECTIONS: { key: SectionKey; label: string; subtitle: string; Icon: React.
   { key: "sms",           label: "Twilio SMS",    subtitle: "Automated SMS",  Icon: MessageSquare },
   { key: "email",         label: "Email",         subtitle: "Notifications",  Icon: Mail },
   { key: "followup",      label: "Follow-Up",     subtitle: "Sequences",      Icon: Zap },
+  { key: "clio",          label: "Clio",          subtitle: "Practice mgmt",  Icon: Link2 },
 ];
 
 function IntegrationsTab() {
   const queryClient = useQueryClient();
+  const searchParams = useSearchParams();
   const [section, setSection] = useState<SectionKey>("callrail");
   const [showKeys, setShowKeys] = useState<Record<string, boolean>>({});
   const [form, setForm] = useState<IntegrationSettingsIn>({});
   const [saved, setSaved] = useState(false);
+  const [clioNotice, setClioNotice] = useState<"connected" | "error" | null>(null);
+  const [clioConnecting, setClioConnecting] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ["integrations"],
     queryFn: settingsApi.getIntegrations,
+  });
+
+  const { data: clioLogs } = useQuery({
+    queryKey: ["clio-sync-logs"],
+    queryFn: () => clioApi.getSyncLogs({ page_size: 8 }),
+    enabled: section === "clio",
+  });
+
+  const disconnectClio = useMutation({
+    mutationFn: clioApi.disconnect,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["integrations"] });
+      queryClient.invalidateQueries({ queryKey: ["clio-sync-logs"] });
+    },
   });
 
   const { mutate, isPending, error } = useMutation({
@@ -203,6 +222,21 @@ function IntegrationsTab() {
       setTimeout(() => setSaved(false), 3000);
     },
   });
+
+  useEffect(() => {
+    const clio = searchParams.get("clio");
+    if (clio === "connected") {
+      setSection("clio");
+      setClioNotice("connected");
+      queryClient.invalidateQueries({ queryKey: ["integrations"] });
+      setTimeout(() => setClioNotice(null), 6000);
+    } else if (clio === "error") {
+      setSection("clio");
+      setClioNotice("error");
+      setTimeout(() => setClioNotice(null), 6000);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const toggleShow = (key: string) => setShowKeys(p => ({ ...p, [key]: !p[key] }));
   const set = (field: keyof IntegrationSettingsIn, value: string) => setForm(p => ({ ...p, [field]: value }));
@@ -217,6 +251,7 @@ function IntegrationsTab() {
       case "sms":           return data.has_twilio;
       case "email":         return data.has_sendgrid_key;
       case "followup":      return !!(data.missed_call_sms_enabled || data.followup_24h_enabled || data.followup_72h_enabled);
+      case "clio":          return data.has_clio;
     }
   };
 
@@ -417,6 +452,132 @@ function IntegrationsTab() {
             Sequences respect opt-outs — leads reply STOP to unsubscribe, UNSTOP to resubscribe.
           </p>
         </>;
+
+      case "clio": {
+        const connected = data?.has_clio ?? false;
+        const connectedAt = data?.clio_connected_at
+          ? new Date(data.clio_connected_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+          : null;
+
+        const connectClio = async () => {
+          setClioConnecting(true);
+          try {
+            const { url } = await clioApi.getAuthUrl();
+            window.location.href = url;
+          } catch {
+            setClioConnecting(false);
+          }
+        };
+
+        const OP_LABELS: Record<string, string> = {
+          contact_create: "Contact created",
+          contact_update: "Contact updated",
+          matter_create:  "Matter created",
+          note_create:    "Note created",
+        };
+
+        return <>
+          {clioNotice === "connected" && (
+            <div className="flex items-center gap-3 p-4 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-xl">
+              <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+              <p className="text-emerald-800 dark:text-emerald-300 text-sm font-semibold font-sans-body">Clio connected successfully!</p>
+            </div>
+          )}
+          {clioNotice === "error" && (
+            <div className="flex items-center gap-3 p-4 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-xl">
+              <AlertCircle className="w-5 h-5 text-red-500 shrink-0" />
+              <p className="text-red-800 dark:text-red-300 text-sm font-semibold font-sans-body">Clio connection failed. Please try again.</p>
+            </div>
+          )}
+
+          {connected ? (
+            <div className="flex flex-col gap-5">
+              <div className="flex items-center justify-between p-4 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800 rounded-xl">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center">
+                    <Link2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-300 font-sans-body">Connected to Clio</p>
+                    {connectedAt && <p className="text-xs text-emerald-600 dark:text-emerald-500 font-sans-body">Since {connectedAt}</p>}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => { if (confirm("Disconnect Clio? Sync will stop until reconnected.")) disconnectClio.mutate(); }}
+                  disabled={disconnectClio.isPending}
+                  className="flex items-center gap-2 text-xs font-semibold text-red-600 hover:text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800 rounded-xl px-3 py-1.5 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all font-sans-body disabled:opacity-50">
+                  {disconnectClio.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <X className="w-3.5 h-3.5" />}
+                  Disconnect
+                </button>
+              </div>
+
+              <div>
+                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 font-sans-body uppercase tracking-wider mb-3">How sync works</p>
+                <div className="flex flex-col gap-2">
+                  {[
+                    ["Consultation Scheduled", "Clio contact created / updated"],
+                    ["Retained",               "Clio matter created + AI summary note pushed"],
+                    ["Manual",                 "Push any lead from the lead detail page"],
+                  ].map(([trigger, action]) => (
+                    <div key={trigger} className="flex items-center gap-3 text-sm font-sans-body">
+                      <span className="text-slate-900 dark:text-slate-100 font-medium w-52 shrink-0">{trigger}</span>
+                      <span className="text-slate-400 dark:text-slate-500">→</span>
+                      <span className="text-slate-500 dark:text-slate-400">{action}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {clioLogs && clioLogs.items.length > 0 && (
+                <div>
+                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 font-sans-body uppercase tracking-wider mb-3">Recent Sync Activity</p>
+                  <div className="border border-slate-100 dark:border-zinc-800 rounded-xl divide-y divide-slate-100 dark:divide-zinc-800 overflow-hidden">
+                    {clioLogs.items.map((log: ClioSyncLog) => (
+                      <div key={log.id} className="flex items-center gap-3 px-4 py-2.5">
+                        <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${log.status === "success" ? "bg-emerald-400" : "bg-red-400"}`} />
+                        <span className="text-xs text-slate-600 dark:text-slate-400 font-sans-body flex-1">{OP_LABELS[log.operation] ?? log.operation}</span>
+                        {log.clio_entity_id && <span className="text-xs font-mono text-slate-400 dark:text-slate-600">#{log.clio_entity_id}</span>}
+                        <span className="text-[11px] text-slate-400 dark:text-slate-600 font-sans-body shrink-0">
+                          {new Date(log.created_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="flex flex-col gap-5">
+              <div className="p-5 bg-slate-50 dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-700 rounded-xl">
+                <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 font-sans-body mb-1.5">Connect your Clio account</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 font-sans-body leading-relaxed">
+                  Sync leads to Clio as contacts and matters automatically. When a lead is marked as retained, Law Cube creates a Clio matter and pushes the AI intake summary as a note.
+                </p>
+              </div>
+              <div className="flex flex-col gap-2">
+                {["Automatic contact creation on consultation scheduled", "Matter + AI note on retention", "Manual push from any lead page", "Inbound Clio webhooks to keep records in sync"].map(f => (
+                  <div key={f} className="flex items-center gap-2.5 text-sm text-slate-600 dark:text-slate-400 font-sans-body">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                    {f}
+                  </div>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={connectClio}
+                disabled={clioConnecting}
+                className="flex items-center justify-center gap-2 bg-[#15803d] hover:bg-[#166534] text-white text-sm font-semibold px-5 py-3 rounded-xl transition-colors font-sans-body disabled:opacity-60 w-fit">
+                {clioConnecting ? <Loader2 className="w-4 h-4 animate-spin" /> : <ExternalLink className="w-4 h-4" />}
+                Connect to Clio
+              </button>
+              <p className="text-xs text-slate-400 dark:text-slate-500 font-sans-body -mt-2">
+                You will be redirected to Clio to authorize Law Cube. A Clio account is required.
+              </p>
+            </div>
+          )}
+        </>;
+      }
     }
   };
 
@@ -505,16 +666,18 @@ function IntegrationsTab() {
           {renderContent()}
         </div>
 
-        {/* Sticky footer */}
-        <div className="shrink-0 border-t border-slate-100 dark:border-zinc-800 px-6 py-4 flex items-center justify-between bg-slate-50/40 dark:bg-zinc-900/30">
-          <p className="text-slate-400 dark:text-slate-500 text-xs font-sans-body">
-            Keys are encrypted at rest and never returned to the client.
-          </p>
-          <button type="submit" disabled={isPending || Object.keys(form).length === 0}
-            className="flex items-center gap-2 bg-[#15803d] hover:bg-[#166534] text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors font-sans-body disabled:opacity-50">
-            {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : saved ? <><Check className="w-4 h-4" />Saved</> : "Save Changes"}
-          </button>
-        </div>
+        {/* Sticky footer — hidden for Clio which has its own inline controls */}
+        {section !== "clio" && (
+          <div className="shrink-0 border-t border-slate-100 dark:border-zinc-800 px-6 py-4 flex items-center justify-between bg-slate-50/40 dark:bg-zinc-900/30">
+            <p className="text-slate-400 dark:text-slate-500 text-xs font-sans-body">
+              Keys are encrypted at rest and never returned to the client.
+            </p>
+            <button type="submit" disabled={isPending || Object.keys(form).length === 0}
+              className="flex items-center gap-2 bg-[#15803d] hover:bg-[#166534] text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors font-sans-body disabled:opacity-50">
+              {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : saved ? <><Check className="w-4 h-4" />Saved</> : "Save Changes"}
+            </button>
+          </div>
+        )}
       </form>
     </div>
   );

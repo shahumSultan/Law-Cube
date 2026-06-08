@@ -100,3 +100,6 @@ class IntegrationSettingsOut(BaseModel):
     missed_call_sms_template: str | None
     followup_24h_sms_template: str | None
     followup_72h_sms_template: str | None
+    # Clio
+    has_clio: bool
+    clio_connected_at: str | None

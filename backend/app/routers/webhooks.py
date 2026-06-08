@@ -300,10 +300,3 @@ def _twiml_response(message: str):
     return Response(content=xml, media_type="application/xml")
 
 
-# ── Clio (stub — M4) ─────────────────────────────────────────────────────────
-
-@router.post("/clio")
-async def clio_webhook(request: Request, db: DB):
-    payload = await request.json()
-    # Clio sync logic — M4
-    return {"status": "received"}
