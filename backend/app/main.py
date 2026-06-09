@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import get_settings
 from app.core.logging import setup_logging
-from app.routers import auth, calls, dashboard, leads, notifications, settings as settings_router, users, webhooks
+from app.routers import auth, calls, clio, dashboard, leads, notifications, settings as settings_router, users, webhooks
 
 settings = get_settings()
 setup_logging(debug=settings.DEBUG, env=settings.APP_ENV)
@@ -62,6 +62,7 @@ app.include_router(dashboard.router, prefix="/api")
 app.include_router(users.router,     prefix="/api")
 app.include_router(settings_router.router,  prefix="/api")
 app.include_router(notifications.router,    prefix="/api")
+app.include_router(clio.router,      prefix="/api")
 app.include_router(webhooks.router,  prefix="/api")
 
 

@@ -1,13 +1,18 @@
+import json
 from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import func, select
 
-from app.core.dependencies import CurrentUser, DB, Manager, require_roles
+from app.core.config import get_settings
+from app.core.dependencies import CurrentUser, DB, FirmOwner, Manager, require_roles
 from app.models.lead import Lead, LeadNote, LeadTimeline
+from app.models.organization import Organization
 from app.models.user import User
 from app.schemas.lead import LeadCreate, LeadListResponse, LeadOut, LeadUpdate, NoteCreate, NoteOut
+
+settings = get_settings()
 
 router = APIRouter(prefix="/leads", tags=["leads"])
 
@@ -108,6 +113,17 @@ async def update_lead(lead_id: UUID, body: LeadUpdate, db: DB, current_user: Cur
             description=f"Status changed from {old_status} to {body.status} by {current_user.full_name}",
         ))
 
+        # Auto-sync to Clio on key status changes
+        if body.status in ("consultation_scheduled", "retained"):
+            try:
+                from arq import create_pool
+                from arq.connections import RedisSettings
+                redis = await create_pool(RedisSettings.from_dsn(settings.REDIS_URL))
+                await redis.enqueue_job("sync_lead_to_clio", str(lead.id))
+                await redis.aclose()
+            except Exception:
+                pass  # Never fail a lead update because of a background task
+
     return lead
 
 
@@ -138,3 +154,35 @@ async def add_note(lead_id: UUID, body: NoteCreate, db: DB, current_user: Curren
     db.add(note)
     await db.flush()
     return note
+
+
+@router.post("/{lead_id}/clio-sync", status_code=status.HTTP_202_ACCEPTED)
+async def clio_sync_lead(lead_id: UUID, db: DB, current_user: FirmOwner):
+    """Enqueue a Clio sync job for this lead."""
+    lead_result = await db.execute(
+        select(Lead).where(Lead.id == lead_id, Lead.organization_id == current_user.organization_id)
+    )
+    if not lead_result.scalar_one_or_none():
+        raise HTTPException(status_code=404, detail="Lead not found")
+
+    org_result = await db.execute(
+        select(Organization).where(Organization.id == current_user.organization_id)
+    )
+    org = org_result.scalar_one_or_none()
+    s = {}
+    if org and org.settings:
+        try:
+            s = json.loads(org.settings)
+        except (json.JSONDecodeError, TypeError):
+            pass
+
+    if not s.get("clio_access_token"):
+        raise HTTPException(status_code=400, detail="Clio is not connected. Go to Settings → Clio to connect.")
+
+    from arq import create_pool
+    from arq.connections import RedisSettings
+    redis = await create_pool(RedisSettings.from_dsn(settings.REDIS_URL))
+    await redis.enqueue_job("sync_lead_to_clio", str(lead_id))
+    await redis.aclose()
+
+    return {"status": "queued", "message": "Sync queued — Clio will be updated shortly."}

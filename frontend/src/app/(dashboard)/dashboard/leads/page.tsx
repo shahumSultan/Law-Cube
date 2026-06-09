@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+import Link from "next/link";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Search, Plus, Filter, ChevronLeft, ChevronRight, MoreHorizontal, ArrowUpDown, X, Loader2, ChevronDown, Check } from "lucide-react";
 import { leadsApi } from "@/lib/api";
@@ -301,10 +302,12 @@ export default function LeadsPage() {
                 : leads.map(lead => (
                   <tr key={lead.id} className="border-b border-slate-50 dark:border-[#166534]/50 table-row-hover">
                     <td className="px-4 sm:px-5 py-4">
-                      <div className="font-medium text-slate-900 dark:text-slate-100 text-sm font-sans-body">
-                        {lead.first_name} {lead.last_name}
-                      </div>
-                      <div className="text-slate-500 dark:text-slate-400 text-xs mt-0.5 font-sans-body">{lead.email}</div>
+                      <Link href={`/dashboard/leads/${lead.id}`} className="group">
+                        <div className="font-medium text-slate-900 dark:text-slate-100 text-sm font-sans-body group-hover:text-[#15803d] dark:group-hover:text-green-400 transition-colors">
+                          {lead.first_name} {lead.last_name}
+                        </div>
+                        <div className="text-slate-500 dark:text-slate-400 text-xs mt-0.5 font-sans-body">{lead.email}</div>
+                      </Link>
                     </td>
                     <td className="hidden md:table-cell px-4 py-4 text-slate-600 dark:text-slate-400 text-sm font-sans-body">{lead.phone}</td>
                     <td className="hidden sm:table-cell px-4 py-4 text-slate-600 dark:text-slate-400 text-sm font-sans-body capitalize">{lead.source?.replace(/_/g, " ")}</td>
