@@ -7,10 +7,12 @@ import { authApi } from "@/lib/api";
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const { accessToken, user, setUser, logout } = useAuthStore();
+  const { accessToken, user, setUser, logout, _hasHydrated } = useAuthStore();
   const [validated, setValidated] = useState(false);
 
   useEffect(() => {
+    if (!_hasHydrated) return;
+
     if (!accessToken) {
       router.replace("/login");
       return;
@@ -26,7 +28,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
         logout();
         router.replace("/");
       });
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [_hasHydrated]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!validated || !user) {
     return (
