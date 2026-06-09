@@ -15,6 +15,7 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { AuthGuard } from "@/components/auth-guard";
 import { useAuthStore } from "@/lib/auth-store";
 import { notificationsApi, type NotificationRecord } from "@/lib/api";
+import { AlertCircle, X as XIcon } from "lucide-react";
 
 const NAV_ITEMS = [
   { icon: LayoutDashboard, label: "Dashboard",  href: "/dashboard" },
@@ -239,6 +240,49 @@ function Sidebar({
         {collapsed ? <ChevronRight className="w-3 h-3" /> : <ChevronLeft className="w-3 h-3" />}
       </button>
     </>
+  );
+}
+
+function TrialBanner() {
+  const user = useAuthStore(s => s.user);
+  const router = useRouter();
+  const [dismissed, setDismissed] = useState(false);
+
+  if (dismissed || !user || user.plan !== "trial" || !user.trial_ends_at) return null;
+
+  const daysLeft = Math.ceil((new Date(user.trial_ends_at).getTime() - Date.now()) / 86_400_000);
+
+  if (daysLeft <= 0) {
+    return (
+      <div className="bg-red-600 text-white px-4 py-2 flex items-center justify-center gap-3 text-sm font-sans-body">
+        <AlertCircle className="w-4 h-4 shrink-0" />
+        <span>Your free trial has expired. Upgrade to continue using Law Cube.</span>
+        <button
+          onClick={() => router.push("/upgrade")}
+          className="ml-2 underline font-semibold hover:no-underline"
+        >
+          Upgrade now
+        </button>
+      </div>
+    );
+  }
+
+  if (daysLeft > 3) return null;
+
+  return (
+    <div className="bg-amber-500 text-white px-4 py-2 flex items-center justify-center gap-3 text-sm font-sans-body">
+      <AlertCircle className="w-4 h-4 shrink-0" />
+      <span>{daysLeft === 1 ? "1 day" : `${daysLeft} days`} left in your free trial.</span>
+      <button
+        onClick={() => router.push("/upgrade")}
+        className="ml-2 underline font-semibold hover:no-underline"
+      >
+        Upgrade now
+      </button>
+      <button onClick={() => setDismissed(true)} className="ml-auto p-0.5 hover:opacity-75">
+        <XIcon className="w-3.5 h-3.5" />
+      </button>
+    </div>
   );
 }
 
@@ -528,6 +572,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           ].join(" ")}
         >
           <Topbar onMobileMenuOpen={() => setMobileOpen(true)} />
+          <TrialBanner />
           <main className="flex-1 p-4 sm:p-6 overflow-auto">{children}</main>
         </div>
       </div>

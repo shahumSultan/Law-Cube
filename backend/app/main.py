@@ -6,6 +6,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import get_settings
+from app.core.dependencies import ActiveTrial
 from app.core.logging import setup_logging
 from app.routers import auth, calls, clio, dashboard, leads, notifications, settings as settings_router, users, webhooks
 
@@ -54,16 +55,16 @@ async def log_requests(request: Request, call_next):
     )
     return response
 
-# Register routers
+# Register routers — auth and webhooks are exempt from trial gating
 app.include_router(auth.router,      prefix="/api")
-app.include_router(leads.router,     prefix="/api")
-app.include_router(calls.router,     prefix="/api")
-app.include_router(dashboard.router, prefix="/api")
-app.include_router(users.router,     prefix="/api")
-app.include_router(settings_router.router,  prefix="/api")
-app.include_router(notifications.router,    prefix="/api")
-app.include_router(clio.router,      prefix="/api")
 app.include_router(webhooks.router,  prefix="/api")
+app.include_router(leads.router,     prefix="/api", dependencies=[ActiveTrial])
+app.include_router(calls.router,     prefix="/api", dependencies=[ActiveTrial])
+app.include_router(dashboard.router, prefix="/api", dependencies=[ActiveTrial])
+app.include_router(users.router,     prefix="/api", dependencies=[ActiveTrial])
+app.include_router(settings_router.router,  prefix="/api", dependencies=[ActiveTrial])
+app.include_router(notifications.router,    prefix="/api", dependencies=[ActiveTrial])
+app.include_router(clio.router,      prefix="/api", dependencies=[ActiveTrial])
 
 
 @app.get("/api/health")

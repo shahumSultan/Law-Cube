@@ -1,4 +1,5 @@
 import re
+from datetime import UTC, datetime, timedelta
 from uuid import UUID
 
 import httpx
@@ -15,6 +16,8 @@ from app.schemas.auth import (
     GoogleAuthRequest, LoginRequest, RefreshRequest,
     RegisterRequest, TokenResponse, UserOut,
 )
+
+TRIAL_DAYS = 7
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 logger = structlog.get_logger()
@@ -52,7 +55,12 @@ async def register(body: RegisterRequest, db: DB):
         raise HTTPException(status_code=400, detail="Email already registered")
 
     slug = await _unique_slug(db, body.firm_name)
-    org = Organization(name=body.firm_name, slug=slug)
+    org = Organization(
+        name=body.firm_name,
+        slug=slug,
+        plan="trial",
+        trial_ends_at=datetime.now(UTC) + timedelta(days=TRIAL_DAYS),
+    )
     db.add(org)
     await db.flush()
 
@@ -131,7 +139,12 @@ async def google_auth(body: GoogleAuthRequest, db: DB):
     # 3. New user → create org + firm_owner
     firm_name = body.firm_name.strip() or f"{first_name} {last_name} Law"
     slug = await _unique_slug(db, firm_name)
-    org = Organization(name=firm_name, slug=slug)
+    org = Organization(
+        name=firm_name,
+        slug=slug,
+        plan="trial",
+        trial_ends_at=datetime.now(UTC) + timedelta(days=TRIAL_DAYS),
+    )
     db.add(org)
     await db.flush()
 
@@ -169,5 +182,18 @@ async def refresh(body: RefreshRequest, db: DB):
 
 
 @router.get("/me", response_model=UserOut)
-async def me(current_user: CurrentUser):
-    return current_user
+async def me(current_user: CurrentUser, db: DB):
+    org_result = await db.execute(select(Organization).where(Organization.id == current_user.organization_id))
+    org = org_result.scalar_one_or_none()
+    return UserOut(
+        id=current_user.id,
+        email=current_user.email,
+        first_name=current_user.first_name,
+        last_name=current_user.last_name,
+        role=current_user.role,
+        organization_id=current_user.organization_id,
+        avatar_url=current_user.avatar_url,
+        email_verified=current_user.email_verified,
+        plan=org.plan if org else "trial",
+        trial_ends_at=org.trial_ends_at.isoformat() if org and org.trial_ends_at else None,
+    )

@@ -1,3 +1,4 @@
+from datetime import UTC, datetime
 from typing import Annotated
 from uuid import UUID
 
@@ -8,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.core.security import decode_token
+from app.models.organization import Organization
 from app.models.user import User
 
 bearer = HTTPBearer()
@@ -46,9 +48,23 @@ def require_roles(*roles: str):
     return _check
 
 
+async def check_active_trial(
+    current_user: Annotated["User", Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> None:
+    if current_user.role == "super_admin":
+        return
+    org_result = await db.execute(select(Organization).where(Organization.id == current_user.organization_id))
+    org = org_result.scalar_one_or_none()
+    if org and org.plan == "trial" and org.trial_ends_at:
+        if datetime.now(UTC) > org.trial_ends_at:
+            raise HTTPException(status_code=402, detail="trial_expired")
+
+
 # Convenience typed aliases
-CurrentUser = Annotated[User, Depends(get_current_user)]
-DB          = Annotated[AsyncSession, Depends(get_db)]
+CurrentUser  = Annotated[User, Depends(get_current_user)]
+DB           = Annotated[AsyncSession, Depends(get_db)]
+ActiveTrial  = Depends(check_active_trial)
 
 # Role-scoped dependencies
 FirmOwner = Annotated[User, Depends(require_roles("firm_owner", "super_admin"))]

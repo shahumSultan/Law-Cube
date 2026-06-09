@@ -58,6 +58,11 @@ async function request<T>(path: string, opts: RequestOptions = {}): Promise<T> {
     }
   }
 
+  if (res.status === 402) {
+    if (typeof window !== "undefined") window.location.replace("/upgrade");
+    throw new Error("trial_expired");
+  }
+
   if (!res.ok) {
     const detail = await res.json().catch(() => ({ detail: res.statusText }));
     throw new Error(detail?.detail ?? "Request failed");
