@@ -11,6 +11,7 @@ interface AuthState {
   refreshToken: string | null;
   isLoading: boolean;
   error: string | null;
+  _hasHydrated: boolean;
 
   // Actions
   login: (email: string, password: string) => Promise<void>;
@@ -19,6 +20,7 @@ interface AuthState {
   refreshAccessToken: () => Promise<void>;
   clearError: () => void;
   setUser: (user: User) => void;
+  setHasHydrated: (v: boolean) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -29,7 +31,9 @@ export const useAuthStore = create<AuthState>()(
       refreshToken: null,
       isLoading: false,
       error: null,
+      _hasHydrated: false,
 
+      setHasHydrated: (v) => set({ _hasHydrated: v }),
       setUser: (user) => set({ user }),
 
       clearError: () => set({ error: null }),
@@ -82,7 +86,9 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: "lc-auth",
-      // Only persist the tokens and user — not loading/error state
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
       partialize: (state) => ({
         user: state.user,
         accessToken: state.accessToken,
