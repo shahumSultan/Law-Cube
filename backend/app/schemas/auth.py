@@ -39,5 +39,7 @@ class UserOut(BaseModel):
     organization_id: UUID
     avatar_url: str | None = None
     email_verified: bool = False
+    plan: str = "trial"
+    trial_ends_at: str | None = None
 
     model_config = {"from_attributes": True}

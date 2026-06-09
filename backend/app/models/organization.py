@@ -14,7 +14,8 @@ class Organization(Base):
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     slug: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
-    plan: Mapped[str] = mapped_column(String(50), default="starter")       # starter | growth | enterprise
+    plan: Mapped[str] = mapped_column(String(50), default="trial")         # trial | starter | growth | enterprise
+    trial_ends_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     callrail_account_id: Mapped[str | None] = mapped_column(String(100))
     clio_account_id: Mapped[str | None] = mapped_column(String(100))

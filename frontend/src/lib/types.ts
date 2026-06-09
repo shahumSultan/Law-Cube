@@ -34,6 +34,8 @@ export interface User {
   avatar_url: string | null;
   is_active: boolean;
   email_verified: boolean;
+  plan: string;
+  trial_ends_at: string | null;
 }
 
 export interface TokenResponse {
