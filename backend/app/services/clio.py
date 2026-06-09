@@ -2,6 +2,7 @@
 import json
 import uuid
 from datetime import UTC, datetime, timedelta
+from urllib.parse import urlencode
 
 import httpx
 import structlog
@@ -26,8 +27,7 @@ def build_auth_url(org_id: str, state: str) -> str:
         "redirect_uri": redirect_uri,
         "state": state,
     }
-    query = "&".join(f"{k}={v}" for k, v in params.items())
-    return f"{CLIO_AUTH_URL}?{query}"
+    return f"{CLIO_AUTH_URL}?{urlencode(params)}"
 
 
 async def exchange_code(code: str) -> dict:
