@@ -6,7 +6,7 @@ dev:           ## Start dev stack (hot reload, no rebuild)
 	$(DEV) up
 
 dev-build:     ## Rebuild images then start (run after pip/npm changes)
-	$(DEV) up --build
+	$(DEV) up -d --build
 
 down:          ## Stop and remove containers
 	docker compose down
