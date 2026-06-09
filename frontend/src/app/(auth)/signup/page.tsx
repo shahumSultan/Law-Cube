@@ -80,7 +80,7 @@ export default function SignupPage() {
           <div className="flex-1">
             <div className="inline-flex items-center gap-2 border border-zinc-800 rounded-full px-3 py-1.5 mb-8">
               <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e]" />
-              <span className="text-zinc-500 text-xs font-semibold font-sans-body">14-day free trial · No credit card</span>
+              <span className="text-zinc-500 text-xs font-semibold font-sans-body">7-day free trial · No credit card</span>
             </div>
 
             <h2 className="font-display font-bold text-zinc-100 leading-tight mb-5" style={{ fontSize: "2.5rem" }}>
@@ -93,7 +93,7 @@ export default function SignupPage() {
 
             <ul className="flex flex-col gap-4 mb-12">
               {[
-                "Free 14-day trial — no credit card required",
+                "Free 7-day trial — no credit card required",
                 "Connect CallRail in under 5 minutes",
                 "AI call summaries live on day one",
                 "Cancel anytime, export your data",
@@ -142,7 +142,7 @@ export default function SignupPage() {
           </Link>
 
           <h1 className="font-display font-bold text-3xl text-zinc-900 dark:text-zinc-100 mb-1">Create your account</h1>
-          <p className="text-zinc-400 dark:text-zinc-500 text-sm mb-8 font-sans-body">Start your 14-day free trial today</p>
+          <p className="text-zinc-400 dark:text-zinc-500 text-sm mb-8 font-sans-body">Start your 7-day free trial today</p>
 
           {displayError && (
             <div className="flex items-start gap-2.5 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg px-3.5 py-3 mb-5">

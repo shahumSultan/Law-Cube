@@ -561,7 +561,7 @@ function Pricing() {
         <Reveal className="text-center mb-16">
           <span className="inline-block text-[#22c55e] text-xs font-semibold uppercase tracking-[0.14em] font-sans-body mb-4">Pricing</span>
           <h2 className="font-display font-bold text-[2.75rem] md:text-[3.5rem] text-zinc-900 dark:text-zinc-100 mb-4 leading-tight">Simple, transparent pricing</h2>
-          <p className="text-zinc-500 dark:text-zinc-400 text-lg font-sans-body">14-day free trial. No credit card required. Cancel anytime.</p>
+          <p className="text-zinc-500 dark:text-zinc-400 text-lg font-sans-body">7-day free trial. No credit card required. Cancel anytime.</p>
         </Reveal>
 
         <div className="grid md:grid-cols-3 gap-5 items-start">
@@ -612,7 +612,7 @@ function Pricing() {
         </div>
 
         <Reveal delay={0.3} className="mt-10 flex flex-wrap items-center justify-center gap-7 text-zinc-400 dark:text-zinc-600 text-sm font-sans-body">
-          {[{ icon: Shield, text: "SOC2 Type II" }, { icon: Clock, text: "14-day free trial" }, { icon: Check, text: "No credit card" }, { icon: Target, text: "Cancel anytime" }].map((item, i) => (
+          {[{ icon: Shield, text: "SOC2 Type II" }, { icon: Clock, text: "7-day free trial" }, { icon: Check, text: "No credit card" }, { icon: Target, text: "Cancel anytime" }].map((item, i) => (
             <div key={i} className="flex items-center gap-1.5">
               <item.icon className="w-3.5 h-3.5" />
               {item.text}
@@ -645,10 +645,10 @@ function CTA() {
                 Join 200+ law firms using Law Cube to turn marketing spend into measurable retained revenue.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <PrimaryButton href="/signup">Start 14-day free trial</PrimaryButton>
+                <PrimaryButton href="/signup">Start 7-day free trial</PrimaryButton>
                 <GhostButton href="#">Talk to sales</GhostButton>
               </div>
-              <p className="text-zinc-600 text-sm mt-6 font-sans-body">14-day free trial · No credit card required · Cancel anytime</p>
+              <p className="text-zinc-600 text-sm mt-6 font-sans-body">7-day free trial · No credit card required · Cancel anytime</p>
             </div>
           </div>
         </Reveal>
