@@ -21,6 +21,7 @@ from app.schemas.clio import (
 from app.services import clio as clio_svc
 
 router = APIRouter(prefix="/clio", tags=["clio"])
+public_router = APIRouter(prefix="/clio", tags=["clio"])
 settings = get_settings()
 logger = structlog.get_logger()
 
@@ -53,7 +54,7 @@ async def get_auth_url(db: DB, current_user: FirmOwner):
     return ClioAuthUrlResponse(url=url)
 
 
-@router.get("/callback")
+@public_router.get("/callback")
 async def clio_callback(code: str | None = None, state: str | None = None, error: str | None = None, db: DB = None):
     """OAuth callback — exchanges code for tokens and redirects to the settings page."""
     frontend_settings = f"{settings.FRONTEND_URL}/dashboard/settings"
