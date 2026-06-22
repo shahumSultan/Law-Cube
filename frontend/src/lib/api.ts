@@ -5,7 +5,8 @@
 
 import type {
   ClioSyncLog, ClioSyncLogListResponse,
-  DashboardResponse, IntegrationSettingsIn, IntegrationSettingsOut,
+  DashboardResponse, FollowUpLogEntry, FollowUpStats,
+  IntegrationSettingsIn, IntegrationSettingsOut,
   InviteResponse, Lead, LeadCreate, LeadListResponse, LeadUpdate,
   Note, OrgUser, TokenResponse, User, UserListResponse,
 } from "./types";
@@ -256,6 +257,20 @@ export const settingsApi = {
     request<IntegrationSettingsOut>("/api/settings/integrations"),
   updateIntegrations: (body: IntegrationSettingsIn) =>
     request<IntegrationSettingsOut>("/api/settings/integrations", { method: "PUT", body }),
+};
+
+// ── Follow-Up ─────────────────────────────────────────────────────────────────
+
+export const followupApi = {
+  getLogs: (params: { page?: number; page_size?: number; channel?: string; step?: number } = {}) => {
+    const qs = new URLSearchParams();
+    if (params.page) qs.set("page", String(params.page));
+    if (params.page_size) qs.set("page_size", String(params.page_size));
+    if (params.channel) qs.set("channel", params.channel);
+    if (params.step !== undefined) qs.set("step", String(params.step));
+    return request<{ items: FollowUpLogEntry[]; total: number }>(`/api/followup/logs?${qs}`);
+  },
+  getStats: () => request<FollowUpStats>("/api/followup/stats"),
 };
 
 // ── Clio ──────────────────────────────────────────────────────────────────────
