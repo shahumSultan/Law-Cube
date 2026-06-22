@@ -820,7 +820,7 @@ export default function SettingsPage() {
                           value={member.role}
                           onChange={e => roleChangeMutation.mutate({ id: member.id, newRole: e.target.value })}
                           className="bg-transparent border-0 outline-none text-xs font-semibold font-sans-body cursor-pointer"
-                          style={{ color: ROLE_COLORS[member.role as Role]?.text ?? "#475569" }}
+                          style={{ color: ({ super_admin: "#7c3aed", firm_owner: "#15803d", intake_manager: "#b45309", intake_specialist: "#15803d", attorney: "#52525b" } as Record<string, string>)[member.role] ?? "#52525b" }}
                         >
                           <option value="intake_specialist">Intake Specialist</option>
                           <option value="intake_manager">Intake Manager</option>
