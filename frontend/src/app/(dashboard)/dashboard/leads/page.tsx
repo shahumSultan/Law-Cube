@@ -91,14 +91,14 @@ function StatusSelect({
     <div
       ref={menuRef}
       style={{ position: "fixed", top: coords.top, left: coords.left, zIndex: 9999 }}
-      className="bg-white dark:bg-zinc-950 border border-slate-200 dark:border-[#166534] rounded-xl shadow-xl py-1.5 min-w-[220px]"
+      className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-[#166534] rounded-xl shadow-xl py-1.5 min-w-[220px]"
     >
       {LEAD_STATUSES.map(s => (
         <button
           key={s}
           onClick={(e) => { e.stopPropagation(); onChange(s); setOpen(false); }}
-          className={`w-full text-left px-3 py-2 flex items-center justify-between transition-colors hover:bg-slate-50 dark:hover:bg-zinc-800 ${
-            s === value ? "bg-slate-50 dark:bg-zinc-900/60" : ""
+          className={`w-full text-left px-3 py-2 flex items-center justify-between transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800 ${
+            s === value ? "bg-zinc-50 dark:bg-zinc-900/60" : ""
           }`}
         >
           <StatusPill status={s} />
@@ -118,11 +118,11 @@ function StatusSelect({
         className="flex items-center gap-1.5 group hover:opacity-80 transition-opacity disabled:opacity-50"
       >
         {loading ? (
-          <Loader2 className="w-3.5 h-3.5 animate-spin text-slate-400" />
+          <Loader2 className="w-3.5 h-3.5 animate-spin text-zinc-400" />
         ) : (
           <>
             <StatusPill status={value} />
-            <ChevronDown className="w-3 h-3 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors" />
+            <ChevronDown className="w-3 h-3 text-zinc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors" />
           </>
         )}
       </button>
@@ -132,15 +132,14 @@ function StatusSelect({
 }
 
 function ScoreBadge({ score }: { score: number | null }) {
-  if (score === null) return <span className="text-slate-400 text-xs font-sans-body">—</span>;
-  const { color, bg, border } = score >= 75
-    ? { color: "#065F46", bg: "#ECFDF5", border: "#A7F3D0" }
+  if (score === null) return <span className="text-zinc-400 text-xs font-sans-body">—</span>;
+  const cls = score >= 75
+    ? "bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800"
     : score >= 50
-    ? { color: "#B45309", bg: "#FFFBEB", border: "#FDE68A" }
-    : { color: "#991B1B", bg: "#FEF2F2", border: "#FECACA" };
+    ? "bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800"
+    : "bg-red-50 text-red-800 border-red-200 dark:bg-red-950/30 dark:text-red-400 dark:border-red-800";
   return (
-    <span className="inline-flex items-center font-sans-body font-bold text-xs px-2 py-0.5 rounded-md"
-      style={{ background: bg, color, border: `1px solid ${border}` }}>
+    <span className={`inline-flex items-center font-sans-body font-bold text-xs px-2 py-0.5 rounded-md border ${cls}`}>
       {score}
     </span>
   );
@@ -148,10 +147,10 @@ function ScoreBadge({ score }: { score: number | null }) {
 
 function SkeletonRow() {
   return (
-    <tr className="border-b border-slate-50 dark:border-[#166534]/50">
+    <tr className="border-b border-zinc-50 dark:border-[#166534]/50">
       {[1, 2, 3, 4, 5].map(i => (
         <td key={i} className="px-4 sm:px-5 py-4">
-          <div className="h-4 bg-slate-100 dark:bg-zinc-900 rounded animate-pulse" style={{ width: `${60 + i * 10}%` }} />
+          <div className="h-4 bg-zinc-100 dark:bg-zinc-900 rounded animate-pulse" style={{ width: `${60 + i * 10}%` }} />
         </td>
       ))}
     </tr>
@@ -208,8 +207,8 @@ export default function LeadsPage() {
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h2 className="font-display font-bold text-xl sm:text-2xl text-slate-900 dark:text-slate-100 tracking-tight">Leads</h2>
-          <p className="text-slate-500 dark:text-slate-400 text-sm mt-0.5 font-sans-body">
+          <h2 className="font-display font-bold text-xl sm:text-2xl text-zinc-900 dark:text-zinc-100 tracking-tight">Leads</h2>
+          <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-0.5 font-sans-body">
             {isLoading ? "Loading…" : `${total} total`}
           </p>
         </div>
@@ -223,15 +222,15 @@ export default function LeadsPage() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white dark:bg-zinc-950 border border-slate-200 dark:border-[#166534] rounded-2xl p-3 sm:p-4">
+      <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-[#166534] rounded-2xl p-3 sm:p-4">
         <div className="flex gap-2 sm:gap-3">
-          <div className="flex items-center gap-2 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-[#166534] rounded-xl px-3.5 py-2.5 flex-1 focus-within:border-[#15803d] transition-colors">
-            <Search className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+          <div className="flex items-center gap-2 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-[#166534] rounded-xl px-3.5 py-2.5 flex-1 focus-within:border-[#15803d] transition-colors">
+            <Search className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
             <input value={search} onChange={e => { setSearch(e.target.value); setPage(1); }}
               placeholder="Search by name, email, phone…"
-              className="bg-transparent text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none flex-1 font-sans-body" />
+              className="bg-transparent text-zinc-900 dark:text-zinc-100 text-sm placeholder:text-zinc-400 outline-none flex-1 font-sans-body" />
             {search && (
-              <button onClick={() => { setSearch(""); setPage(1); }} className="text-slate-400 hover:text-slate-600 transition-colors">
+              <button onClick={() => { setSearch(""); setPage(1); }} className="text-zinc-400 hover:text-zinc-600 transition-colors">
                 <X className="w-3.5 h-3.5" />
               </button>
             )}
@@ -239,30 +238,30 @@ export default function LeadsPage() {
           <button
             onClick={() => setFiltersOpen(f => !f)}
             className={`sm:hidden flex items-center gap-2 border rounded-xl px-3 py-2.5 text-sm font-medium transition-all font-sans-body ${
-              hasActiveFilters ? "bg-[#15803d] border-[#15803d] text-white" : "bg-slate-50 dark:bg-zinc-900 border-slate-200 dark:border-[#166534] text-slate-600 dark:text-slate-400"
+              hasActiveFilters ? "bg-[#15803d] border-[#15803d] text-white" : "bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-[#166534] text-zinc-600 dark:text-zinc-400"
             }`}>
             <Filter className="w-3.5 h-3.5" />
           </button>
           <div className="hidden sm:flex items-center gap-2 sm:gap-3">
             <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setPage(1); }}
-              className="bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-[#166534] rounded-xl px-3 py-2.5 text-slate-700 dark:text-slate-300 text-sm outline-none hover:border-slate-300 dark:hover:border-zinc-600 transition-colors cursor-pointer font-sans-body">
+              className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-[#166534] rounded-xl px-3 py-2.5 text-zinc-700 dark:text-zinc-300 text-sm outline-none hover:border-zinc-300 dark:hover:border-zinc-600 transition-colors cursor-pointer font-sans-body">
               {STATUSES.map(s => <option key={s}>{s}</option>)}
             </select>
             <select value={sourceFilter} onChange={e => { setSourceFilter(e.target.value); setPage(1); }}
-              className="bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-[#166534] rounded-xl px-3 py-2.5 text-slate-700 dark:text-slate-300 text-sm outline-none hover:border-slate-300 dark:hover:border-zinc-600 transition-colors cursor-pointer font-sans-body">
+              className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-[#166534] rounded-xl px-3 py-2.5 text-zinc-700 dark:text-zinc-300 text-sm outline-none hover:border-zinc-300 dark:hover:border-zinc-600 transition-colors cursor-pointer font-sans-body">
               {SOURCES.map(s => <option key={s}>{s}</option>)}
             </select>
           </div>
         </div>
 
         {filtersOpen && (
-          <div className="sm:hidden flex flex-col gap-2 mt-3 pt-3 border-t border-slate-100 dark:border-[#166534]">
+          <div className="sm:hidden flex flex-col gap-2 mt-3 pt-3 border-t border-zinc-100 dark:border-[#166534]">
             <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setPage(1); }}
-              className="w-full bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-[#166534] rounded-xl px-3 py-2.5 text-slate-700 dark:text-slate-300 text-sm outline-none font-sans-body">
+              className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-[#166534] rounded-xl px-3 py-2.5 text-zinc-700 dark:text-zinc-300 text-sm outline-none font-sans-body">
               {STATUSES.map(s => <option key={s}>{s}</option>)}
             </select>
             <select value={sourceFilter} onChange={e => { setSourceFilter(e.target.value); setPage(1); }}
-              className="w-full bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-[#166534] rounded-xl px-3 py-2.5 text-slate-700 dark:text-slate-300 text-sm outline-none font-sans-body">
+              className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-[#166534] rounded-xl px-3 py-2.5 text-zinc-700 dark:text-zinc-300 text-sm outline-none font-sans-body">
               {SOURCES.map(s => <option key={s}>{s}</option>)}
             </select>
           </div>
@@ -270,21 +269,21 @@ export default function LeadsPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white dark:bg-zinc-950 border border-slate-200 dark:border-[#166534] rounded-2xl overflow-hidden">
+      <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-[#166534] rounded-2xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-slate-100 dark:border-[#166534]">
-                <th className="text-left text-slate-500 dark:text-slate-400 text-xs font-semibold px-4 sm:px-5 py-3.5 font-sans-body uppercase tracking-wider">
+              <tr className="border-b border-zinc-100 dark:border-[#166534]">
+                <th className="text-left text-zinc-500 dark:text-zinc-400 text-xs font-semibold px-4 sm:px-5 py-3.5 font-sans-body uppercase tracking-wider">
                   <span className="flex items-center gap-1">Name <ArrowUpDown className="w-3 h-3 opacity-40" /></span>
                 </th>
-                <th className="hidden md:table-cell text-left text-slate-500 dark:text-slate-400 text-xs font-semibold px-4 py-3.5 font-sans-body uppercase tracking-wider">Phone</th>
-                <th className="hidden sm:table-cell text-left text-slate-500 dark:text-slate-400 text-xs font-semibold px-4 py-3.5 font-sans-body uppercase tracking-wider">Source</th>
-                <th className="hidden xl:table-cell text-left text-slate-500 dark:text-slate-400 text-xs font-semibold px-4 py-3.5 font-sans-body uppercase tracking-wider">Campaign</th>
-                <th className="text-left text-slate-500 dark:text-slate-400 text-xs font-semibold px-4 py-3.5 font-sans-body uppercase tracking-wider">Score</th>
-                <th className="text-left text-slate-500 dark:text-slate-400 text-xs font-semibold px-4 py-3.5 font-sans-body uppercase tracking-wider">Status</th>
-                <th className="hidden lg:table-cell text-left text-slate-500 dark:text-slate-400 text-xs font-semibold px-4 py-3.5 font-sans-body uppercase tracking-wider">Assigned</th>
-                <th className="hidden md:table-cell text-left text-slate-500 dark:text-slate-400 text-xs font-semibold px-4 py-3.5 font-sans-body uppercase tracking-wider">Created</th>
+                <th className="hidden md:table-cell text-left text-zinc-500 dark:text-zinc-400 text-xs font-semibold px-4 py-3.5 font-sans-body uppercase tracking-wider">Phone</th>
+                <th className="hidden sm:table-cell text-left text-zinc-500 dark:text-zinc-400 text-xs font-semibold px-4 py-3.5 font-sans-body uppercase tracking-wider">Source</th>
+                <th className="hidden xl:table-cell text-left text-zinc-500 dark:text-zinc-400 text-xs font-semibold px-4 py-3.5 font-sans-body uppercase tracking-wider">Campaign</th>
+                <th className="text-left text-zinc-500 dark:text-zinc-400 text-xs font-semibold px-4 py-3.5 font-sans-body uppercase tracking-wider">Score</th>
+                <th className="text-left text-zinc-500 dark:text-zinc-400 text-xs font-semibold px-4 py-3.5 font-sans-body uppercase tracking-wider">Status</th>
+                <th className="hidden lg:table-cell text-left text-zinc-500 dark:text-zinc-400 text-xs font-semibold px-4 py-3.5 font-sans-body uppercase tracking-wider">Assigned</th>
+                <th className="hidden md:table-cell text-left text-zinc-500 dark:text-zinc-400 text-xs font-semibold px-4 py-3.5 font-sans-body uppercase tracking-wider">Created</th>
                 <th className="w-10 px-4 py-3.5" />
               </tr>
             </thead>
@@ -294,25 +293,25 @@ export default function LeadsPage() {
                 : leads.length === 0
                 ? (
                   <tr>
-                    <td colSpan={9} className="text-center py-16 text-slate-400 dark:text-slate-500 text-sm font-sans-body">
+                    <td colSpan={9} className="text-center py-16 text-zinc-400 dark:text-zinc-500 text-sm font-sans-body">
                       No leads match your filters.
                     </td>
                   </tr>
                 )
                 : leads.map(lead => (
-                  <tr key={lead.id} className="border-b border-slate-50 dark:border-[#166534]/50 table-row-hover">
+                  <tr key={lead.id} className="border-b border-zinc-50 dark:border-[#166534]/50 table-row-hover">
                     <td className="px-4 sm:px-5 py-4">
                       <Link href={`/dashboard/leads/${lead.id}`} className="group">
-                        <div className="font-medium text-slate-900 dark:text-slate-100 text-sm font-sans-body group-hover:text-[#15803d] dark:group-hover:text-green-400 transition-colors">
+                        <div className="font-medium text-zinc-900 dark:text-zinc-100 text-sm font-sans-body group-hover:text-[#15803d] dark:group-hover:text-green-400 transition-colors">
                           {lead.first_name} {lead.last_name}
                         </div>
-                        <div className="text-slate-500 dark:text-slate-400 text-xs mt-0.5 font-sans-body">{lead.email}</div>
+                        <div className="text-zinc-500 dark:text-zinc-400 text-xs mt-0.5 font-sans-body">{lead.email}</div>
                       </Link>
                     </td>
-                    <td className="hidden md:table-cell px-4 py-4 text-slate-600 dark:text-slate-400 text-sm font-sans-body">{lead.phone}</td>
-                    <td className="hidden sm:table-cell px-4 py-4 text-slate-600 dark:text-slate-400 text-sm font-sans-body capitalize">{lead.source?.replace(/_/g, " ")}</td>
+                    <td className="hidden md:table-cell px-4 py-4 text-zinc-600 dark:text-zinc-400 text-sm font-sans-body">{lead.phone}</td>
+                    <td className="hidden sm:table-cell px-4 py-4 text-zinc-600 dark:text-zinc-400 text-sm font-sans-body capitalize">{lead.source?.replace(/_/g, " ")}</td>
                     <td className="hidden xl:table-cell px-4 py-4">
-                      <span className="text-slate-500 dark:text-slate-400 text-xs truncate block max-w-[140px]">{lead.campaign ?? "—"}</span>
+                      <span className="text-zinc-500 dark:text-zinc-400 text-xs truncate block max-w-[140px]">{lead.campaign ?? "—"}</span>
                     </td>
                     <td className="px-4 py-4"><ScoreBadge score={lead.score} /></td>
                     <td className="px-4 py-4">
@@ -326,10 +325,10 @@ export default function LeadsPage() {
                         <StatusPill status={lead.status} />
                       )}
                     </td>
-                    <td className="hidden lg:table-cell px-4 py-4 text-slate-600 dark:text-slate-400 text-sm font-sans-body">
+                    <td className="hidden lg:table-cell px-4 py-4 text-zinc-600 dark:text-zinc-400 text-sm font-sans-body">
                       {lead.assigned_user_id ?? "—"}
                     </td>
-                    <td className="hidden md:table-cell px-4 py-4 text-slate-500 dark:text-slate-400 text-xs whitespace-nowrap font-sans-body">
+                    <td className="hidden md:table-cell px-4 py-4 text-zinc-500 dark:text-zinc-400 text-xs whitespace-nowrap font-sans-body">
                       {new Date(lead.created_at).toLocaleDateString()}
                     </td>
                     <td className="px-4 py-4">
@@ -341,7 +340,7 @@ export default function LeadsPage() {
                             }
                           }}
                           disabled={deleteMutation.isPending}
-                          className="w-7 h-7 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center justify-center text-slate-400 hover:text-red-500 transition-all"
+                          className="w-7 h-7 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center justify-center text-zinc-400 hover:text-red-500 transition-all"
                           title="Delete lead"
                         >
                           {deleteMutation.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <MoreHorizontal className="w-4 h-4" />}
@@ -356,15 +355,15 @@ export default function LeadsPage() {
         </div>
 
         {/* Pagination */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 sm:px-6 py-4 border-t border-slate-100 dark:border-[#166534]">
-          <span className="text-slate-500 dark:text-slate-400 text-sm font-sans-body order-2 sm:order-1">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 sm:px-6 py-4 border-t border-zinc-100 dark:border-[#166534]">
+          <span className="text-zinc-500 dark:text-zinc-400 text-sm font-sans-body order-2 sm:order-1">
             Showing {leads.length} of {total} leads
           </span>
           <div className="flex items-center gap-1.5 order-1 sm:order-2">
             <button
               onClick={() => setPage(p => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="w-8 h-8 rounded-lg bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-[#166534] flex items-center justify-center text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:border-slate-300 transition-all disabled:opacity-40"
+              className="w-8 h-8 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-[#166534] flex items-center justify-center text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 transition-all disabled:opacity-40"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -373,7 +372,7 @@ export default function LeadsPage() {
                 className={`w-8 h-8 rounded-lg text-sm font-semibold font-sans-body transition-all ${
                   n === page
                     ? "bg-[#15803d] text-white shadow-sm"
-                    : "bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-[#166534] text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
+                    : "bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-[#166534] text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200"
                 }`}>
                 {n}
               </button>
@@ -381,7 +380,7 @@ export default function LeadsPage() {
             <button
               onClick={() => setPage(p => Math.min(totalPages, p + 1))}
               disabled={page >= totalPages}
-              className="w-8 h-8 rounded-lg bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-[#166534] flex items-center justify-center text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:border-slate-300 transition-all disabled:opacity-40"
+              className="w-8 h-8 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-[#166534] flex items-center justify-center text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 transition-all disabled:opacity-40"
             >
               <ChevronRight className="w-4 h-4" />
             </button>

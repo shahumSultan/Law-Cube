@@ -22,19 +22,18 @@ const ROLE_LABELS: Record<Role, string> = {
   attorney: "Attorney",
 };
 
-const ROLE_COLORS: Record<Role, { bg: string; text: string; border: string }> = {
-  super_admin:       { bg: "#F5F3FF", text: "#5B21B6", border: "#DDD6FE" },
-  firm_owner:        { bg: "#f0fdf4", text: "#15803d", border: "#bbf7d0" },
-  intake_manager:    { bg: "#FFFBEB", text: "#B45309", border: "#FDE68A" },
-  intake_specialist: { bg: "#F0FDF4", text: "#15803D", border: "#BBF7D0" },
-  attorney:          { bg: "#F8FAFC", text: "#475569", border: "#E2E8F0" },
+const ROLE_COLORS: Record<Role, string> = {
+  super_admin:       "bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-950/30 dark:text-violet-400 dark:border-violet-800",
+  firm_owner:        "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800",
+  intake_manager:    "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800",
+  intake_specialist: "bg-green-50 text-green-700 border-green-200 dark:bg-green-950/30 dark:text-green-400 dark:border-green-800",
+  attorney:          "bg-zinc-100 text-zinc-600 border-zinc-200 dark:bg-zinc-800/60 dark:text-zinc-400 dark:border-zinc-700",
 };
 
 function RoleBadge({ role }: { role: Role }) {
-  const c = ROLE_COLORS[role] ?? ROLE_COLORS.intake_specialist;
+  const cls = ROLE_COLORS[role] ?? ROLE_COLORS.intake_specialist;
   return (
-    <span className="inline-flex items-center text-xs font-semibold px-2.5 py-0.5 rounded-full font-sans-body"
-      style={{ background: c.bg, color: c.text, border: `1px solid ${c.border}` }}>
+    <span className={`inline-flex items-center text-xs font-semibold px-2.5 py-0.5 rounded-full border font-sans-body ${cls}`}>
       {ROLE_LABELS[role] ?? role}
     </span>
   );
@@ -71,12 +70,12 @@ function InviteModal({ onClose }: { onClose: () => void }) {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96, y: 16 }}
         transition={{ type: "spring", damping: 30, stiffness: 350 }}
-        className="relative z-10 w-full max-w-md bg-white dark:bg-zinc-950 rounded-2xl shadow-2xl border border-slate-200 dark:border-[#166534] overflow-hidden"
+        className="relative z-10 w-full max-w-md bg-white dark:bg-zinc-950 rounded-2xl shadow-2xl border border-zinc-200 dark:border-[#166534] overflow-hidden"
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-[#166534]">
-          <h2 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-lg">Invite Team Member</h2>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100 dark:border-[#166534]">
+          <h2 className="font-display font-semibold text-zinc-900 dark:text-zinc-100 text-lg">Invite Team Member</h2>
           <button onClick={onClose}
-            className="w-8 h-8 rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-800 flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-all">
+            className="w-8 h-8 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-center text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-all">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -94,17 +93,17 @@ function InviteModal({ onClose }: { onClose: () => void }) {
             </div>
 
             <div>
-              <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">
+              <label className="text-zinc-600 dark:text-zinc-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">
                 Invite Link
               </label>
-              <div className="flex items-center gap-2 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-[#166534] rounded-xl px-3.5 py-2.5">
-                <span className="text-slate-600 dark:text-slate-400 text-xs font-mono flex-1 truncate">{result.invite_url}</span>
+              <div className="flex items-center gap-2 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-[#166534] rounded-xl px-3.5 py-2.5">
+                <span className="text-zinc-600 dark:text-zinc-400 text-xs font-mono flex-1 truncate">{result.invite_url}</span>
                 <button onClick={copyLink}
                   className="text-[#15803d] dark:text-green-400 hover:text-[#166534] transition-colors shrink-0">
                   {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
                 </button>
               </div>
-              <p className="text-slate-400 text-xs mt-1.5 font-sans-body">
+              <p className="text-zinc-400 text-xs mt-1.5 font-sans-body">
                 In production, this link will be emailed automatically.
               </p>
             </div>
@@ -126,27 +125,27 @@ function InviteModal({ onClose }: { onClose: () => void }) {
               {[{ label: "First name", key: "first_name", placeholder: "Sarah" },
                 { label: "Last name", key: "last_name", placeholder: "Thornton" }].map(f => (
                 <div key={f.key}>
-                  <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">{f.label}</label>
+                  <label className="text-zinc-600 dark:text-zinc-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">{f.label}</label>
                   <input type="text" required value={form[f.key as keyof typeof form]}
                     onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))}
                     placeholder={f.placeholder}
-                    className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-[#166534] focus:border-[#15803d] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors font-sans-body" />
+                    className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-[#166534] focus:border-[#15803d] rounded-xl px-3.5 py-2.5 text-zinc-900 dark:text-zinc-100 text-sm placeholder:text-zinc-400 outline-none transition-colors font-sans-body" />
                 </div>
               ))}
             </div>
 
             <div>
-              <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">Work Email</label>
+              <label className="text-zinc-600 dark:text-zinc-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">Work Email</label>
               <input type="email" required value={form.email}
                 onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
                 placeholder="sarah@lawfirm.com"
-                className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-[#166534] focus:border-[#15803d] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors font-sans-body" />
+                className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-[#166534] focus:border-[#15803d] rounded-xl px-3.5 py-2.5 text-zinc-900 dark:text-zinc-100 text-sm placeholder:text-zinc-400 outline-none transition-colors font-sans-body" />
             </div>
 
             <div>
-              <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">Role</label>
+              <label className="text-zinc-600 dark:text-zinc-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">Role</label>
               <select value={form.role} onChange={e => setForm(p => ({ ...p, role: e.target.value }))}
-                className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-[#166534] focus:border-[#15803d] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm outline-none font-sans-body">
+                className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-[#166534] focus:border-[#15803d] rounded-xl px-3.5 py-2.5 text-zinc-900 dark:text-zinc-100 text-sm outline-none font-sans-body">
                 <option value="intake_specialist">Intake Specialist</option>
                 <option value="intake_manager">Intake Manager</option>
                 <option value="attorney">Attorney</option>
@@ -156,7 +155,7 @@ function InviteModal({ onClose }: { onClose: () => void }) {
 
             <div className="flex gap-3 pt-1">
               <button type="button" onClick={onClose}
-                className="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-[#166534] text-slate-600 dark:text-slate-400 text-sm font-semibold font-sans-body hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors">
+                className="flex-1 py-2.5 rounded-xl border border-zinc-200 dark:border-[#166534] text-zinc-600 dark:text-zinc-400 text-sm font-semibold font-sans-body hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors">
                 Cancel
               </button>
               <button type="submit" disabled={isPending}
@@ -266,8 +265,8 @@ function IntegrationsTab() {
     return (
       <div>
         <div className="flex items-center justify-between mb-1.5">
-          <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold font-sans-body uppercase tracking-wider">{label}</label>
-          <span className={`flex items-center gap-1 text-xs font-semibold font-sans-body ${configured ? "text-emerald-600 dark:text-emerald-400" : "text-slate-400 dark:text-slate-500"}`}>
+          <label className="text-zinc-600 dark:text-zinc-400 text-xs font-semibold font-sans-body uppercase tracking-wider">{label}</label>
+          <span className={`flex items-center gap-1 text-xs font-semibold font-sans-body ${configured ? "text-emerald-600 dark:text-emerald-400" : "text-zinc-400 dark:text-zinc-500"}`}>
             {configured ? <><CheckCircle2 className="w-3.5 h-3.5" />Configured</> : <><AlertCircle className="w-3.5 h-3.5" />Not set</>}
           </span>
         </div>
@@ -277,9 +276,9 @@ function IntegrationsTab() {
               placeholder={configured ? "Enter new key to rotate…" : "Paste your API key…"}
               value={currentVal ?? ""} onChange={e => set(field, e.target.value)}
               autoComplete="new-password"
-              className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 focus:border-[#15803d] rounded-xl px-3.5 py-2.5 pr-10 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors font-mono" />
+              className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 focus:border-[#15803d] rounded-xl px-3.5 py-2.5 pr-10 text-zinc-900 dark:text-zinc-100 text-sm placeholder:text-zinc-400 outline-none transition-colors font-mono" />
             <button type="button" onClick={() => toggleShow(field as string)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">
               {visible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
@@ -290,7 +289,7 @@ function IntegrationsTab() {
             </button>
           )}
         </div>
-        <p className="text-slate-400 dark:text-slate-500 text-xs mt-1.5 font-sans-body">{description}</p>
+        <p className="text-zinc-400 dark:text-zinc-500 text-xs mt-1.5 font-sans-body">{description}</p>
       </div>
     );
   };
@@ -299,11 +298,11 @@ function IntegrationsTab() {
     label: string; field: keyof IntegrationSettingsIn; placeholder: string; description?: string; type?: string;
   }) => (
     <div>
-      <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">{label}</label>
+      <label className="text-zinc-600 dark:text-zinc-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">{label}</label>
       <input type={type} placeholder={placeholder} value={(form[field] as string | undefined) ?? ""}
         autoComplete="off" onChange={e => set(field, e.target.value)}
-        className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 focus:border-[#15803d] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 outline-none transition-colors font-mono" />
-      {description && <p className="text-slate-400 dark:text-slate-500 text-xs mt-1.5 font-sans-body">{description}</p>}
+        className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 focus:border-[#15803d] rounded-xl px-3.5 py-2.5 text-zinc-900 dark:text-zinc-100 text-sm placeholder:text-zinc-400 outline-none transition-colors font-mono" />
+      {description && <p className="text-zinc-400 dark:text-zinc-500 text-xs mt-1.5 font-sans-body">{description}</p>}
     </div>
   );
 
@@ -312,11 +311,11 @@ function IntegrationsTab() {
   }) => (
     <div className="flex items-start justify-between gap-4">
       <div>
-        <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 font-sans-body">{label}</p>
-        <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5 font-sans-body">{description}</p>
+        <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 font-sans-body">{label}</p>
+        <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-0.5 font-sans-body">{description}</p>
       </div>
       <button type="button" role="switch" aria-checked={value} onClick={() => onChange(!value)}
-        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${value ? "bg-[#15803d]" : "bg-slate-200 dark:bg-zinc-700"}`}>
+        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${value ? "bg-[#15803d]" : "bg-zinc-200 dark:bg-zinc-700"}`}>
         <span className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${value ? "translate-x-5" : "translate-x-0"}`} />
       </button>
     </div>
@@ -342,15 +341,15 @@ function IntegrationsTab() {
       case "transcription":
         return <>
           <div>
-            <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">Primary Provider</label>
+            <label className="text-zinc-600 dark:text-zinc-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">Primary Provider</label>
             <select value={form.transcription_provider ?? data?.transcription_provider ?? "openai"}
               onChange={e => set("transcription_provider", e.target.value)}
-              className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 focus:border-[#15803d] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm outline-none font-sans-body">
+              className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 focus:border-[#15803d] rounded-xl px-3.5 py-2.5 text-zinc-900 dark:text-zinc-100 text-sm outline-none font-sans-body">
               <option value="openai">OpenAI Whisper</option>
               <option value="deepgram">Deepgram Nova-2 (free tier available)</option>
               <option value="assemblyai">AssemblyAI (free tier available)</option>
             </select>
-            <p className="text-slate-400 dark:text-slate-500 text-xs mt-1.5 font-sans-body">Other configured providers are tried automatically on failure.</p>
+            <p className="text-zinc-400 dark:text-zinc-500 text-xs mt-1.5 font-sans-body">Other configured providers are tried automatically on failure.</p>
           </div>
           <KeyField label="OpenAI API Key" field="openai_api_key" configured={data?.has_openai_key ?? false}
             description="Whisper transcription + GPT-4o mini fallback analysis. platform.openai.com/api-keys" />
@@ -363,15 +362,15 @@ function IntegrationsTab() {
       case "ai":
         return <>
           <div>
-            <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">Primary Provider</label>
+            <label className="text-zinc-600 dark:text-zinc-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">Primary Provider</label>
             <select value={form.ai_primary_provider ?? data?.ai_primary_provider ?? "openai"}
               onChange={e => set("ai_primary_provider", e.target.value)}
-              className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 focus:border-[#15803d] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm outline-none font-sans-body">
+              className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 focus:border-[#15803d] rounded-xl px-3.5 py-2.5 text-zinc-900 dark:text-zinc-100 text-sm outline-none font-sans-body">
               <option value="openai">OpenAI (GPT-4o mini)</option>
               <option value="anthropic">Anthropic (Claude Haiku)</option>
               <option value="google">Google (Gemini 1.5 Flash)</option>
             </select>
-            <p className="text-slate-400 dark:text-slate-500 text-xs mt-1.5 font-sans-body">Other providers are used as automatic fallbacks if the primary fails.</p>
+            <p className="text-zinc-400 dark:text-zinc-500 text-xs mt-1.5 font-sans-body">Other providers are used as automatic fallbacks if the primary fails.</p>
           </div>
           <KeyField label="Anthropic API Key" field="anthropic_api_key" configured={data?.has_anthropic_key ?? false}
             description="Claude Haiku — fallback analysis provider. console.anthropic.com/settings/keys" />
@@ -401,7 +400,7 @@ function IntegrationsTab() {
             <TextField label="From Name" field="notification_from_name"
               placeholder={data?.notification_from_name ?? "Law Cube Intake"} />
           </div>
-          <p className="text-slate-400 dark:text-slate-500 text-xs font-sans-body -mt-1">
+          <p className="text-zinc-400 dark:text-zinc-500 text-xs font-sans-body -mt-1">
             The sending address must be verified in SendGrid before emails will deliver.
           </p>
         </>;
@@ -413,43 +412,43 @@ function IntegrationsTab() {
             value={missedEnabled} onChange={v => setForm(p => ({ ...p, missed_call_sms_enabled: v }))} />
           {missedEnabled && (
             <div>
-              <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">Missed Call Template</label>
+              <label className="text-zinc-600 dark:text-zinc-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">Missed Call Template</label>
               <textarea rows={3}
                 value={form.missed_call_sms_template ?? (data?.missed_call_sms_template ?? "Hi {first_name}, we missed your call at {firm_name}. We'd love to help — reply or call back to speak with our intake team.")}
                 onChange={e => set("missed_call_sms_template", e.target.value)}
-                className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 focus:border-[#15803d] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm outline-none transition-colors font-sans-body resize-none" />
-              <p className="text-slate-400 dark:text-slate-500 text-xs mt-1.5 font-sans-body">Variables: {"{first_name}"}, {"{firm_name}"}, {"{case_type}"}</p>
+                className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 focus:border-[#15803d] rounded-xl px-3.5 py-2.5 text-zinc-900 dark:text-zinc-100 text-sm outline-none transition-colors font-sans-body resize-none" />
+              <p className="text-zinc-400 dark:text-zinc-500 text-xs mt-1.5 font-sans-body">Variables: {"{first_name}"}, {"{firm_name}"}, {"{case_type}"}</p>
             </div>
           )}
-          <div className="h-px bg-slate-100 dark:bg-zinc-800" />
+          <div className="h-px bg-zinc-100 dark:bg-zinc-800" />
           <ToggleField label="24-Hour Follow-Up"
             description="Contact leads who haven't responded 24 hours after a missed call"
             value={f24hEnabled} onChange={v => setForm(p => ({ ...p, followup_24h_enabled: v }))} />
           {f24hEnabled && (
             <div>
-              <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">24h Template</label>
+              <label className="text-zinc-600 dark:text-zinc-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">24h Template</label>
               <textarea rows={3}
                 value={form.followup_24h_sms_template ?? (data?.followup_24h_sms_template ?? "Hi {first_name}, just following up on your call yesterday. We're here to help — reply anytime to schedule a free consultation.")}
                 onChange={e => set("followup_24h_sms_template", e.target.value)}
-                className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 focus:border-[#15803d] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm outline-none transition-colors font-sans-body resize-none" />
-              <p className="text-slate-400 dark:text-slate-500 text-xs mt-1.5 font-sans-body">Variables: {"{first_name}"}, {"{firm_name}"}, {"{case_type}"}</p>
+                className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 focus:border-[#15803d] rounded-xl px-3.5 py-2.5 text-zinc-900 dark:text-zinc-100 text-sm outline-none transition-colors font-sans-body resize-none" />
+              <p className="text-zinc-400 dark:text-zinc-500 text-xs mt-1.5 font-sans-body">Variables: {"{first_name}"}, {"{firm_name}"}, {"{case_type}"}</p>
             </div>
           )}
-          <div className="h-px bg-slate-100 dark:bg-zinc-800" />
+          <div className="h-px bg-zinc-100 dark:bg-zinc-800" />
           <ToggleField label="72-Hour Follow-Up"
             description="Send a final follow-up to leads who still haven't responded after 72 hours"
             value={f72hEnabled} onChange={v => setForm(p => ({ ...p, followup_72h_enabled: v }))} />
           {f72hEnabled && (
             <div>
-              <label className="text-slate-600 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">72h Template</label>
+              <label className="text-zinc-600 dark:text-zinc-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">72h Template</label>
               <textarea rows={3}
                 value={form.followup_72h_sms_template ?? (data?.followup_72h_sms_template ?? "Hi {first_name}, we're still here if you need help. Schedule a free consultation at your convenience — no obligation.")}
                 onChange={e => set("followup_72h_sms_template", e.target.value)}
-                className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 focus:border-[#15803d] rounded-xl px-3.5 py-2.5 text-slate-900 dark:text-slate-100 text-sm outline-none transition-colors font-sans-body resize-none" />
-              <p className="text-slate-400 dark:text-slate-500 text-xs mt-1.5 font-sans-body">Variables: {"{first_name}"}, {"{firm_name}"}, {"{case_type}"}</p>
+                className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 focus:border-[#15803d] rounded-xl px-3.5 py-2.5 text-zinc-900 dark:text-zinc-100 text-sm outline-none transition-colors font-sans-body resize-none" />
+              <p className="text-zinc-400 dark:text-zinc-500 text-xs mt-1.5 font-sans-body">Variables: {"{first_name}"}, {"{firm_name}"}, {"{case_type}"}</p>
             </div>
           )}
-          <p className="text-slate-400 dark:text-slate-500 text-xs font-sans-body">
+          <p className="text-zinc-400 dark:text-zinc-500 text-xs font-sans-body">
             Sequences respect opt-outs — leads reply STOP to unsubscribe, UNSTOP to resubscribe.
           </p>
         </>;
@@ -516,7 +515,7 @@ function IntegrationsTab() {
               </div>
 
               <div>
-                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 font-sans-body uppercase tracking-wider mb-3">How sync works</p>
+                <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 font-sans-body uppercase tracking-wider mb-3">How sync works</p>
                 <div className="flex flex-col gap-2">
                   {[
                     ["Consultation Scheduled", "Clio contact created / updated"],
@@ -524,9 +523,9 @@ function IntegrationsTab() {
                     ["Manual",                 "Push any lead from the lead detail page"],
                   ].map(([trigger, action]) => (
                     <div key={trigger} className="flex items-center gap-3 text-sm font-sans-body">
-                      <span className="text-slate-900 dark:text-slate-100 font-medium w-52 shrink-0">{trigger}</span>
-                      <span className="text-slate-400 dark:text-slate-500">→</span>
-                      <span className="text-slate-500 dark:text-slate-400">{action}</span>
+                      <span className="text-zinc-900 dark:text-zinc-100 font-medium w-52 shrink-0">{trigger}</span>
+                      <span className="text-zinc-400 dark:text-zinc-500">→</span>
+                      <span className="text-zinc-500 dark:text-zinc-400">{action}</span>
                     </div>
                   ))}
                 </div>
@@ -534,14 +533,14 @@ function IntegrationsTab() {
 
               {clioLogs && clioLogs.items.length > 0 && (
                 <div>
-                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 font-sans-body uppercase tracking-wider mb-3">Recent Sync Activity</p>
-                  <div className="border border-slate-100 dark:border-zinc-800 rounded-xl divide-y divide-slate-100 dark:divide-zinc-800 overflow-hidden">
+                  <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 font-sans-body uppercase tracking-wider mb-3">Recent Sync Activity</p>
+                  <div className="border border-zinc-100 dark:border-zinc-800 rounded-xl divide-y divide-zinc-100 dark:divide-zinc-800 overflow-hidden">
                     {clioLogs.items.map((log: ClioSyncLog) => (
                       <div key={log.id} className="flex items-center gap-3 px-4 py-2.5">
                         <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${log.status === "success" ? "bg-emerald-400" : "bg-red-400"}`} />
-                        <span className="text-xs text-slate-600 dark:text-slate-400 font-sans-body flex-1">{OP_LABELS[log.operation] ?? log.operation}</span>
-                        {log.clio_entity_id && <span className="text-xs font-mono text-slate-400 dark:text-slate-600">#{log.clio_entity_id}</span>}
-                        <span className="text-[11px] text-slate-400 dark:text-slate-600 font-sans-body shrink-0">
+                        <span className="text-xs text-zinc-600 dark:text-zinc-400 font-sans-body flex-1">{OP_LABELS[log.operation] ?? log.operation}</span>
+                        {log.clio_entity_id && <span className="text-xs font-mono text-zinc-400 dark:text-zinc-600">#{log.clio_entity_id}</span>}
+                        <span className="text-[11px] text-zinc-400 dark:text-zinc-600 font-sans-body shrink-0">
                           {new Date(log.created_at).toLocaleDateString()}
                         </span>
                       </div>
@@ -552,15 +551,15 @@ function IntegrationsTab() {
             </div>
           ) : (
             <div className="flex flex-col gap-5">
-              <div className="p-5 bg-slate-50 dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-700 rounded-xl">
-                <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 font-sans-body mb-1.5">Connect your Clio account</p>
-                <p className="text-sm text-slate-500 dark:text-slate-400 font-sans-body leading-relaxed">
+              <div className="p-5 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-700 rounded-xl">
+                <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 font-sans-body mb-1.5">Connect your Clio account</p>
+                <p className="text-sm text-zinc-500 dark:text-zinc-400 font-sans-body leading-relaxed">
                   Sync leads to Clio as contacts and matters automatically. When a lead is marked as retained, Law Cube creates a Clio matter and pushes the AI intake summary as a note.
                 </p>
               </div>
               <div className="flex flex-col gap-2">
                 {["Automatic contact creation on consultation scheduled", "Matter + AI note on retention", "Manual push from any lead page", "Inbound Clio webhooks to keep records in sync"].map(f => (
-                  <div key={f} className="flex items-center gap-2.5 text-sm text-slate-600 dark:text-slate-400 font-sans-body">
+                  <div key={f} className="flex items-center gap-2.5 text-sm text-zinc-600 dark:text-zinc-400 font-sans-body">
                     <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
                     {f}
                   </div>
@@ -580,7 +579,7 @@ function IntegrationsTab() {
                 {clioConnecting ? <Loader2 className="w-4 h-4 animate-spin" /> : <ExternalLink className="w-4 h-4" />}
                 Connect to Clio
               </button>
-              <p className="text-xs text-slate-400 dark:text-slate-500 font-sans-body -mt-2">
+              <p className="text-xs text-zinc-400 dark:text-zinc-500 font-sans-body -mt-2">
                 You will be redirected to Clio to authorize Law Cube. A Clio account is required.
               </p>
             </div>
@@ -594,15 +593,15 @@ function IntegrationsTab() {
 
   if (isLoading) {
     return (
-      <div className="bg-white dark:bg-zinc-950 border border-slate-200 dark:border-[#166534] rounded-2xl overflow-hidden flex" style={{ minHeight: 520 }}>
-        <div className="w-52 shrink-0 border-r border-slate-100 dark:border-zinc-800 bg-slate-50/40 dark:bg-zinc-900/40 p-2 flex flex-col gap-1.5">
+      <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-[#166534] rounded-2xl overflow-hidden flex" style={{ minHeight: 520 }}>
+        <div className="w-52 shrink-0 border-r border-zinc-100 dark:border-zinc-800 bg-zinc-50/40 dark:bg-zinc-900/40 p-2 flex flex-col gap-1.5">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-14 rounded-xl bg-slate-100 dark:bg-zinc-800 animate-pulse" />
+            <div key={i} className="h-14 rounded-xl bg-zinc-100 dark:bg-zinc-800 animate-pulse" />
           ))}
         </div>
         <div className="flex-1 p-6 flex flex-col gap-5">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-14 rounded-xl bg-slate-100 dark:bg-zinc-800 animate-pulse" />
+            <div key={i} className="h-14 rounded-xl bg-zinc-100 dark:bg-zinc-800 animate-pulse" />
           ))}
         </div>
       </div>
@@ -612,10 +611,10 @@ function IntegrationsTab() {
   const activeSection = SECTIONS.find(s => s.key === section)!;
 
   return (
-    <div className="bg-white dark:bg-zinc-950 border border-slate-200 dark:border-[#166534] rounded-2xl overflow-hidden flex" style={{ minHeight: 540 }}>
+    <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-[#166534] rounded-2xl overflow-hidden flex" style={{ minHeight: 540 }}>
 
       {/* ── Left sidebar ── */}
-      <div className="w-52 shrink-0 border-r border-slate-100 dark:border-zinc-800 flex flex-col bg-slate-50/40 dark:bg-zinc-900/30">
+      <div className="w-52 shrink-0 border-r border-zinc-100 dark:border-zinc-800 flex flex-col bg-zinc-50/40 dark:bg-zinc-900/30">
         {SECTIONS.map(({ key, label, subtitle, Icon }) => {
           const active = section === key;
           const configured = isConfigured(key);
@@ -626,15 +625,15 @@ function IntegrationsTab() {
               }`}>
               {active && <div className="absolute left-0 top-3 bottom-3 w-[3px] rounded-r-full bg-[#15803d]" />}
               <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
-                active ? "bg-[#f0fdf4] dark:bg-emerald-950/50" : "bg-slate-100 dark:bg-zinc-800 group-hover:bg-slate-50 dark:group-hover:bg-zinc-700/50"
+                active ? "bg-[#f0fdf4] dark:bg-emerald-950/50" : "bg-zinc-100 dark:bg-zinc-800 group-hover:bg-zinc-50 dark:group-hover:bg-zinc-700/50"
               }`}>
-                <Icon className={`w-3.5 h-3.5 transition-colors ${active ? "text-[#15803d]" : "text-slate-400 dark:text-slate-500"}`} />
+                <Icon className={`w-3.5 h-3.5 transition-colors ${active ? "text-[#15803d]" : "text-zinc-400 dark:text-zinc-500"}`} />
               </div>
               <div className="flex-1 min-w-0">
-                <p className={`text-xs font-semibold font-sans-body leading-tight ${active ? "text-slate-900 dark:text-slate-100" : "text-slate-600 dark:text-slate-400"}`}>{label}</p>
-                <p className="text-[11px] text-slate-400 dark:text-slate-500 font-sans-body mt-0.5">{subtitle}</p>
+                <p className={`text-xs font-semibold font-sans-body leading-tight ${active ? "text-zinc-900 dark:text-zinc-100" : "text-zinc-600 dark:text-zinc-400"}`}>{label}</p>
+                <p className="text-[11px] text-zinc-400 dark:text-zinc-500 font-sans-body mt-0.5">{subtitle}</p>
               </div>
-              <div className={`w-1.5 h-1.5 rounded-full shrink-0 transition-colors ${configured ? "bg-[#22c55e]" : "bg-slate-200 dark:bg-zinc-700"}`} />
+              <div className={`w-1.5 h-1.5 rounded-full shrink-0 transition-colors ${configured ? "bg-[#22c55e]" : "bg-zinc-200 dark:bg-zinc-700"}`} />
             </button>
           );
         })}
@@ -646,14 +645,14 @@ function IntegrationsTab() {
         <input type="password" autoComplete="current-password" className="hidden" aria-hidden="true" readOnly />
 
         {/* Panel header */}
-        <div className="shrink-0 px-6 py-4 border-b border-slate-100 dark:border-zinc-800 flex items-center justify-between">
+        <div className="shrink-0 px-6 py-4 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-[#f0fdf4] dark:bg-emerald-950/50 flex items-center justify-center">
               <activeSection.Icon className="w-4 h-4 text-[#15803d]" />
             </div>
             <div>
-              <h3 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-base leading-tight">{activeSection.label}</h3>
-              <p className="text-slate-500 dark:text-slate-400 text-xs font-sans-body">{activeSection.subtitle}</p>
+              <h3 className="font-display font-semibold text-zinc-900 dark:text-zinc-100 text-base leading-tight">{activeSection.label}</h3>
+              <p className="text-zinc-500 dark:text-zinc-400 text-xs font-sans-body">{activeSection.subtitle}</p>
             </div>
           </div>
           {isConfigured(section) && (
@@ -677,8 +676,8 @@ function IntegrationsTab() {
 
         {/* Sticky footer — hidden for Clio which has its own inline controls */}
         {section !== "clio" && (
-          <div className="shrink-0 border-t border-slate-100 dark:border-zinc-800 px-6 py-4 flex items-center justify-between bg-slate-50/40 dark:bg-zinc-900/30">
-            <p className="text-slate-400 dark:text-slate-500 text-xs font-sans-body">
+          <div className="shrink-0 border-t border-zinc-100 dark:border-zinc-800 px-6 py-4 flex items-center justify-between bg-zinc-50/40 dark:bg-zinc-900/30">
+            <p className="text-zinc-400 dark:text-zinc-500 text-xs font-sans-body">
               Keys are encrypted at rest and never returned to the client.
             </p>
             <button type="submit" disabled={isPending || Object.keys(form).length === 0}
@@ -722,12 +721,12 @@ export default function SettingsPage() {
   return (
     <div className="max-w-4xl flex flex-col gap-6">
       <div>
-        <h2 className="font-display font-bold text-xl sm:text-2xl text-slate-900 dark:text-slate-100 tracking-tight">Settings</h2>
-        <p className="text-slate-500 dark:text-slate-400 text-sm mt-0.5 font-sans-body">Manage your firm profile and team</p>
+        <h2 className="font-display font-bold text-xl sm:text-2xl text-zinc-900 dark:text-zinc-100 tracking-tight">Settings</h2>
+        <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-0.5 font-sans-body">Manage your firm profile and team</p>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 border-b border-slate-200 dark:border-[#166534]">
+      <div className="flex gap-1 border-b border-zinc-200 dark:border-[#166534]">
         {[
           { key: "team" as const, label: "Team", icon: Users },
           { key: "profile" as const, label: "Profile", icon: User },
@@ -737,7 +736,7 @@ export default function SettingsPage() {
             className={`flex items-center gap-2 px-4 py-2.5 text-sm font-semibold font-sans-body border-b-2 transition-colors ${
               tab === t.key
                 ? "border-[#15803d] text-[#15803d] dark:text-green-400 dark:border-green-400"
-                : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
+                : "border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300"
             }`}>
             <t.icon className="w-4 h-4" />
             {t.label}
@@ -750,8 +749,8 @@ export default function SettingsPage() {
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-lg">Team Members</h3>
-              <p className="text-slate-500 dark:text-slate-400 text-sm font-sans-body">
+              <h3 className="font-display font-semibold text-zinc-900 dark:text-zinc-100 text-lg">Team Members</h3>
+              <p className="text-zinc-500 dark:text-zinc-400 text-sm font-sans-body">
                 {members.length} member{members.length !== 1 ? "s" : ""}
               </p>
             </div>
@@ -764,23 +763,23 @@ export default function SettingsPage() {
             )}
           </div>
 
-          <div className="bg-white dark:bg-zinc-950 border border-slate-200 dark:border-[#166534] rounded-2xl overflow-hidden">
+          <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-[#166534] rounded-2xl overflow-hidden">
             {usersLoading ? (
               <div className="p-6 space-y-4">
                 {Array.from({ length: 3 }).map((_, i) => (
                   <div key={i} className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-zinc-900 animate-pulse" />
+                    <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-900 animate-pulse" />
                     <div className="flex-1 space-y-2">
-                      <div className="h-4 w-32 bg-slate-100 dark:bg-zinc-900 rounded animate-pulse" />
-                      <div className="h-3 w-48 bg-slate-100 dark:bg-zinc-900 rounded animate-pulse" />
+                      <div className="h-4 w-32 bg-zinc-100 dark:bg-zinc-900 rounded animate-pulse" />
+                      <div className="h-3 w-48 bg-zinc-100 dark:bg-zinc-900 rounded animate-pulse" />
                     </div>
                   </div>
                 ))}
               </div>
             ) : members.length === 0 ? (
               <div className="py-16 text-center">
-                <Users className="w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
-                <p className="text-slate-500 dark:text-slate-400 text-sm font-sans-body">No team members yet</p>
+                <Users className="w-8 h-8 text-zinc-300 dark:text-zinc-600 mx-auto mb-3" />
+                <p className="text-zinc-500 dark:text-zinc-400 text-sm font-sans-body">No team members yet</p>
                 {canInviteUser(role) && (
                   <button onClick={() => setInviteOpen(true)}
                     className="mt-3 text-[#15803d] dark:text-green-400 text-sm font-semibold hover:underline font-sans-body">
@@ -789,7 +788,7 @@ export default function SettingsPage() {
                 )}
               </div>
             ) : (
-              <div className="divide-y divide-slate-100 dark:divide-slate-700/50">
+              <div className="divide-y divide-zinc-100 dark:divide-zinc-700/50">
                 {members.map(member => (
                   <div key={member.id} className="flex items-center gap-4 px-5 py-4">
                     <div className="w-10 h-10 rounded-full bg-[#15803d] flex items-center justify-center border border-green-800/20 shrink-0">
@@ -800,19 +799,19 @@ export default function SettingsPage() {
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-medium text-slate-900 dark:text-slate-100 text-sm font-sans-body">
+                        <span className="font-medium text-zinc-900 dark:text-zinc-100 text-sm font-sans-body">
                           {member.first_name} {member.last_name}
                           {member.id === currentUser?.id && (
-                            <span className="text-slate-400 dark:text-slate-500 font-normal"> (you)</span>
+                            <span className="text-zinc-400 dark:text-zinc-500 font-normal"> (you)</span>
                           )}
                         </span>
                         {!member.is_active && (
-                          <span className="text-xs bg-slate-100 dark:bg-zinc-900 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded-full font-sans-body">
+                          <span className="text-xs bg-zinc-100 dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 px-2 py-0.5 rounded-full font-sans-body">
                             Pending
                           </span>
                         )}
                       </div>
-                      <p className="text-slate-500 dark:text-slate-400 text-xs font-sans-body truncate">{member.email}</p>
+                      <p className="text-zinc-500 dark:text-zinc-400 text-xs font-sans-body truncate">{member.email}</p>
                     </div>
 
                     <div className="shrink-0">
@@ -841,7 +840,7 @@ export default function SettingsPage() {
                           }
                         }}
                         disabled={deactivateMutation.isPending}
-                        className="w-8 h-8 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center justify-center text-slate-300 dark:text-slate-600 hover:text-red-500 transition-all shrink-0"
+                        className="w-8 h-8 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center justify-center text-zinc-300 dark:text-zinc-600 hover:text-red-500 transition-all shrink-0"
                         title="Deactivate user"
                       >
                         {deactivateMutation.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
@@ -853,9 +852,9 @@ export default function SettingsPage() {
             )}
           </div>
 
-          <div className="flex items-start gap-3 p-4 bg-slate-50 dark:bg-zinc-900/50 border border-slate-200 dark:border-[#166534] rounded-xl">
-            <Shield className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
-            <p className="text-slate-500 dark:text-slate-400 text-xs font-sans-body leading-relaxed">
+          <div className="flex items-start gap-3 p-4 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-[#166534] rounded-xl">
+            <Shield className="w-4 h-4 text-zinc-400 shrink-0 mt-0.5" />
+            <p className="text-zinc-500 dark:text-zinc-400 text-xs font-sans-body leading-relaxed">
               All user actions are audit-logged. Role changes take effect immediately. Deactivated users retain their data but cannot log in.
             </p>
           </div>
@@ -865,7 +864,7 @@ export default function SettingsPage() {
       {/* Profile tab */}
       {tab === "profile" && currentUser && (
         <div className="flex flex-col gap-5">
-          <div className="bg-white dark:bg-zinc-950 border border-slate-200 dark:border-[#166534] rounded-2xl p-6">
+          <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-[#166534] rounded-2xl p-6">
             <div className="flex items-center gap-4 mb-6">
               <div className="w-16 h-16 rounded-full bg-[#15803d] flex items-center justify-center border-2 border-green-200 dark:border-green-900">
                 <span className="text-white text-xl font-bold font-sans-body">
@@ -873,7 +872,7 @@ export default function SettingsPage() {
                 </span>
               </div>
               <div>
-                <h3 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-xl">
+                <h3 className="font-display font-semibold text-zinc-900 dark:text-zinc-100 text-xl">
                   {currentUser.first_name} {currentUser.last_name}
                 </h3>
                 <RoleBadge role={currentUser.role as Role} />
@@ -888,15 +887,15 @@ export default function SettingsPage() {
                 { label: "Role", value: ROLE_LABELS[currentUser.role as Role] ?? currentUser.role },
               ].map(f => (
                 <div key={f.label}>
-                  <label className="text-slate-500 dark:text-slate-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">{f.label}</label>
-                  <div className="bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-[#166534] rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 text-sm font-sans-body">
+                  <label className="text-zinc-500 dark:text-zinc-400 text-xs font-semibold mb-1.5 block font-sans-body uppercase tracking-wider">{f.label}</label>
+                  <div className="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-[#166534] rounded-xl px-4 py-3 text-zinc-900 dark:text-zinc-100 text-sm font-sans-body">
                     {f.value}
                   </div>
                 </div>
               ))}
             </div>
 
-            <p className="text-slate-400 dark:text-slate-500 text-xs mt-4 font-sans-body">
+            <p className="text-zinc-400 dark:text-zinc-500 text-xs mt-4 font-sans-body">
               Profile editing will be available in a future update.
             </p>
           </div>

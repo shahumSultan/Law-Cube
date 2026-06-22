@@ -26,7 +26,7 @@ const STATUS_COLORS: Record<string, { bg: string; text: string; dot: string }> =
   consultation_scheduled:  { bg: "bg-violet-50 dark:bg-violet-950/30",text: "text-violet-700 dark:text-violet-300",dot: "bg-violet-400" },
   consultation_completed:  { bg: "bg-sky-50 dark:bg-sky-950/30",      text: "text-sky-700 dark:text-sky-300",      dot: "bg-sky-400" },
   retained:                { bg: "bg-emerald-50 dark:bg-emerald-950/30",text: "text-emerald-700 dark:text-emerald-300",dot: "bg-emerald-400" },
-  lost:                    { bg: "bg-slate-100 dark:bg-zinc-800",      text: "text-slate-500 dark:text-slate-400",  dot: "bg-slate-400" },
+  lost:                    { bg: "bg-zinc-100 dark:bg-zinc-800",      text: "text-zinc-500 dark:text-zinc-400",  dot: "bg-zinc-400" },
   spam:                    { bg: "bg-red-50 dark:bg-red-950/30",       text: "text-red-600 dark:text-red-400",      dot: "bg-red-400" },
 };
 
@@ -80,9 +80,9 @@ export default function LeadDetailPage() {
   if (isLoading) {
     return (
       <div className="max-w-4xl flex flex-col gap-6 animate-pulse">
-        <div className="h-8 w-48 bg-slate-100 dark:bg-zinc-800 rounded-xl" />
-        <div className="h-48 bg-slate-100 dark:bg-zinc-800 rounded-2xl" />
-        <div className="h-72 bg-slate-100 dark:bg-zinc-800 rounded-2xl" />
+        <div className="h-8 w-48 bg-zinc-100 dark:bg-zinc-800 rounded-xl" />
+        <div className="h-48 bg-zinc-100 dark:bg-zinc-800 rounded-2xl" />
+        <div className="h-72 bg-zinc-100 dark:bg-zinc-800 rounded-2xl" />
       </div>
     );
   }
@@ -90,10 +90,10 @@ export default function LeadDetailPage() {
   if (!lead) {
     return (
       <div className="max-w-4xl">
-        <button onClick={() => router.back()} className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 font-sans-body mb-6">
+        <button onClick={() => router.back()} className="flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 font-sans-body mb-6">
           <ArrowLeft className="w-4 h-4" /> Back
         </button>
-        <p className="text-slate-500 font-sans-body">Lead not found.</p>
+        <p className="text-zinc-500 font-sans-body">Lead not found.</p>
       </div>
     );
   }
@@ -107,19 +107,19 @@ export default function LeadDetailPage() {
       {/* Back + title */}
       <div className="flex items-center gap-3">
         <button onClick={() => router.back()}
-          className="w-8 h-8 rounded-xl border border-slate-200 dark:border-[#166534] flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-50 dark:hover:bg-zinc-800 transition-all">
+          className="w-8 h-8 rounded-xl border border-zinc-200 dark:border-[#166534] flex items-center justify-center text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all">
           <ArrowLeft className="w-4 h-4" />
         </button>
         <div>
-          <h2 className="font-display font-bold text-xl text-slate-900 dark:text-slate-100 tracking-tight">
+          <h2 className="font-display font-bold text-xl text-zinc-900 dark:text-zinc-100 tracking-tight">
             {lead.first_name} {lead.last_name}
           </h2>
-          <p className="text-slate-500 dark:text-slate-400 text-sm font-sans-body">Lead details</p>
+          <p className="text-zinc-500 dark:text-zinc-400 text-sm font-sans-body">Lead details</p>
         </div>
       </div>
 
       {/* Lead info card */}
-      <div className="bg-white dark:bg-zinc-950 border border-slate-200 dark:border-[#166534] rounded-2xl p-6">
+      <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-[#166534] rounded-2xl p-6">
         <div className="flex items-start justify-between gap-4 mb-5">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-2xl bg-[#15803d] flex items-center justify-center border border-green-700/20 shrink-0">
@@ -128,10 +128,10 @@ export default function LeadDetailPage() {
               </span>
             </div>
             <div>
-              <h3 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-xl leading-tight">
+              <h3 className="font-display font-semibold text-zinc-900 dark:text-zinc-100 text-xl leading-tight">
                 {lead.first_name} {lead.last_name}
               </h3>
-              <p className="text-slate-500 dark:text-slate-400 text-sm font-sans-body capitalize mt-0.5">
+              <p className="text-zinc-500 dark:text-zinc-400 text-sm font-sans-body capitalize mt-0.5">
                 Source: {lead.source}
               </p>
             </div>
@@ -142,42 +142,42 @@ export default function LeadDetailPage() {
         <div className="grid sm:grid-cols-2 gap-3">
           {lead.phone && (
             <div className="flex items-center gap-2.5 text-sm font-sans-body">
-              <Phone className="w-4 h-4 text-slate-400 shrink-0" />
-              <span className="text-slate-700 dark:text-slate-300 font-mono">{lead.phone}</span>
+              <Phone className="w-4 h-4 text-zinc-400 shrink-0" />
+              <span className="text-zinc-700 dark:text-zinc-300 font-mono">{lead.phone}</span>
             </div>
           )}
           {lead.email && (
             <div className="flex items-center gap-2.5 text-sm font-sans-body">
-              <Mail className="w-4 h-4 text-slate-400 shrink-0" />
-              <span className="text-slate-700 dark:text-slate-300">{lead.email}</span>
+              <Mail className="w-4 h-4 text-zinc-400 shrink-0" />
+              <span className="text-zinc-700 dark:text-zinc-300">{lead.email}</span>
             </div>
           )}
           {lead.campaign && (
             <div className="flex items-center gap-2.5 text-sm font-sans-body">
-              <Tag className="w-4 h-4 text-slate-400 shrink-0" />
-              <span className="text-slate-700 dark:text-slate-300">{lead.campaign}</span>
+              <Tag className="w-4 h-4 text-zinc-400 shrink-0" />
+              <span className="text-zinc-700 dark:text-zinc-300">{lead.campaign}</span>
             </div>
           )}
           <div className="flex items-center gap-2.5 text-sm font-sans-body">
-            <Calendar className="w-4 h-4 text-slate-400 shrink-0" />
-            <span className="text-slate-700 dark:text-slate-300">
+            <Calendar className="w-4 h-4 text-zinc-400 shrink-0" />
+            <span className="text-zinc-700 dark:text-zinc-300">
               {new Date(lead.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
             </span>
           </div>
         </div>
 
         {lead.ai_summary && (
-          <div className="mt-5 p-4 bg-slate-50 dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-700 rounded-xl">
-            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 font-sans-body">AI Summary</p>
-            <p className="text-sm text-slate-700 dark:text-slate-300 font-sans-body leading-relaxed">{lead.ai_summary}</p>
+          <div className="mt-5 p-4 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-700 rounded-xl">
+            <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2 font-sans-body">AI Summary</p>
+            <p className="text-sm text-zinc-700 dark:text-zinc-300 font-sans-body leading-relaxed">{lead.ai_summary}</p>
           </div>
         )}
 
         {lead.score !== null && lead.score !== undefined && (
           <div className="mt-4 flex items-center gap-3">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 font-sans-body uppercase tracking-wider">AI Score</span>
+            <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 font-sans-body uppercase tracking-wider">AI Score</span>
             <div className="flex items-center gap-2">
-              <div className="w-32 h-2 bg-slate-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+              <div className="w-32 h-2 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
                 <div className="h-full rounded-full bg-[#15803d] transition-all" style={{ width: `${lead.score}%` }} />
               </div>
               <span className="text-sm font-bold text-[#15803d] font-sans-body">{lead.score}</span>
@@ -187,15 +187,15 @@ export default function LeadDetailPage() {
       </div>
 
       {/* Clio sync panel */}
-      <div className="bg-white dark:bg-zinc-950 border border-slate-200 dark:border-[#166534] rounded-2xl overflow-hidden">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-zinc-800">
+      <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-[#166534] rounded-2xl overflow-hidden">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100 dark:border-zinc-800">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-[#f0fdf4] dark:bg-emerald-950/50 flex items-center justify-center">
               <Link2 className="w-4 h-4 text-[#15803d]" />
             </div>
             <div>
-              <h3 className="font-display font-semibold text-slate-900 dark:text-slate-100 text-base leading-tight">Clio Sync</h3>
-              <p className="text-slate-500 dark:text-slate-400 text-xs font-sans-body">Practice management integration</p>
+              <h3 className="font-display font-semibold text-zinc-900 dark:text-zinc-100 text-base leading-tight">Clio Sync</h3>
+              <p className="text-zinc-500 dark:text-zinc-400 text-xs font-sans-body">Practice management integration</p>
             </div>
           </div>
 
@@ -215,12 +215,12 @@ export default function LeadDetailPage() {
         <div className="p-6">
           {!clioConnected ? (
             <div className="flex flex-col items-center gap-3 py-6 text-center">
-              <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-zinc-800 flex items-center justify-center">
-                <Link2 className="w-5 h-5 text-slate-400" />
+              <div className="w-12 h-12 rounded-2xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                <Link2 className="w-5 h-5 text-zinc-400" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 font-sans-body">Clio not connected</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-sans-body mt-0.5">Connect Clio in Settings → Integrations to enable sync.</p>
+                <p className="text-sm font-semibold text-zinc-700 dark:text-zinc-300 font-sans-body">Clio not connected</p>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 font-sans-body mt-0.5">Connect Clio in Settings → Integrations to enable sync.</p>
               </div>
               <button
                 onClick={() => router.push("/dashboard/settings?tab=integrations")}
@@ -246,11 +246,11 @@ export default function LeadDetailPage() {
 
               {/* Clio IDs */}
               <div className="grid sm:grid-cols-2 gap-3">
-                <div className="p-4 bg-slate-50 dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-700 rounded-xl">
-                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider font-sans-body mb-1.5">Contact ID</p>
+                <div className="p-4 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-700 rounded-xl">
+                  <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-sans-body mb-1.5">Contact ID</p>
                   {lead.clio_contact_id ? (
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-mono text-slate-800 dark:text-slate-200">{lead.clio_contact_id}</span>
+                      <span className="text-sm font-mono text-zinc-800 dark:text-zinc-200">{lead.clio_contact_id}</span>
                       <a
                         href={`${clioBaseUrl}/contacts/${lead.clio_contact_id}`}
                         target="_blank" rel="noopener noreferrer"
@@ -259,18 +259,18 @@ export default function LeadDetailPage() {
                       </a>
                     </div>
                   ) : (
-                    <div className="flex items-center gap-2 text-slate-400 dark:text-slate-600">
+                    <div className="flex items-center gap-2 text-zinc-400 dark:text-zinc-600">
                       <Clock className="w-3.5 h-3.5" />
                       <span className="text-xs font-sans-body">Not synced yet</span>
                     </div>
                   )}
                 </div>
 
-                <div className="p-4 bg-slate-50 dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-700 rounded-xl">
-                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider font-sans-body mb-1.5">Matter ID</p>
+                <div className="p-4 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-700 rounded-xl">
+                  <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-sans-body mb-1.5">Matter ID</p>
                   {lead.clio_matter_id ? (
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-mono text-slate-800 dark:text-slate-200">{lead.clio_matter_id}</span>
+                      <span className="text-sm font-mono text-zinc-800 dark:text-zinc-200">{lead.clio_matter_id}</span>
                       <a
                         href={`${clioBaseUrl}/matters/${lead.clio_matter_id}`}
                         target="_blank" rel="noopener noreferrer"
@@ -279,7 +279,7 @@ export default function LeadDetailPage() {
                       </a>
                     </div>
                   ) : (
-                    <div className="flex items-center gap-2 text-slate-400 dark:text-slate-600">
+                    <div className="flex items-center gap-2 text-zinc-400 dark:text-zinc-600">
                       <Clock className="w-3.5 h-3.5" />
                       <span className="text-xs font-sans-body">
                         {lead.status === "retained" ? "Sync pending" : "Created on retention"}
@@ -291,18 +291,18 @@ export default function LeadDetailPage() {
 
               {/* Sync log */}
               <div>
-                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider font-sans-body mb-3">Sync History</p>
+                <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-sans-body mb-3">Sync History</p>
                 {logsLoading ? (
                   <div className="space-y-2">
-                    {[0, 1, 2].map(i => <div key={i} className="h-10 bg-slate-100 dark:bg-zinc-800 rounded-xl animate-pulse" />)}
+                    {[0, 1, 2].map(i => <div key={i} className="h-10 bg-zinc-100 dark:bg-zinc-800 rounded-xl animate-pulse" />)}
                   </div>
                 ) : clioLogs && clioLogs.items.length > 0 ? (
-                  <div className="border border-slate-100 dark:border-zinc-800 rounded-xl divide-y divide-slate-100 dark:divide-zinc-800 overflow-hidden">
+                  <div className="border border-zinc-100 dark:border-zinc-800 rounded-xl divide-y divide-zinc-100 dark:divide-zinc-800 overflow-hidden">
                     {clioLogs.items.map((log: ClioSyncLog) => (
                       <div key={log.id} className="flex items-center gap-3 px-4 py-3">
                         <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${log.status === "success" ? "bg-emerald-400" : "bg-red-400"}`} />
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-semibold text-slate-700 dark:text-slate-300 font-sans-body">
+                          <p className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 font-sans-body">
                             {OP_LABELS[log.operation] ?? log.operation}
                           </p>
                           {log.error_message && (
@@ -310,18 +310,18 @@ export default function LeadDetailPage() {
                           )}
                         </div>
                         {log.clio_entity_id && (
-                          <span className="text-xs font-mono text-slate-400 dark:text-slate-600 shrink-0">#{log.clio_entity_id}</span>
+                          <span className="text-xs font-mono text-zinc-400 dark:text-zinc-600 shrink-0">#{log.clio_entity_id}</span>
                         )}
-                        <span className="text-[11px] text-slate-400 dark:text-slate-600 font-sans-body shrink-0">
+                        <span className="text-[11px] text-zinc-400 dark:text-zinc-600 font-sans-body shrink-0">
                           {new Date(log.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                         </span>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="flex flex-col items-center gap-2 py-8 text-center border border-slate-100 dark:border-zinc-800 rounded-xl">
-                    <User className="w-6 h-6 text-slate-300 dark:text-slate-700" />
-                    <p className="text-xs text-slate-400 dark:text-slate-600 font-sans-body">No sync history yet. Click "Push to Clio" to sync.</p>
+                  <div className="flex flex-col items-center gap-2 py-8 text-center border border-zinc-100 dark:border-zinc-800 rounded-xl">
+                    <User className="w-6 h-6 text-zinc-300 dark:text-zinc-700" />
+                    <p className="text-xs text-zinc-400 dark:text-zinc-600 font-sans-body">No sync history yet. Click "Push to Clio" to sync.</p>
                   </div>
                 )}
               </div>

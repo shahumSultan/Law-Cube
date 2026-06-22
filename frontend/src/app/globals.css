@@ -80,6 +80,19 @@ html {
   --color-zinc-50:  #fafafa;
 }
 
+/* ── Chart + select tokens ───────────────────────────────────────────────────── */
+:root {
+  --chart-grid: #e4e4e7;
+  --chart-tick: #a1a1aa;
+}
+.dark {
+  --chart-grid: #27272a;
+  --chart-tick: #52525b;
+}
+
+/* Native select — adopt browser dark scheme in dark mode */
+.dark select { color-scheme: dark; }
+
 /* ── Light mode ─────────────────────────────────────────────────────────────── */
 :root {
   --background: #fafafa;
