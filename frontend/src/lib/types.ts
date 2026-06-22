@@ -232,3 +232,21 @@ export function canInviteUser(role: Role): boolean {
 export function canChangeRole(role: Role): boolean {
   return isFirmOwner(role);
 }
+
+export interface FollowUpLogEntry {
+  id: string;
+  lead_id: string;
+  lead_name: string | null;
+  lead_phone: string | null;
+  sequence_step: number;
+  channel: string;
+  sent_at: string;
+}
+
+export interface FollowUpStats {
+  sent_this_month: number;
+  sent_24h: number;
+  sent_72h: number;
+  sent_missed_call: number;
+  opted_out_leads: number;
+}

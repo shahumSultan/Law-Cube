@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import get_settings
 from app.core.dependencies import ActiveTrial
 from app.core.logging import setup_logging
-from app.routers import auth, calls, clio, dashboard, leads, notifications, settings as settings_router, users, webhooks
+from app.routers import auth, calls, clio, dashboard, followup, leads, notifications, settings as settings_router, users, webhooks
 from app.routers.clio import public_router as clio_public_router
 
 settings = get_settings()
@@ -67,6 +67,7 @@ app.include_router(users.router,            prefix="/api", dependencies=[ActiveT
 app.include_router(settings_router.router,  prefix="/api", dependencies=[ActiveTrial])
 app.include_router(notifications.router,    prefix="/api", dependencies=[ActiveTrial])
 app.include_router(clio.router,             prefix="/api", dependencies=[ActiveTrial])
+app.include_router(followup.router,         prefix="/api", dependencies=[ActiveTrial])
 
 
 @app.get("/api/health")
